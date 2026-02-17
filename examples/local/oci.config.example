@@ -1,0 +1,6 @@
+[DEFAULT]
+user=ocid1.user.oc1..REPLACE_ME
+tenancy=ocid1.tenancy.oc1..REPLACE_ME
+region=eu-frankfurt-1
+fingerprint=aa:bb:cc:dd:REPLACE_ME
+key_file=/absolute/path/to/.oci/oci_api_key.pem

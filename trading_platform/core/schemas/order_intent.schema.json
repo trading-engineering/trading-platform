@@ -1,0 +1,187 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/order_intent.schema.json",
+  "title": "OrderIntent",
+  "type": "object",
+  "description": "Schema for an order intent used as a single source of truth across strategy, validation, and (backtest) execution bindings. The schema models intent-specific requirements via oneOf (new/cancel/replace).",
+  "required": [
+    "ts_ns_local",
+    "instrument",
+    "client_order_id",
+    "intent_type"
+  ],
+  "properties": {
+    "ts_ns_local": {
+      "type": "integer",
+      "description": "Local intent timestamp in nanoseconds since Unix epoch.",
+      "exclusiveMinimum": 0
+    },
+    "instrument": {
+      "type": "string",
+      "description": "Instrument identifier used for routing and execution binding (e.g., symbol, asset code). Required for all intents, including cancel.",
+      "minLength": 1
+    },
+    "client_order_id": {
+      "type": "string",
+      "description": "Order identifier (maps to hftbacktest 'order_id'). Used for new/cancel/replace. Must be unique while an order with the same ID exists.",
+      "minLength": 1
+    },
+    "intent_type": {
+      "type": "string",
+      "enum": [
+        "new",
+        "cancel",
+        "replace"
+      ],
+      "description": "Intent type describing the order lifecycle action."
+    },
+    "intents_correlation_id": {
+      "type": "string",
+      "description": "Optional correlation identifier to link multiple intents (e.g., decision bundles) across the order lifecycle.",
+      "minLength": 1
+    },
+    "order_type": {
+      "type": "string",
+      "enum": [
+        "limit",
+        "market"
+      ],
+      "description": "Order type. For replace intents this must be 'limit'."
+    },
+    "side": {
+      "type": "string",
+      "enum": [
+        "buy",
+        "sell"
+      ],
+      "description": "Order side."
+    },
+    "intended_price": {
+      "description": "Intended order price. Required for both limit and market orders to match the execution binding signature.",
+      "$ref": "https://schemas.example.com/common.schema.json#/definitions/Price"
+    },
+    "intended_qty": {
+      "description": "Intended total order quantity. For replace intents, this is the new total quantity (not a delta).",
+      "$ref": "https://schemas.example.com/common.schema.json#/definitions/Quantity"
+    },
+    "time_in_force": {
+      "type": "string",
+      "enum": [
+        "GTC",
+        "IOC",
+        "FOK",
+        "POST_ONLY"
+      ],
+      "description": "Time in force. Required for new intents. Not allowed for replace intents because the binding does not support modifying it."
+    }
+  },
+  "oneOf": [
+    {
+      "title": "NewOrderIntent",
+      "description": "Create a new order.",
+      "type": "object",
+      "properties": {
+        "intent_type": {
+          "const": "new"
+        }
+      },
+      "required": [
+        "ts_ns_local",
+        "instrument",
+        "client_order_id",
+        "intent_type",
+        "side",
+        "order_type",
+        "intended_qty",
+        "intended_price",
+        "time_in_force"
+      ]
+    },
+    {
+      "title": "CancelOrderIntent",
+      "description": "Cancel an existing order identified by client_order_id.",
+      "type": "object",
+      "properties": {
+        "intent_type": {
+          "const": "cancel"
+        }
+      },
+      "required": [
+        "ts_ns_local",
+        "instrument",
+        "client_order_id",
+        "intent_type"
+      ],
+      "allOf": [
+        {
+          "not": {
+            "required": [
+              "side"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "order_type"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "intended_qty"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "intended_price"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "time_in_force"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "title": "ReplaceOrderIntent",
+      "description": "Modify an existing order (limit-only). The order ID remains the same (client_order_id). Time-in-force cannot be modified.",
+      "type": "object",
+      "properties": {
+        "intent_type": {
+          "const": "replace"
+        },
+        "order_type": {
+          "const": "limit"
+        }
+      },
+      "required": [
+        "ts_ns_local",
+        "instrument",
+        "client_order_id",
+        "intent_type",
+        "side",
+        "order_type",
+        "intended_qty",
+        "intended_price"
+      ],
+      "allOf": [
+        {
+          "not": {
+            "required": [
+              "time_in_force"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "additionalProperties": false
+}

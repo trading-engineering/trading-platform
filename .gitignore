@@ -1,0 +1,116 @@
+# ==============================
+# Python bytecode / cache
+# ==============================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ==============================
+# Virtual environments
+# ==============================
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# ==============================
+# Sensitive environment files
+# ==============================
+.env
+*.pem
+*.key
+*.crt
+*.pub
+.oci/
+
+# ==============================
+# Python packaging / build artifacts
+# ==============================
+build/
+dist/
+*.egg-info/
+.eggs/
+wheels/
+*.egg
+MANIFEST
+share/python-wheels/
+
+# ==============================
+# Installation logs
+# ==============================
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ==============================
+# Test / Coverage outputs
+# ==============================
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# ==============================
+# IDEs / Editors
+# ==============================
+# VS Code
+.vscode/
+# PyCharm
+.idea/
+# Spyder / Rope
+.spyderproject
+.spyproject
+.ropeproject
+
+# ==============================
+# Jupyter notebooks
+# ==============================
+.ipynb_checkpoints/
+
+# ==============================
+# Type checker caches
+# ==============================
+.mypy_cache/
+.dmypy.json
+.dmypy.json
+.pyre/
+.pytype/
+
+# ==============================
+# Cython debug
+# ==============================
+cython_debug/
+
+# ==============================
+# Documentation builds
+# ==============================
+docs/_build/
+site/
+
+# ==============================
+# Runtime local data
+# ==============================
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# ==============================
+# Devcontainer related
+# ==============================
+.devcontainer/.env
+.devcontainer/docker-env/
+
+# ==============================
+# Cursor editor
+# ==============================
+.cursorignore
+.cursorindexingignore

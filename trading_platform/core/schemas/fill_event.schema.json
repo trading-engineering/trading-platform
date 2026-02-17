@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/fill_event.schema.json",
+  "title": "FillEvent",
+  "type": "object",
+  "required": [
+    "ts_ns_exch",
+    "ts_ns_local",
+    "instrument",
+    "client_order_id",
+    "side",
+    "filled_price",
+    "cum_filled_qty",
+    "time_in_force",
+    "liquidity_flag"
+  ],
+  "properties": {
+    "ts_ns_exch": {
+      "description": "Venue fill event timestamp in nanoseconds since Unix epoch.",
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "ts_ns_local": {
+      "description": "Local fill event timestamp in nanoseconds since Unix epoch.",
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "instrument": {
+      "description": "Instrument identifier.",
+      "type": "string",
+      "minLength": 1
+    },
+    "client_order_id": {
+      "description": "Client-assigned order ID (if used).",
+      "type": "string",
+      "minLength": 1
+    },
+    "side": {
+      "description": "Side of the filled order from client perspective.",
+      "type": "string",
+      "enum": ["buy", "sell"]
+    },
+    "intended_price": {
+      "description": "Intended price for the order.",
+      "$ref": "https://schemas.example.com/common.schema.json#/definitions/Price"
+    },
+    "filled_price": {
+      "description": "Filled price for the order.",
+      "$ref": "https://schemas.example.com/common.schema.json#/definitions/Price"
+    },
+    "intended_qty": {
+      "description": "Intended quantity of this order in underlying units.",
+      "$ref": "https://schemas.example.com/common.schema.json#/definitions/Quantity"
+    },
+    "cum_filled_qty": {
+      "description": "Cumulative filled quantity of this order in underlying units at this state.",
+      "$ref": "https://schemas.example.com/common.schema.json#/definitions/Quantity"
+    },
+    "remaining_qty": {
+      "description": "Remaining open quantity after this state.",
+      "$ref": "https://schemas.example.com/common.schema.json#/definitions/Quantity"
+    },
+    "time_in_force": {
+      "description": "Time-in-force instruction (venue-specific mapping).",
+      "type": "string",
+      "enum": ["GTC", "IOC", "FOK", "POST_ONLY"]
+    },
+    "liquidity_flag": {
+      "description": "Indicates whether the fill was maker or taker.",
+      "type": "string",
+      "enum": ["maker", "taker", "unknown"]
+    },
+    "fee": {
+      "description": "Transaction fee or rebate. Negative = fee paid, positive = rebate.",
+      "$ref": "https://schemas.example.com/common.schema.json#/definitions/Money"
+    }
+  },
+  "additionalProperties": false
+}

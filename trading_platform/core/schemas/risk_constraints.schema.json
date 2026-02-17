@@ -1,0 +1,166 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/risk_constraints.schema.json",
+  "title": "RiskConstraints",
+  "type": "object",
+  "required": [
+    "ts_ns_local",
+    "scope",
+    "trading_enabled"
+  ],
+  "properties": {
+    "ts_ns_local": {
+      "description": "Local risk state timestamp in nanoseconds since Unix epoch.",
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "scope": {
+      "description": "Scope for which these constraints apply (e.g. strategy name, account).",
+      "type": "string",
+      "minLength": 1
+    },
+    "trading_enabled": {
+      "description": "Global on/off flag. If false, no new risk-increasing orders should be sent.",
+      "type": "boolean"
+    },
+
+    "position_limits": {
+      "description": "Limits expressed in underlying units (e.g. shares, contracts). Position value is interpreted in the given currency context.",
+      "type": "object",
+      "required": ["currency"],
+      "properties": {
+        "currency": {
+          "description": "Currency context for evaluating position limits (e.g. 'USD', 'EUR')",
+          "type": "string",
+          "minLength": 1
+        },
+        "max_position": {
+          "description": "Maximum allowed absolute position in underlying units (applies to the net position if the venue auto-nets).",
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "notional_limits": {
+      "description": "Limits expressed in monetary notional (exposure) in a given currency.",
+      "type": "object",
+      "required": [
+        "currency"
+      ],
+      "properties": {
+        "currency": {
+          "description": "Currency identifier used for notional limits (e.g. 'USD', 'EUR', 'SimDollar'). No specific format enforced.",
+          "type": "string",
+          "minLength": 1
+        },
+        "max_gross_notional": {
+          "description": "Maximum allowed gross notional exposure (sum of absolute notionals across instruments) in the given currency.",
+          "type": "number",
+          "minimum": 0
+        },
+        "max_single_order_notional": {
+          "description": "Maximum allowed notional for a single new order in the given currency.",
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "quote_limits": {
+      "description": "Limits on outstanding quote exposure, expressed in a monetary currency.",
+      "type": "object",
+      "required": [
+        "currency"
+      ],
+      "properties": {
+        "currency": {
+          "description": "Currency identifier used for quote-notional limits (e.g. 'USD', 'EUR', 'SimDollar'). No specific format enforced.",
+          "type": "string",
+          "minLength": 1
+        },
+        "max_gross_quote_notional": {
+          "description": "Maximum gross notional of all active quotes (sum of absolute notional of all bid/ask quotes) in the given currency.",
+          "type": "number",
+          "minimum": 0
+        },
+        "max_net_quote_notional": {
+          "description": "Maximum net notional of active quotes (bid notional - ask notional).",
+          "type": "number"
+        },
+        "max_active_quotes": {
+          "description": "Maximum number of active quotes across all instruments.",
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "order_rate_limits": {
+      "description": "Rate limits for order and cancel activity.",
+      "type": "object",
+      "properties": {
+        "max_orders_per_second": {
+          "description": "Maximum number of new orders per second.",
+          "type": "number",
+          "minimum": 0
+        },
+        "max_cancels_per_second": {
+          "description": "Maximum number of cancel requests per second.",
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "max_loss": {
+      "description": "Maximum allowed realized + unrealized losses.",
+      "type": "object",
+      "required": [
+        "currency",
+        "max_drawdown"
+      ],
+      "properties": {
+        "currency": {
+          "description": "Currency identifier used for the daily loss limit (e.g. 'USD', 'EUR', 'SimDollar'). No specific format enforced.",
+          "type": "string",
+          "minLength": 1
+        },
+        "max_drawdown": {
+          "description": "Maximum permitted portfolio loss measured from the most recent equity peak (peak-to-trough drawdown limit).",
+          "type": "number",
+          "exclusiveMaximum": 0
+        },
+        "rolling_loss": {
+          "description": "Maximum permitted loss within a rolling time window; used as an additional regime/bug protection alongside the max_drawdown limit.",
+          "type": "number",
+          "exclusiveMaximum": 0
+        },
+        "rolling_loss_window": {
+          "description": "Size of rolling loss measurement window in minutes, defining how far back losses are accumulated for the rolling_loss check.",
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "extra": {
+      "description": "Extension point for additional risk parameters.",
+      "type": "object",
+      "additionalProperties": {
+        "type": [
+          "string",
+          "number",
+          "boolean",
+          "null"
+        ]
+      }
+    }
+  },
+  "additionalProperties": false
+}

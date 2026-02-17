@@ -1,0 +1,412 @@
+{"event": "RiskDecisionEvent(ts_ns_local=1723161256101000000, accepted=6, queued=0, rejected=0, handled=0, reject_reasons={})"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='4218267878951418420', prev_state=None, next_state='working')"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='1478678295735644481', prev_state=None, next_state='working')"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='9220587067321093634', prev_state=None, next_state='working')"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='1078790734324421344', prev_state=None, next_state='working')"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='3670455356658261962', prev_state=None, next_state='working')"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='7581400325422276892', prev_state=None, next_state='working')"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161256201000000, accepted=0, queued=0, rejected=0, handled=6, reject_reasons={})"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='1478678295735644481', prev_state='working', next_state='expired')"}
+{"event": "DerivedFillEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='1478678295735644481', side='buy', delta_qty=0.08, cum_qty=0.08, price=59999.9)"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='3670455356658261962', prev_state='working', next_state='expired')"}
+{"event": "DerivedFillEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='3670455356658261962', side='sell', delta_qty=0.01, cum_qty=0.01, price=60000.100000000006)"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161256301000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "ExposureDerivedEvent(ts_ns_local=1723161256310000000, instrument='BTC_USDC-PERPETUAL', exposure=1200.0000000000002, delta_exposure=1200.0000000000002)"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='1478678295735644481', prev_state=None, next_state='filled')"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='3670455356658261962', prev_state=None, next_state='expired')"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161256401000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161256501000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161256601000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161256701000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='1478678295735644481', prev_state=None, next_state='filled')"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='3670455356658261962', prev_state=None, next_state='expired')"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161256801000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "DerivedPnLEvent(ts_ns_local=1723161256810000000, instrument='BTC_USDC-PERPETUAL', delta_pnl=0.0009999999999763531, cum_realized_pnl=0.0009999999999763531)"}
+{"event": "ExposureDerivedEvent(ts_ns_local=1723161256810000000, instrument='BTC_USDC-PERPETUAL', exposure=599.9999999999997, delta_exposure=-600.0000000000006)"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='1478678295735644481', prev_state=None, next_state='filled')"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='3670455356658261962', prev_state=None, next_state='filled')"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161256901000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161257001000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161257101000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161257201000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161257301000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161257401000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161257501000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161257601000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161257701000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161257801000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161257901000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161258001000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161258101000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161258201000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161258301000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161258401000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161258501000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161258601000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161258701000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161258801000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161258901000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161259001000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161259101000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161259201000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161259301000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161259401000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "DerivedPnLEvent(ts_ns_local=1723161259410000000, instrument='BTC_USDC-PERPETUAL', delta_pnl=-0.0004999999999881766, cum_realized_pnl=0.0004999999999881766)"}
+{"event": "ExposureDerivedEvent(ts_ns_local=1723161259410000000, instrument='BTC_USDC-PERPETUAL', exposure=599.9994999999997, delta_exposure=-0.0004999999999881766)"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='1478678295735644481', prev_state=None, next_state='filled')"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='9220587067321093634', prev_state='working', next_state='expired')"}
+{"event": "DerivedFillEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='9220587067321093634', side='buy', delta_qty=0.02, cum_qty=0.02, price=59999.8)"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='3670455356658261962', prev_state=None, next_state='filled')"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161259501000000, accepted=2, queued=0, rejected=3, handled=1, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 3})"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='1478678295735644481', prev_state=None, next_state='filled')"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='9220587067321093634', prev_state=None, next_state='expired')"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='3670455356658261962', prev_state=None, next_state='filled')"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161259601000000, accepted=0, queued=0, rejected=3, handled=3, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 3})"}
+{"event": "DerivedPnLEvent(ts_ns_local=1723161259610000000, instrument='BTC_USDC-PERPETUAL', delta_pnl=0.012000000000284672, cum_realized_pnl=0.012500000000272848)"}
+{"event": "ExposureDerivedEvent(ts_ns_local=1723161259610000000, instrument='BTC_USDC-PERPETUAL', exposure=5399.9955, delta_exposure=4799.996)"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='1478678295735644481', prev_state=None, next_state='filled')"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='9220587067321093634', prev_state=None, next_state='filled')"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='3670455356658261962', prev_state=None, next_state='filled')"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161259701000000, accepted=0, queued=0, rejected=3, handled=3, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 3})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161259801000000, accepted=0, queued=0, rejected=3, handled=3, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 3})"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161259501000000, instrument='BTC_USDC-PERPETUAL', client_order_id='4218267878951418420', prev_state='working', next_state='expired')"}
+{"event": "DerivedFillEvent(ts_ns_local=1723161259501000000, instrument='BTC_USDC-PERPETUAL', client_order_id='4218267878951418420', side='sell', delta_qty=0.02, cum_qty=0.02, price=60000.100000000006)"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='1478678295735644481', prev_state=None, next_state='filled')"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='9220587067321093634', prev_state=None, next_state='filled')"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='3670455356658261962', prev_state=None, next_state='filled')"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161259901000000, accepted=4, queued=0, rejected=0, handled=2, reject_reasons={})"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161259501000000, instrument='BTC_USDC-PERPETUAL', client_order_id='4218267878951418420', prev_state=None, next_state='expired')"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='1478678295735644481', prev_state=None, next_state='filled')"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='9220587067321093634', prev_state=None, next_state='filled')"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='3670455356658261962', prev_state=None, next_state='filled')"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161260001000000, accepted=4, queued=0, rejected=0, handled=2, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161260101000000, accepted=4, queued=0, rejected=0, handled=2, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161260201000000, accepted=4, queued=0, rejected=0, handled=2, reject_reasons={})"}
+{"event": "DerivedPnLEvent(ts_ns_local=1723161260210000000, instrument='BTC_USDC-PERPETUAL', delta_pnl=0.007500000000163709, cum_realized_pnl=0.020000000000436557)"}
+{"event": "ExposureDerivedEvent(ts_ns_local=1723161260210000000, instrument='BTC_USDC-PERPETUAL', exposure=2399.9979999999996, delta_exposure=-2999.9975000000004)"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161259501000000, instrument='BTC_USDC-PERPETUAL', client_order_id='4218267878951418420', prev_state=None, next_state='filled')"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='1478678295735644481', prev_state=None, next_state='filled')"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='9220587067321093634', prev_state=None, next_state='filled')"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='3670455356658261962', prev_state=None, next_state='filled')"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161260301000000, accepted=4, queued=0, rejected=0, handled=2, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161260401000000, accepted=4, queued=0, rejected=0, handled=2, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161260501000000, accepted=4, queued=0, rejected=0, handled=2, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161260601000000, accepted=6, queued=0, rejected=0, handled=0, reject_reasons={})"}
+{"event": "DerivedPnLEvent(ts_ns_local=1723161260621000000, instrument='BTC_USDC-PERPETUAL', delta_pnl=0.00400000000036016, cum_realized_pnl=0.024000000000796717)"}
+{"event": "ExposureDerivedEvent(ts_ns_local=1723161260621000000, instrument='BTC_USDC-PERPETUAL', exposure=2400.002, delta_exposure=0.00400000000036016)"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161259501000000, instrument='BTC_USDC-PERPETUAL', client_order_id='4218267878951418420', prev_state=None, next_state='filled')"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='1478678295735644481', prev_state=None, next_state='filled')"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='9220587067321093634', prev_state=None, next_state='filled')"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='3670455356658261962', prev_state=None, next_state='filled')"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161260701000000, accepted=2, queued=2, rejected=0, handled=2, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161260751000000, accepted=1, queued=1, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161260801000000, accepted=1, queued=3, rejected=1, handled=2, reject_reasons={'ORDER_NOT_FOUND': 1})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161260851000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161260901000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161260951000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161261001000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161261051000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161261101000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161261151000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161261201000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161261251000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161261301000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161261351000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161261401000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161261451000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161261501000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161261551000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161261601000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161261651000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161261701000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161261751000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161261801000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161261851000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161261901000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161261951000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161262001000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161262051000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161262101000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161262151000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161262201000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161262251000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161262301000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161262351000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161262401000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161262451000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161262501000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161262551000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161262601000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161262651000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161262701000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161262751000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161262801000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161262851000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161262901000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161262951000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161263001000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161263051000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161263101000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161263151000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161263201000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161263251000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161263301000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161263351000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161263401000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161263451000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161263501000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161263551000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161263601000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161263651000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161263701000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161263751000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161263801000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161263851000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161263901000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161263951000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161264001000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161264051000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161264101000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161264151000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161264201000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161264251000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161264301000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161264351000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161264401000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161264451000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161264501000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161264551000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161264601000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161264651000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161264701000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161264751000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161264801000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161264851000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161264901000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161264951000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265001000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265051000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265101000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265151000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265201000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265251000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265301000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265351000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265401000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265451000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265501000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265551000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265601000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265651000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265701000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265751000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265801000000, accepted=1, queued=3, rejected=2, handled=2, reject_reasons={'ORDER_NOT_FOUND': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265851000000, accepted=1, queued=2, rejected=0, handled=0, reject_reasons={})"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161259501000000, instrument='BTC_USDC-PERPETUAL', client_order_id='4218267878951418420', prev_state=None, next_state='filled')"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='1478678295735644481', prev_state=None, next_state='filled')"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='9220587067321093634', prev_state=None, next_state='filled')"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='3670455356658261962', prev_state=None, next_state='filled')"}
+{"event": "DerivedPnLEvent(ts_ns_local=1723161265851000000, instrument='BTC_USDC-PERPETUAL', delta_pnl=0.020000000000436557, cum_realized_pnl=0.044000000001233275)"}
+{"event": "ExposureDerivedEvent(ts_ns_local=1723161265851000000, instrument='BTC_USDC-PERPETUAL', exposure=7200.006, delta_exposure=4800.004000000001)"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161259501000000, instrument='BTC_USDC-PERPETUAL', client_order_id='4218267878951418420', prev_state=None, next_state='filled')"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='1478678295735644481', prev_state=None, next_state='filled')"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='9220587067321093634', prev_state=None, next_state='filled')"}
+{"event": "OrderStateTransitionEvent(ts_ns_local=1723161256101000000, instrument='BTC_USDC-PERPETUAL', client_order_id='3670455356658261962', prev_state=None, next_state='filled')"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=2, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=2, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=2, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=4, handled=2, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 4})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=2, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}
+{"event": "RiskDecisionEvent(ts_ns_local=1723161265860000000, accepted=0, queued=0, rejected=2, handled=4, reject_reasons={'MAX_GROSS_QUOTE_NOTIONAL': 2})"}

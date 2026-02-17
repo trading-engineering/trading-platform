@@ -1,0 +1,117 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "trading-platform"
+version = "0.1.0"
+description = "Trading platform."
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "bxvtr@protonmail.com" }]
+license = { text = "MIT" }
+
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent"
+]
+
+dependencies = [
+  "pydantic>=2,<3",
+  "ujson>=5,<6",
+  "tqdm>=4,<5",
+  "pyarrow>=16.0,<17",
+  "oci>=2,<3",
+  "hftbacktest>=2,<3",
+  "numpy>=2.0,<2.3",
+  "jsonschema>=4,<5",
+  "mlflow>=3,<4",
+  "prometheus-client>=0.24,<1"
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=9,<10",
+  "import-linter>=1.11,<2",
+  "ruff>=0.4,<1",
+  "mypy>=1.9,<2"
+]
+
+# --------------------------------------------------
+# Explicit package discovery
+# --------------------------------------------------
+[tool.setuptools.packages.find]
+include = ["trading_platform*"]
+
+# --------------------------------------------------
+# Pytest
+# --------------------------------------------------
+[tool.pytest.ini_options]
+minversion = "9.0"
+addopts = "-ra"
+testpaths = ["tests"]
+
+# --------------------------------------------------
+# Ruff
+# --------------------------------------------------
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = ["E501"]
+
+# --------------------------------------------------
+# MyPy (static typing)
+# --------------------------------------------------
+[tool.mypy]
+python_version = "3.11"
+warn_unused_configs = true
+ignore_missing_imports = true
+pretty = true
+show_error_codes = true
+ignore_errors = true
+
+# --------------------------------------------------
+# Import Linter
+# --------------------------------------------------
+[tool.importlinter]
+root_package = "trading_platform"
+include_external_packages = true
+
+# Core stays pure
+[[tool.importlinter.contracts]]
+name = "Core must be pure"
+type = "forbidden"
+source_modules = ["trading_platform.core"]
+forbidden_modules = [
+  "trading_platform.live",
+  "trading_platform.backtest",
+  "trading_platform.strategies"
+]
+
+# Strategies use core only
+[[tool.importlinter.contracts]]
+name = "Strategies may depend on core only"
+type = "forbidden"
+source_modules = ["trading_platform.strategies"]
+forbidden_modules = [
+  "trading_platform.live",
+  "trading_platform.backtest"
+]
+
+# Environments must not mix
+[[tool.importlinter.contracts]]
+name = "Live and backtest must not mix"
+type = "forbidden"
+source_modules = ["trading_platform.live"]
+forbidden_modules = ["trading_platform.backtest"]
+
+[[tool.importlinter.contracts]]
+name = "Backtest must not depend on live"
+type = "forbidden"
+source_modules = ["trading_platform.backtest"]
+forbidden_modules = ["trading_platform.live"]

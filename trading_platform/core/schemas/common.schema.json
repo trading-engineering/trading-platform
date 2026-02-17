@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schemas.example.com/common.schema.json",
+  "definitions": {
+    "Money": {
+      "type": "object",
+      "description": "Monetary amount with currency.",
+      "required": ["currency", "amount"],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Currency code (e.g. USD, EUR)."
+        },
+        "amount": {
+          "type": "number",
+          "description": "Positive or negative monetary amount."
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "Price": {
+      "type": "object",
+      "description": "Price or rate with currency (e.g. price per unit).",
+      "required": ["currency", "value"],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Currency code (e.g. USD, EUR)."
+        },
+        "value": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Price value in quote currency. Price can be 0 as a placeholder."
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "Quantity": {
+      "type": "object",
+      "required": ["value", "unit"],
+      "properties": {
+        "value": { "type": "number", "minimum": 0, "description": "Value can be 0 for remaining quantity." },
+        "unit": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    }
+  }
+}

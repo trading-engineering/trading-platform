@@ -1,0 +1,100 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/order_state_event.schema.json",
+  "title": "OrderStateEvent",
+  "type": "object",
+  "required": [
+    "ts_ns_exch",
+    "ts_ns_local",
+    "instrument",
+    "client_order_id",
+    "order_type",
+    "state_type",
+    "side",
+    "intended_price",
+    "intended_qty",
+    "time_in_force"
+  ],
+  "properties": {
+    "ts_ns_exch": {
+      "description": "Venue state event timestamp in nanoseconds since Unix epoch.",
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "ts_ns_local": {
+      "description": "Local state event timestamp in nanoseconds since Unix epoch.",
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "instrument": {
+      "description": "Instrument identifier.",
+      "type": "string",
+      "minLength": 1
+    },
+    "client_order_id": {
+      "description": "Client-assigned order ID (if used).",
+      "type": "string",
+      "minLength": 1
+    },
+    "order_type": {
+      "description": "Order type indicating how the order was intended to be executed.",
+      "type": "string",
+      "enum": ["limit", "market"]
+    },
+    "state_type": {
+      "description": "Lifecycle state of the order.",
+      "type": "string",
+      "enum": [
+        "pending_new",
+        "accepted",
+        "working",
+        "partially_filled",
+        "filled",
+        "canceled",
+        "expired",
+        "rejected",
+        "replaced"
+      ]
+    },
+    "side": {
+      "description": "Side of the filled order from client perspective.",
+      "type": "string",
+      "enum": ["buy", "sell"]
+    },
+    "intended_price": {
+      "description": "Intended price for the order.",
+      "$ref": "https://schemas.example.com/common.schema.json#/definitions/Price"
+    },
+    "filled_price": {
+      "description": "Filled price for the order.",
+      "$ref": "https://schemas.example.com/common.schema.json#/definitions/Price"
+    },
+    "intended_qty": {
+      "description": "Intended quantity of this order in underlying units.",
+      "$ref": "https://schemas.example.com/common.schema.json#/definitions/Quantity"
+    },
+    "cum_filled_qty": {
+      "description": "Cumulative filled quantity of this order in underlying units at this state.",
+      "$ref": "https://schemas.example.com/common.schema.json#/definitions/Quantity"
+    },
+    "remaining_qty": {
+      "description": "Remaining open quantity after this state.",
+      "$ref": "https://schemas.example.com/common.schema.json#/definitions/Quantity"
+    },
+    "time_in_force": {
+      "description": "Time-in-force instruction (venue-specific mapping).",
+      "type": "string",
+      "enum": ["GTC", "IOC", "FOK", "POST_ONLY"]
+    },
+    "reason": {
+      "description": "Optional reason or error code for this state change.",
+      "type": "string",
+      "minLength": 1
+    },
+    "raw": {
+      "description": "Optional raw payload from venue or OMS for debugging.",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

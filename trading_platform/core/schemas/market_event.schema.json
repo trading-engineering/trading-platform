@@ -1,0 +1,121 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/market_event.schema.json",
+  "title": "MarketEvent",
+  "type": "object",
+  "required": [
+    "ts_ns_exch",
+    "ts_ns_local",
+    "instrument",
+    "event_type"
+  ],
+  "properties": {
+    "ts_ns_exch": {
+      "description": "Venue event timestamp in nanoseconds since Unix epoch.",
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "ts_ns_local": {
+      "description": "Local event timestamp in nanoseconds since Unix epoch.",
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "instrument": {
+      "description": "Instrument identifier, venue-specific.",
+      "type": "string",
+      "minLength": 1
+    },
+    "event_type": {
+      "description": "Type of market event.",
+      "type": "string",
+      "enum": ["book", "trade"]
+    },
+    "book": {
+      "description": "Payload for order book events.",
+      "type": "object",
+      "required": ["book_type", "bids", "asks"],
+      "properties": {
+        "book_type": {
+          "description": "Whether this is a full snapshot or an incremental update.",
+          "type": "string",
+          "enum": ["snapshot", "delta"]
+        },
+        "bids": {
+          "description": "Bid levels, highest price first.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["price", "quantity"],
+            "properties": {
+              "price": { "$ref": "https://schemas.example.com/common.schema.json#/definitions/Price" },
+              "quantity": { "$ref": "https://schemas.example.com/common.schema.json#/definitions/Quantity" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "asks": {
+          "description": "Ask levels, lowest price first.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["price", "quantity"],
+            "properties": {
+              "price": { "$ref": "https://schemas.example.com/common.schema.json#/definitions/Price" },
+              "quantity": { "$ref": "https://schemas.example.com/common.schema.json#/definitions/Quantity" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "depth": {
+          "description": "Depth of the book represented by this event (number of levels).",
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "trade": {
+      "description": "Payload for trade events.",
+      "type": "object",
+      "required": ["side", "price", "quantity"],
+      "properties": {
+        "side": {
+          "description": "Taker side of the trade.",
+          "type": "string",
+          "enum": ["buy", "sell"]
+        },
+        "price": {
+          "description": "Trade price.",
+          "$ref": "https://schemas.example.com/common.schema.json#/definitions/Price"
+        },
+        "quantity": {
+          "description": "Trade quantity in contract units.",
+          "$ref": "https://schemas.example.com/common.schema.json#/definitions/Quantity"
+        },
+        "trade_id": {
+          "description": "Venue-provided trade identifier, if available.",
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "event_type": { "const": "book" } } },
+      "then": {
+        "required": ["book"],
+        "not": { "required": ["trade"] }
+      }
+    },
+    {
+      "if": { "properties": { "event_type": { "const": "trade" } } },
+      "then": {
+        "required": ["trade"],
+        "not": { "required": ["book"] }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

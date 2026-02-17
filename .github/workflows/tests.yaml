@@ -1,0 +1,45 @@
+name: Python Tests
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Upgrade pip & build tools
+        run: |
+          python -m pip install --upgrade pip build
+
+      - name: Install project (dev mode)
+        run: |
+          pip install -e ".[dev]"
+
+      - name: Run full check suite (source)
+        run: ./scripts/check.sh
+
+      - name: Build wheel
+        run: python -m build
+
+      - name: Test built wheel in clean environment
+        run: |
+          python -m venv wheel_env
+          source wheel_env/bin/activate
+          pip install --upgrade pip
+          pip install dist/*.whl
+          pip install ".[dev]"
+          ./scripts/check.sh

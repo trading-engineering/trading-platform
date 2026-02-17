@@ -1,0 +1,88 @@
+{
+  "id": "debug_strategy_v0",
+  "description": "Debug Strategy V0",
+
+  "engine": {
+    "initial_snapshot": null,
+    "data_files": [
+      "/workspace/trading-platform/tests/data/parts/part-000.npz",
+      "/workspace/trading-platform/tests/data/parts/part-001.npz",
+      "/workspace/trading-platform/tests/data/parts/part-002.npz"
+    ],
+
+    "instrument": "BTC_USDC-PERPETUAL",
+    "tick_size": 0.1,
+    "lot_size": 0.01,
+    "contract_size": 1,
+
+    "maker_fee_rate": 0.0,
+    "taker_fee_rate": 0.0,
+
+    "entry_latency_ns": 10000000,
+    "response_latency_ns": 10000000,
+
+    "use_risk_adverse_queue_model": true,
+    "partial_fill_venue": true,
+
+    "max_steps": 5000000,
+
+    "last_trades_capacity": 10,
+    "max_price_tick_levels": 20,
+
+    "roi_lb": 40000,
+    "roi_ub": 80000,
+
+    "stats_npz_path": "/workspace/trading-platform/tests/data/results/stats.npz",
+    "event_bus_path": "/workspace/trading-platform/tests/data/results/events.json"
+  },
+
+  "risk": {
+    "scope": "debug_strategy_v0",
+
+    "position_limits": {
+      "currency": "USDC",
+      "max_position": 10
+    },
+
+    "notional_limits": {
+      "currency": "USDC",
+      "max_gross_notional": 200000.0,
+      "max_single_order_notional": 10000.0
+    },
+
+    "quote_limits": {
+      "currency": "USDC",
+      "max_gross_quote_notional": 20000.0,
+      "max_net_quote_notional": 10000.0,
+      "max_active_quotes": 20000
+    },
+
+    "order_rate_limits": {
+      "max_orders_per_second": 20,
+      "max_cancels_per_second": 20
+    },
+
+    "max_loss": {
+      "currency": "USDC",
+      "max_drawdown": -2000.0,
+      "rolling_loss": -200.0,
+      "rolling_loss_window": 60
+    },
+
+    "extra": {
+      "venue_policy": {
+        "min_order_notional": 5.0,
+        "post_only_mode": "reject"
+      }
+    }
+  },
+
+  "strategy": {
+    "class_path": "examples.strategies.debug_strategy:DebugStrategyV0",
+    "spread": 5.0,
+    "order_qty": 0.1,
+    "use_price_tick_levels": 3,
+    "post_only": true
+  }
+
+}
