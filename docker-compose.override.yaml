@@ -1,5 +1,0 @@
-services:
-  app:
-    volumes:
-      # SELinux-specific volume mount
-      - .:/workspace/trading-platform:Z

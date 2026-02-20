@@ -3,9 +3,13 @@
 from __future__ import annotations
 
 import argparse
-import json
+import json, sys
 from pathlib import Path
 from typing import TYPE_CHECKING
+
+# Enable importing plugin-style modules outside the core package (e.g. examples/)
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(PROJECT_ROOT))
 
 if TYPE_CHECKING:
     from trading_platform import BacktestResult

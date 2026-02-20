@@ -1,26 +1,18 @@
 {
-  "name": "trading-platform devcontainer",
-  "dockerComposeFile": [
-    "../docker-compose.yaml",
-    "../docker-compose.override.yaml"
-  ],
-  "service": "app",
-  "workspaceFolder": "/workspace/trading-platform",
-  "remoteUser": "root",
+  "name": "Trading Platform Dev",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+
+  "postCreateCommand": "pip install -e .[dev]",
+
   "customizations": {
     "vscode": {
-      "settings": {
-        "python.defaultInterpreterPath": "/opt/venv/bin/python",
-        "python.testing.pytestEnabled": true,
-        "python.testing.pytestArgs": [
-          "tests"
-        ]
-      },
       "extensions": [
         "ms-python.python",
         "ms-python.debugpy"
       ]
     }
-  },
-  "postCreateCommand": "/bin/bash scripts/post-create.sh"
+  }
 }
