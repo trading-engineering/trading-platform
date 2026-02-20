@@ -43,7 +43,7 @@ def load_schema(name: str) -> dict:
     """
     global SCHEMA_REGISTRY
 
-    root = Path(__file__).parent.parent.parent.parent  # /workspace/trading-platform
+    root = Path(__file__).parent.parent.parent.parent  # /workspaces/trading-platform
     name = "trading_platform/core/schemas/" + name
     schema_path = root / name
 

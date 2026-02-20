@@ -5,9 +5,9 @@
   "engine": {
     "initial_snapshot": null,
     "data_files": [
-      "/workspace/trading-platform/tests/data/parts/part-000.npz",
-      "/workspace/trading-platform/tests/data/parts/part-001.npz",
-      "/workspace/trading-platform/tests/data/parts/part-002.npz"
+      "/workspaces/trading-platform/tests/data/parts/part-000.npz",
+      "/workspaces/trading-platform/tests/data/parts/part-001.npz",
+      "/workspaces/trading-platform/tests/data/parts/part-002.npz"
     ],
 
     "instrument": "BTC_USDC-PERPETUAL",
@@ -32,8 +32,8 @@
     "roi_lb": 40000,
     "roi_ub": 80000,
 
-    "stats_npz_path": "/workspace/trading-platform/tests/data/results/stats.npz",
-    "event_bus_path": "/workspace/trading-platform/tests/data/results/events.json"
+    "stats_npz_path": "/workspaces/trading-platform/tests/data/results/stats.npz",
+    "event_bus_path": "/workspaces/trading-platform/tests/data/results/events.json"
   },
 
   "risk": {
