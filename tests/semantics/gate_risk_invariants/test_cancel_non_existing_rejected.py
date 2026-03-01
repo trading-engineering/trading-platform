@@ -8,15 +8,15 @@ A CANCEL intent requires an existing order with the same
 
 from __future__ import annotations
 
-from trading_platform.core.domain.reject_reasons import RejectReason
-from trading_platform.core.domain.state import StrategyState
-from trading_platform.core.domain.types import (
+from trading_framework.core.domain.reject_reasons import RejectReason
+from trading_framework.core.domain.state import StrategyState
+from trading_framework.core.domain.types import (
     CancelOrderIntent,
     NotionalLimits,
 )
-from trading_platform.core.events.sinks.null_event_bus import NullEventBus
-from trading_platform.core.risk.risk_config import RiskConfig
-from trading_platform.core.risk.risk_engine import RiskEngine
+from trading_framework.core.events.sinks.null_event_bus import NullEventBus
+from trading_framework.core.risk.risk_config import RiskConfig
+from trading_framework.core.risk.risk_engine import RiskEngine
 
 
 def test_cancel_for_non_existing_order_is_rejected() -> None:

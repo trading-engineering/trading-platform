@@ -10,7 +10,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from trading_platform.backtest.orchestrator.manifest import DataFileMeta
+    from trading_framework.backtest.orchestrator.manifest import DataFileMeta
 
 
 def segment_files(

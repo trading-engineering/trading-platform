@@ -9,9 +9,9 @@ from typing import TYPE_CHECKING, Protocol
 if TYPE_CHECKING:
     from hftbacktest import ROIVectorMarketDepthBacktest
 
-    from trading_platform.core.domain.types import OrderIntent
+    from trading_framework.core.domain.types import OrderIntent
 
-from trading_platform.core.domain.reject_reasons import RejectReason
+from trading_framework.core.domain.reject_reasons import RejectReason
 
 
 class ExecutionAdapter(Protocol):

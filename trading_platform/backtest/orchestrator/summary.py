@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, List
 
 if TYPE_CHECKING:
-    from trading_platform.backtest.orchestrator.planner_models import ExperimentPlan
+    from trading_framework.backtest.orchestrator.planner_models import ExperimentPlan
 
 
 # ---------------------------------------------------------------------------

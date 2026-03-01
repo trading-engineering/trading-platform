@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from trading_platform import (
+    from trading_framework import (
         EngineContext,
         GateDecision,
         MarketEvent,
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
         StrategyState,
     )
 
-from trading_platform import (
+from trading_framework import (
     NewOrderIntent,
     OrderIntent,
     Price,

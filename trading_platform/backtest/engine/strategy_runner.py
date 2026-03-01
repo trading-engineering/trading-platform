@@ -7,8 +7,8 @@ from collections import deque
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from trading_platform.core.domain.state import StrategyState
-from trading_platform.core.domain.types import (
+from trading_framework.core.domain.state import StrategyState
+from trading_framework.core.domain.types import (
     BookLevel,
     BookPayload,
     MarketEvent,
@@ -16,17 +16,17 @@ from trading_platform.core.domain.types import (
     Price,
     Quantity,
 )
-from trading_platform.core.events.event_bus import EventBus
-from trading_platform.core.events.sinks.file_recorder import FileRecorderSink
-from trading_platform.core.events.sinks.sink_logging import LoggingEventSink
-from trading_platform.core.ports.venue_adapter import VenueAdapter
-from trading_platform.core.risk.risk_config import RiskConfig
-from trading_platform.core.risk.risk_engine import RejectedIntent, RiskEngine
+from trading_framework.core.events.event_bus import EventBus
+from trading_framework.core.events.sinks.file_recorder import FileRecorderSink
+from trading_framework.core.events.sinks.sink_logging import LoggingEventSink
+from trading_framework.core.ports.venue_adapter import VenueAdapter
+from trading_framework.core.risk.risk_config import RiskConfig
+from trading_framework.core.risk.risk_engine import RejectedIntent, RiskEngine
 
 if TYPE_CHECKING:
-    from trading_platform.backtest.adapters.execution import HftBacktestExecutionAdapter
-    from trading_platform.backtest.engine.hft_engine import HftEngineConfig
-    from trading_platform.strategies.base import Strategy
+    from trading_framework.backtest.adapters.execution import HftBacktestExecutionAdapter
+    from trading_framework.backtest.engine.hft_engine import HftEngineConfig
+    from trading_framework.strategies.base import Strategy
 
 
 MAX_TIMEOUT_NS = 1 << 62  # Effectively "wait forever" without a heartbeat

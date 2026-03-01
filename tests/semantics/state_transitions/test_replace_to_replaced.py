@@ -8,8 +8,8 @@ for the same client_order_id.
 
 from __future__ import annotations
 
-from trading_platform.core.domain.state import StrategyState
-from trading_platform.core.events.sinks.null_event_bus import NullEventBus
+from trading_framework.core.domain.state import StrategyState
+from trading_framework.core.events.sinks.null_event_bus import NullEventBus
 
 
 def test_replace_transitions_to_replaced() -> None:

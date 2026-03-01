@@ -3,14 +3,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from trading_platform.backtest.orchestrator.manifest import DataFileMeta, DatasetManifest
+    from trading_framework.backtest.orchestrator.manifest import DataFileMeta, DatasetManifest
 
-from trading_platform.backtest.orchestrator.planner_models import (
+from trading_framework.backtest.orchestrator.planner_models import (
     ExperimentPlan,
     SegmentPlan,
 )
-from trading_platform.backtest.orchestrator.segmenter import segment_files
-from trading_platform.backtest.orchestrator.sweeps import (
+from trading_framework.backtest.orchestrator.segmenter import segment_files
+from trading_framework.backtest.orchestrator.sweeps import (
     expand_parameter_grid,
     expand_ranges,
 )

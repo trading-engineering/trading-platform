@@ -1,4 +1,4 @@
-"""Public API for the trading_platform package.
+"""Public API for the trading_framework package.
 
 Only symbols imported here are considered part of the stable,
 supported external interface.
@@ -11,13 +11,13 @@ from importlib.metadata import PackageNotFoundError, version
 # ----------------------------------------------------------------------
 # Backtest Engine API
 # ----------------------------------------------------------------------
-from trading_platform.backtest.engine.engine_base import BacktestResult
-from trading_platform.backtest.engine.hft_engine import (
+from trading_framework.backtest.engine.engine_base import BacktestResult
+from trading_framework.backtest.engine.hft_engine import (
     HftBacktestConfig,
     HftBacktestEngine,
     HftEngineConfig,
 )
-from trading_platform.core.domain.slots import (
+from trading_framework.core.domain.slots import (
     SlotKey,
     stable_slot_order_id,
 )
@@ -25,8 +25,8 @@ from trading_platform.core.domain.slots import (
 # ----------------------------------------------------------------------
 # Domain Types (used by strategies)
 # ----------------------------------------------------------------------
-from trading_platform.core.domain.state import StrategyState
-from trading_platform.core.domain.types import (
+from trading_framework.core.domain.state import StrategyState
+from trading_framework.core.domain.types import (
     MarketEvent,
     NewOrderIntent,
     OrderIntent,
@@ -35,19 +35,19 @@ from trading_platform.core.domain.types import (
     ReplaceOrderIntent,
     RiskConstraints,
 )
-from trading_platform.core.ports.engine_context import EngineContext
+from trading_framework.core.ports.engine_context import EngineContext
 
 # ----------------------------------------------------------------------
 # Config API (used by consumers)
 # ----------------------------------------------------------------------
-from trading_platform.core.risk.risk_config import RiskConfig
-from trading_platform.core.risk.risk_engine import GateDecision
+from trading_framework.core.risk.risk_config import RiskConfig
+from trading_framework.core.risk.risk_engine import GateDecision
 
 # ----------------------------------------------------------------------
 # Strategy Interface
 # ----------------------------------------------------------------------
-from trading_platform.strategies.base import Strategy
-from trading_platform.strategies.strategy_config import StrategyConfig
+from trading_framework.strategies.base import Strategy
+from trading_framework.strategies.strategy_config import StrategyConfig
 
 # ----------------------------------------------------------------------
 # Public API definition
@@ -90,6 +90,6 @@ __all__ = [
 # ----------------------------------------------------------------------
 
 try:
-    __version__ = version("trading-platform")
+    __version__ = version("trading-framework")
 except PackageNotFoundError:
     __version__ = "0.0.0"

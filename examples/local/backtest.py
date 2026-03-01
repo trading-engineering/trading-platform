@@ -14,9 +14,9 @@ if __name__ == "__main__" or True:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 if TYPE_CHECKING:
-    from trading_platform import BacktestResult
+    from trading_framework import BacktestResult
 
-from trading_platform import (
+from trading_framework import (
     HftBacktestConfig,
     HftBacktestEngine,
     HftEngineConfig,

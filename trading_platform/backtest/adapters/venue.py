@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from hftbacktest import ROIVectorMarketDepthBacktest
 
-from trading_platform.core.ports.venue_adapter import VenueAdapter
+from trading_framework.core.ports.venue_adapter import VenueAdapter
 
 
 @dataclass(frozen=True)

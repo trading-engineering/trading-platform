@@ -1,15 +1,12 @@
-# Trading Platform
+# Trading Framework
 
-![CI](https://github.com/trading-engineering/trading-platform/actions/workflows/tests.yaml/badge.svg)
+![CI](https://github.com/trading-engineering/trading-framework/actions/workflows/tests.yaml/badge.svg)
 ![Python](https://img.shields.io/badge/python-3.11+-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-Deterministic, event-driven trading framework built on top of
-[hftbacktest](https://github.com/nkaz001/hftbacktest), extending it with
-risk management, explicit order state machines, queue semantics and
-research orchestration.
-
-Designed for realistic backtesting and production-ready architecture.
+Deterministic, event-driven core framework for trading engineering,
+built on top of [hftbacktest](https://github.com/nkaz001/hftbacktest), and extended with
+explicit risk management, order state machines, queue semantics, and research orchestration.
 
 ---
 
@@ -19,7 +16,7 @@ This project wraps the open-source `hftbacktest` engine and extends it
 into a structured trading framework.
 
 While `hftbacktest` provides a high-performance event-driven simulation
-core, this platform adds the missing layers required for realistic
+core, this framework adds the missing layers required for realistic
 research and strategy development:
 
 - Explicit order state machine
@@ -99,8 +96,8 @@ No S3, cloud storage or live connectivity required.
 A reproducible development environment is provided via a dev container.
 
 ```bash
-git clone https://github.com/trading-engineering/trading-platform
-cd trading-platform
+git clone https://github.com/trading-engineering/trading-framework
+cd trading-framework
 ```
 
 Open in an IDE supporting Dev Containers (e.g. VS Code), reopen in
@@ -151,7 +148,7 @@ These enable:
 Entrypoints are located in:
 
 ```
-trading_platform/backtest/runtime/
+trading_framework/backtest/runtime/
 ```
 
 Infrastructure and orchestration configuration are intentionally kept separate from the core trading framework.
@@ -160,7 +157,7 @@ Cloud execution currently relies on [Oracle Cloud Infrastructure](https://cloud.
 The storage integration is implemented through an S3-compatible adapter in the I/O layer located in:
 
 ```
-trading_platform/backtest/io/
+trading_framework/backtest/io/
 ```
 
 The runtime entrypoints are designed primarily for [Kubernetes](https://kubernetes.io)-based workloads orchestrated via [Argo Workflows](https://argoproj.github.io/workflows).

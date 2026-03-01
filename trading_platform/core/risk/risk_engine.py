@@ -7,17 +7,17 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from trading_platform.core.domain.reject_reasons import RejectReason
-from trading_platform.core.domain.types import NewOrderIntent, OrderIntent, RiskConstraints
-from trading_platform.core.events.events import RiskDecisionEvent
-from trading_platform.core.ports.venue_policy import VenuePolicy
+from trading_framework.core.domain.reject_reasons import RejectReason
+from trading_framework.core.domain.types import NewOrderIntent, OrderIntent, RiskConstraints
+from trading_framework.core.events.events import RiskDecisionEvent
+from trading_framework.core.ports.venue_policy import VenuePolicy
 
 if TYPE_CHECKING:
     from risk.risk_config import RiskConfig
 
-    from trading_platform.core.domain.state import StrategyState
-    from trading_platform.core.domain.types import QuoteLimits
-    from trading_platform.core.events.event_bus import EventBus
+    from trading_framework.core.domain.state import StrategyState
+    from trading_framework.core.domain.types import QuoteLimits
+    from trading_framework.core.events.event_bus import EventBus
 
 
 # ---------------------------------------------------------------------------

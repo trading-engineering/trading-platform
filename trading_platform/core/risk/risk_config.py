@@ -6,7 +6,7 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from trading_platform.core.domain.types import (
+from trading_framework.core.domain.types import (
     MaxLoss,
     NotionalLimits,
     OrderRateLimits,

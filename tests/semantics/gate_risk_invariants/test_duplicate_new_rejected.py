@@ -8,18 +8,18 @@ Invariant:
 
 from __future__ import annotations
 
-from trading_platform.core.domain.reject_reasons import RejectReason
-from trading_platform.core.domain.state import StrategyState
-from trading_platform.core.domain.types import (
+from trading_framework.core.domain.reject_reasons import RejectReason
+from trading_framework.core.domain.state import StrategyState
+from trading_framework.core.domain.types import (
     NewOrderIntent,
     NotionalLimits,
     OrderStateEvent,
     Price,
     Quantity,
 )
-from trading_platform.core.events.sinks.null_event_bus import NullEventBus
-from trading_platform.core.risk.risk_config import RiskConfig
-from trading_platform.core.risk.risk_engine import RiskEngine
+from trading_framework.core.events.sinks.null_event_bus import NullEventBus
+from trading_framework.core.risk.risk_config import RiskConfig
+from trading_framework.core.risk.risk_engine import RiskEngine
 
 
 def test_duplicate_new_is_rejected_when_working_order_exists() -> None:

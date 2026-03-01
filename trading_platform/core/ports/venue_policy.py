@@ -12,11 +12,11 @@ import math
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from trading_platform.core.domain.reject_reasons import RejectReason
-from trading_platform.core.domain.types import NewOrderIntent, OrderIntent
+from trading_framework.core.domain.reject_reasons import RejectReason
+from trading_framework.core.domain.types import NewOrderIntent, OrderIntent
 
 if TYPE_CHECKING:
-    from trading_platform.core.domain.state import StrategyState
+    from trading_framework.core.domain.state import StrategyState
 
 
 @dataclass(slots=True)

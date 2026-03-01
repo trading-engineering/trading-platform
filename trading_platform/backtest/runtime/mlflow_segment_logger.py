@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 import mlflow
 
 if TYPE_CHECKING:
-    from trading_platform.backtest.runtime.context import SegmentContext
+    from trading_framework.backtest.runtime.context import SegmentContext
 
 LOGGER = logging.getLogger(__name__)
 

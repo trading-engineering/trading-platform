@@ -6,10 +6,10 @@ import logging
 from datetime import datetime, timezone
 from pathlib import Path
 
-from trading_platform.backtest.io.s3_adapter import OCIObjectStorageS3Shim
-from trading_platform.backtest.runtime.context import SegmentContext
-from trading_platform.backtest.runtime.mlflow_segment_logger import MlflowSegmentLogger
-from trading_platform.backtest.runtime.prometheus_metrics import PrometheusMetricsClient
+from trading_framework.backtest.io.s3_adapter import OCIObjectStorageS3Shim
+from trading_framework.backtest.runtime.context import SegmentContext
+from trading_framework.backtest.runtime.mlflow_segment_logger import MlflowSegmentLogger
+from trading_framework.backtest.runtime.prometheus_metrics import PrometheusMetricsClient
 
 LOGGER = logging.getLogger(__name__)
 

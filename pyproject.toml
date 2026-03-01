@@ -3,9 +3,9 @@ requires = ["setuptools>=69", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "trading-platform"
+name = "trading-framework"
 version = "0.1.0"
-description = "Trading platform."
+description = "Trading Framework."
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [{ name = "tradingeng@protonmail.com" }]
@@ -43,7 +43,7 @@ dev = [
 # Explicit package discovery
 # --------------------------------------------------
 [tool.setuptools.packages.find]
-include = ["trading_platform*"]
+include = ["trading_framework*"]
 
 # --------------------------------------------------
 # Pytest
@@ -79,39 +79,39 @@ ignore_errors = true
 # Import Linter
 # --------------------------------------------------
 [tool.importlinter]
-root_package = "trading_platform"
+root_package = "trading_framework"
 include_external_packages = true
 
 # Core stays pure
 [[tool.importlinter.contracts]]
 name = "Core must be pure"
 type = "forbidden"
-source_modules = ["trading_platform.core"]
+source_modules = ["trading_framework.core"]
 forbidden_modules = [
-  "trading_platform.live",
-  "trading_platform.backtest",
-  "trading_platform.strategies"
+  "trading_framework.live",
+  "trading_framework.backtest",
+  "trading_framework.strategies"
 ]
 
 # Strategies use core only
 [[tool.importlinter.contracts]]
 name = "Strategies may depend on core only"
 type = "forbidden"
-source_modules = ["trading_platform.strategies"]
+source_modules = ["trading_framework.strategies"]
 forbidden_modules = [
-  "trading_platform.live",
-  "trading_platform.backtest"
+  "trading_framework.live",
+  "trading_framework.backtest"
 ]
 
 # Environments must not mix
 [[tool.importlinter.contracts]]
 name = "Live and backtest must not mix"
 type = "forbidden"
-source_modules = ["trading_platform.live"]
-forbidden_modules = ["trading_platform.backtest"]
+source_modules = ["trading_framework.live"]
+forbidden_modules = ["trading_framework.backtest"]
 
 [[tool.importlinter.contracts]]
 name = "Backtest must not depend on live"
 type = "forbidden"
-source_modules = ["trading_platform.backtest"]
-forbidden_modules = ["trading_platform.live"]
+source_modules = ["trading_framework.backtest"]
+forbidden_modules = ["trading_framework.live"]

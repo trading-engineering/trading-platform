@@ -1,5 +1,5 @@
 {
-  "name": "Trading Platform Dev",
+  "name": "Trading Framework Dev",
   "build": {
     "dockerfile": "Dockerfile",
     "context": ".."

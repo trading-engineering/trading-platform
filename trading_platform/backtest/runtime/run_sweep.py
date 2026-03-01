@@ -4,7 +4,7 @@ import argparse
 import importlib.metadata
 import json
 import os
-import platform
+import framework
 import shutil
 import sys
 import tomllib
@@ -13,15 +13,15 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from trading_platform.backtest.engine.hft_engine import (
+from trading_framework.backtest.engine.hft_engine import (
     HftBacktestConfig,
     HftBacktestEngine,
     HftEngineConfig,
 )
-from trading_platform.backtest.io.s3_adapter import OCIObjectStorageS3Shim
-from trading_platform.backtest.runtime.context import SweepContext
-from trading_platform.core.risk.risk_config import RiskConfig
-from trading_platform.strategies.strategy_config import StrategyConfig
+from trading_framework.backtest.io.s3_adapter import OCIObjectStorageS3Shim
+from trading_framework.backtest.runtime.context import SweepContext
+from trading_framework.core.risk.risk_config import RiskConfig
+from trading_framework.strategies.strategy_config import StrategyConfig
 
 
 class SweepMaterializer:
@@ -223,7 +223,7 @@ class SweepMetadataWriter:
                 pyproject_path
             )
 
-        distribution_name = name_from_pyproject or "trading-platform"
+        distribution_name = name_from_pyproject or "trading-framework"
 
         version: str | None
         source: str
@@ -281,7 +281,7 @@ class SweepMetadataWriter:
             },
             "environment": {
                 "python": sys.version.split()[0],
-                "platform": platform.platform(),
+                "framework": framework.framework(),
                 "container_image": os.environ.get("IMAGE_TAG"),
             },
             "artifacts": {

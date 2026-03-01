@@ -9,8 +9,8 @@ the queued NEW must be removed and replaced by the CANCEL.
 
 from __future__ import annotations
 
-from trading_platform.core.domain.state import StrategyState
-from trading_platform.core.domain.types import (
+from trading_framework.core.domain.state import StrategyState
+from trading_framework.core.domain.types import (
     CancelOrderIntent,
     NewOrderIntent,
     NotionalLimits,
@@ -18,9 +18,9 @@ from trading_platform.core.domain.types import (
     Price,
     Quantity,
 )
-from trading_platform.core.events.sinks.null_event_bus import NullEventBus
-from trading_platform.core.risk.risk_config import RiskConfig
-from trading_platform.core.risk.risk_engine import RiskEngine
+from trading_framework.core.events.sinks.null_event_bus import NullEventBus
+from trading_framework.core.risk.risk_config import RiskConfig
+from trading_framework.core.risk.risk_engine import RiskEngine
 
 
 def test_cancel_dominates_queued_new() -> None:

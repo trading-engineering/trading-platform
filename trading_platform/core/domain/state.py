@@ -15,10 +15,10 @@ from collections import deque
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable, Iterable
 
-from trading_platform.core.domain.order_state_machine import is_valid_transition
-from trading_platform.core.domain.slots import SlotKey, stable_slot_order_id
-from trading_platform.core.domain.types import OrderStateEvent
-from trading_platform.core.events.events import (
+from trading_framework.core.domain.order_state_machine import is_valid_transition
+from trading_framework.core.domain.slots import SlotKey, stable_slot_order_id
+from trading_framework.core.domain.types import OrderStateEvent
+from trading_framework.core.events.events import (
     DerivedFillEvent,
     DerivedPnLEvent,
     ExposureDerivedEvent,
@@ -26,8 +26,8 @@ from trading_platform.core.events.events import (
 )
 
 if TYPE_CHECKING:
-    from trading_platform.core.domain.types import FillEvent, NewOrderIntent, OrderIntent
-    from trading_platform.core.events.event_bus import EventBus
+    from trading_framework.core.domain.types import FillEvent, NewOrderIntent, OrderIntent
+    from trading_framework.core.events.event_bus import EventBus
 
 
 # ---------------------------------------------------------------------------

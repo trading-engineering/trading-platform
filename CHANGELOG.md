@@ -9,7 +9,7 @@ and this project adheres to Semantic Versioning.
 
 ## [0.1.0] - 2026-02-17
 
-Initial public release of the trading platform backtest core.
+Initial public release of the trading framework backtest core.
 
 ### Added
 

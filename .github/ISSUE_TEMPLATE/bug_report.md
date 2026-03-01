@@ -9,7 +9,7 @@ Clear and concise description of the issue.
 
 ## Environment
 
-- Trading Platform version:
+- Trading Framework version:
 - Python version:
 - Execution mode (local / cloud):
 - Strategy used:

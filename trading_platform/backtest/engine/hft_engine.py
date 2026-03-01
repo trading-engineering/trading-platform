@@ -13,18 +13,18 @@ from hftbacktest import (
 )
 
 if TYPE_CHECKING:
-    from trading_platform.core.risk.risk_config import RiskConfig
+    from trading_framework.core.risk.risk_config import RiskConfig
 
-from trading_platform.backtest.adapters.execution import HftBacktestExecutionAdapter
-from trading_platform.backtest.adapters.venue import HftBacktestVenueAdapter
-from trading_platform.backtest.engine.engine_base import (
+from trading_framework.backtest.adapters.execution import HftBacktestExecutionAdapter
+from trading_framework.backtest.adapters.venue import HftBacktestVenueAdapter
+from trading_framework.backtest.engine.engine_base import (
     BacktestConfig,
     BacktestEngine,
     BacktestResult,
 )
-from trading_platform.backtest.engine.strategy_runner import HftStrategyRunner
-from trading_platform.strategies.base import Strategy
-from trading_platform.strategies.strategy_config import StrategyConfig
+from trading_framework.backtest.engine.strategy_runner import HftStrategyRunner
+from trading_framework.strategies.base import Strategy
+from trading_framework.strategies.strategy_config import StrategyConfig
 
 
 # pylint: disable=too-many-instance-attributes

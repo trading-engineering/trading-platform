@@ -22,7 +22,7 @@ from pydantic import ValidationError as PydanticValidationError
 from referencing import Registry, Resource
 from referencing.jsonschema import DRAFT202012
 
-from trading_platform.core.domain.types import (
+from trading_framework.core.domain.types import (
     FillEvent,
     MarketEvent,
     OrderIntent,
@@ -43,8 +43,8 @@ def load_schema(name: str) -> dict:
     """
     global SCHEMA_REGISTRY
 
-    root = Path(__file__).parent.parent.parent.parent  # /workspaces/trading-platform
-    name = "trading_platform/core/schemas/" + name
+    root = Path(__file__).parent.parent.parent.parent  # /workspaces/trading-framework
+    name = "trading_framework/core/schemas/" + name
     schema_path = root / name
 
     with schema_path.open("r", encoding="utf-8") as f:
