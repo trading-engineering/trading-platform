@@ -1,4 +1,4 @@
-# Trading Framework
+# TradingChassis – Core
 
 ![CI](https://github.com/trading-engineering/trading-framework/actions/workflows/tests.yaml/badge.svg)
 ![Python](https://img.shields.io/badge/python-3.11+-blue)
@@ -41,7 +41,7 @@ Backtesting setups tend to:
 - Lack deterministic event modeling
 - Do not scale to research workflows
 
-This framework solves those problems by introducing:
+This Core solves those problems by introducing:
 
 - Clear domain boundaries
 - Explicit state transitions
@@ -91,7 +91,7 @@ Minimal local example: `examples/local/backtest.py`\
 Runs entirely locally using bundled or synthetic example data.\
 No S3, cloud storage or live connectivity required.
 
-### Option 1 --- Recommended: Dev Container
+### Option 1 – Recommended: Dev Container
 
 A reproducible development environment is provided via a dev container.
 
@@ -100,8 +100,7 @@ git clone https://github.com/trading-engineering/trading-framework
 cd trading-framework
 ```
 
-Open in an IDE supporting Dev Containers (e.g. VS Code), reopen in
-container, then:
+Open in an IDE supporting Dev Containers, reopen in container, then:
 
 ```bash
 python examples/local/backtest.py --config examples/local/local.json
@@ -109,7 +108,7 @@ python examples/local/backtest.py --config examples/local/local.json
 
 No manual `pip install` required inside the container.
 
-### Option 2 --- Local Python Environment
+### Option 2 – Local Python Environment
 
 Python 3.11.x is required.
 

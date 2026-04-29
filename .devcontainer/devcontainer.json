@@ -1,18 +1,17 @@
 {
-  "name": "Trading Framework Dev",
+  "name": "TradingChassis Core Dev",
   "build": {
     "dockerfile": "Dockerfile",
     "context": ".."
   },
 
-  "postCreateCommand": "pip install -e .[dev]",
+  "workspaceFolder": "/workspaces/core",
+  "remoteUser": "root",
+  "runArgs": ["--security-opt=label=disable"],
+  "containerEnv": {
+    "SHELL": "/bin/bash"
+  },
 
-  "customizations": {
-    "vscode": {
-      "extensions": [
-        "ms-python.python",
-        "ms-python.debugpy"
-      ]
-    }
-  }
+  "postCreateCommand": "pip install -e .[dev]"
+
 }
