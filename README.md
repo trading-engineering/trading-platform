@@ -76,10 +76,7 @@ Internally:
 Core modules:
 
 - `core/` -- domain models, state machine, risk engine, events
-- `backtest/` -- engine adapters, orchestration, runtime entrypoints
 - `strategies/` -- base strategy interfaces
-- `live/` -- live adapters (work in progress)
-- `examples/` -- minimal runnable setups
 - `tests/` -- semantic invariant validation
 - `scripts/` -- development helper scripts
 
@@ -87,9 +84,9 @@ Core modules:
 
 ## 🚀 Quickstart
 
-Minimal local example: `examples/local/backtest.py`\
-Runs entirely locally using bundled or synthetic example data.\
-No S3, cloud storage or live connectivity required.
+This repository (`core`) is the **library-only** semantic core.
+
+For runnable backtests and runtime entrypoints, use `core-runtime` (the runtime/backtesting repository).
 
 ### Option 1 – Recommended: Dev Container
 
@@ -103,7 +100,8 @@ cd trading-framework
 Open in an IDE supporting Dev Containers, reopen in container, then:
 
 ```bash
-python examples/local/backtest.py --config examples/local/local.json
+cd ../core-runtime
+python trading_runtime/local/backtest.py --config trading_runtime/local/local.json
 ```
 
 No manual `pip install` required inside the container.
@@ -114,7 +112,6 @@ Python 3.11.x is required.
 
 ```bash
 pip install -e .
-python examples/local/backtest.py --config examples/local/local.json
 ```
 
 ---
@@ -123,46 +120,11 @@ python examples/local/backtest.py --config examples/local/local.json
 
 ### Local Mode
 
-- Fully local execution
-- Uses bundled or synthetic data
-- No cloud dependencies
-- Suitable for development and testing
-
-```bash
-python examples/local/backtest.py --config examples/local/local.json
-```
+Local execution is provided by `core-runtime`.
 
 ### Cloud / Entrypoint Mode
 
-The backtest runtime exposes entrypoints designed for cloud-native
-execution environments.
-
-These enable:
-
-- Remote segment execution
-- Distributed parameter sweeps
-- Object storage integration
-- Experiment orchestration via external workflow engines
-
-Entrypoints are located in:
-
-```
-trading_framework/backtest/runtime/
-```
-
-Infrastructure and orchestration configuration are intentionally kept separate from the core trading framework.
-
-Cloud execution currently relies on [Oracle Cloud Infrastructure](https://cloud.oracle.com) (OCI) Object Storage accessed via Instance Principals and OCI IAM configuration.
-The storage integration is implemented through an S3-compatible adapter in the I/O layer located in:
-
-```
-trading_framework/backtest/io/
-```
-
-The runtime entrypoints are designed primarily for [Kubernetes](https://kubernetes.io)-based workloads orchestrated via [Argo Workflows](https://argoproj.github.io/workflows).
-
-While the core architecture is cloud-agnostic, the current infrastructure bindings are OCI-specific.
-Other cloud providers and execution environments are not yet implemented.
+Runtime/backtesting entrypoints and orchestration live in `core-runtime`.
 
 ---
 
@@ -181,15 +143,15 @@ Key assumptions:
 Example synthetic datasets are provided in:
 
 ```
-tests/data/parts/
+core-runtime/tests/data/parts/
 ```
 
 Example parts:
 
 ```
-tests/data/parts/part-000.npz
-tests/data/parts/part-001.npz
-tests/data/parts/part-002.npz
+core-runtime/tests/data/parts/part-000.npz
+core-runtime/tests/data/parts/part-001.npz
+core-runtime/tests/data/parts/part-002.npz
 ```
 
 ### Result Artifacts
@@ -197,20 +159,20 @@ tests/data/parts/part-002.npz
 Backtest runs produce deterministic result artifacts stored in:
 
 ```
-tests/data/results/
+core-runtime/tests/data/results/
 ```
 
 Generated files may include:
 
 ```
-tests/data/results/stats.npz
-tests/data/results/events.json
+core-runtime/tests/data/results/stats.npz
+core-runtime/tests/data/results/events.json
 ```
 
 Helper scripts for generating and inspecting synthetic datasets are located in:
 
 ```
-tests/data/scripts/
+core-runtime/tests/data/scripts/
 ```
 
 ---
@@ -218,7 +180,7 @@ tests/data/scripts/
 ## ⚙️ Configuration
 
 Execution is driven by explicit configuration files
-(e.g. `examples/local/local.json`).
+(see `core-runtime/trading_runtime/local/local.json` for a runnable example).
 
 Configurations define:
 
