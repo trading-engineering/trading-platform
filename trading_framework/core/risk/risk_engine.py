@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-import math
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from trading_framework.core.domain.reject_reasons import RejectReason
-from trading_framework.core.domain.types import NewOrderIntent, OrderIntent, RiskConstraints
+from trading_framework.core.domain.types import OrderIntent, RiskConstraints
+from trading_framework.core.execution_control import ExecutionControl
 from trading_framework.core.events.events import RiskDecisionEvent
 from trading_framework.core.ports.venue_policy import VenuePolicy
 
@@ -82,12 +82,9 @@ class RiskEngine:
             post_only_mode=venue_policy_cfg["post_only_mode"],
         )
 
-        # Persistent per-second rate buckets keyed by local timestamp second.
-        # Example: {sec: {"order": 3, "cancel": 10}}
-        self._rate_state: dict[str, dict[str, float]] = {
-            "order": {"tokens": 0.0, "last_ts": 0.0},
-            "cancel": {"tokens": 0.0, "last_ts": 0.0},
-        }
+        # Internal execution-control component owns rate state and queue admission logic.
+        # RiskEngine must own a single instance to preserve state lifetime semantics.
+        self._execution_control = ExecutionControl()
 
     @staticmethod
     def _parse_venue_policy_config(risk_cfg: RiskConfig) -> dict[str, object]:
@@ -394,8 +391,12 @@ class RiskEngine:
                     working = state.get_working_order_snapshot(it.instrument, it.client_order_id)
                     if working is not None:
                         if (
-                            self._float_equal(working.intended_price, replace_px)
-                            and self._float_equal(working.intended_qty, replace_qty)
+                            self._execution_control.is_replace_noop_against_working(
+                                replace_intent=it,
+                                working_intended_price=working.intended_price,
+                                working_intended_qty=working.intended_qty,
+                                float_equal=self._float_equal,
+                            )
                         ):
                             handled_in_queue.append(it)
                             continue
@@ -403,9 +404,11 @@ class RiskEngine:
                 if not has_working and has_queued:
                     queued_new = state.find_queued_new_intent(it.instrument, it.client_order_id)
                     if queued_new is not None:
-                        q_px = queued_new.intended_price.value
-                        q_qty = queued_new.intended_qty.value
-                        if self._float_equal(q_px, replace_px) and self._float_equal(q_qty, replace_qty):
+                        if self._execution_control.is_replace_noop_against_queued_new(
+                            replace_intent=it,
+                            queued_new=queued_new,
+                            float_equal=self._float_equal,
+                        ):
                             handled_in_queue.append(it)
                             continue
 
@@ -419,10 +422,12 @@ class RiskEngine:
                 if not has_working:
                     if has_queued:
                         # Cancel only queued state: remove queued intents and do not send a cancel.
-                        removed = state.pop_queued_intents_for_order(it.instrument, it.client_order_id)
-                        for qi in removed:
-                            replaced_in_queue.append((qi.intent, it))
-                        handled_in_queue.append(it)
+                        self._execution_control.handle_cancel_against_queued_only_state(
+                            it,
+                            state=state,
+                            replaced_in_queue=replaced_in_queue,
+                            handled_in_queue=handled_in_queue,
+                        )
                         continue
 
                     rejected.append(RejectedIntent(it, RejectReason.ORDER_NOT_FOUND))
@@ -438,31 +443,15 @@ class RiskEngine:
                         _count_reject(RejectReason.ORDER_NOT_FOUND)
                         continue
 
-                    removed = state.pop_queued_intents_for_order(it.instrument, it.client_order_id)
-                    for qi in removed:
-                        replaced_in_queue.append((qi.intent, it))
-
-                    updated_new = NewOrderIntent(
-                        ts_ns_local=it.ts_ns_local,
-                        instrument=it.instrument,
-                        client_order_id=it.client_order_id,
-                        intents_correlation_id=it.intents_correlation_id,
-                        side=it.side,
-                        order_type=it.order_type,
-                        intended_qty=it.intended_qty,
-                        intended_price=it.intended_price,
-                        time_in_force=queued_new.time_in_force,
+                    self._execution_control.handle_replace_against_queued_new(
+                        it,
+                        state=state,
+                        queued_new=queued_new,
+                        replaced_in_queue=replaced_in_queue,
+                        dropped_in_queue=dropped_in_queue,
+                        queued=queued,
+                        handled_in_queue=handled_in_queue,
                     )
-
-                    q_items, replaced, dropped = state.merge_intents_into_queue(
-                        instrument=it.instrument,
-                        intents=[updated_new],
-                    )
-
-                    handled_in_queue.append(it)
-                    replaced_in_queue.extend(replaced)
-                    dropped_in_queue.extend(dropped)
-                    queued.extend(q_items)
                     continue
 
             # 0.6) Inflight gating: if an update is already in flight for this
@@ -473,10 +462,12 @@ class RiskEngine:
             # This enforces *eventual consistency*, not ACK-synchronous behavior.
             # An intent may be queued even though the previous request has already
             # reached the venue but is not yet observable via snapshots.
-            if it.intent_type in ("new", "replace"):
-                if state.has_inflight(it.instrument, it.client_order_id):
-                    to_queue_by_instr[it.instrument].append(it)
-                    continue
+            if self._execution_control.maybe_route_new_replace_to_queue_on_inflight(
+                it,
+                state,
+                to_queue_by_instr,
+            ):
+                continue
 
             # 1) Outbound hygiene validation (hard reject)
             ok, reason = self._validate_intent(it, state)
@@ -504,7 +495,9 @@ class RiskEngine:
             # 3) Rate limiting -> queue (soft, not reject)
             if it.intent_type == "cancel":
                 if max_cancels_per_sec is not None:
-                    allowed, wake_ts = self._consume_rate("cancel", now_ts_ns_local, max_cancels_per_sec)
+                    allowed, wake_ts = self._execution_control.consume_rate(
+                        "cancel", now_ts_ns_local, max_cancels_per_sec
+                    )
                     if not allowed:
                         to_queue_by_instr[it.instrument].append(it)
                         next_send_ts = wake_ts if next_send_ts is None else min(next_send_ts, wake_ts)
@@ -514,7 +507,9 @@ class RiskEngine:
 
             # new / replace
             if max_orders_per_sec is not None:
-                allowed, wake_ts = self._consume_rate("order", now_ts_ns_local, max_orders_per_sec)
+                allowed, wake_ts = self._execution_control.consume_rate(
+                    "order", now_ts_ns_local, max_orders_per_sec
+                )
                 if not allowed:
                     to_queue_by_instr[it.instrument].append(it)
                     next_send_ts = wake_ts if next_send_ts is None else min(next_send_ts, wake_ts)
@@ -525,13 +520,13 @@ class RiskEngine:
         # -----------------------------------------------------------------
         # Queue merge per instrument (replacement rules live in StrategyState)
         # -----------------------------------------------------------------
-        for instr, intents in to_queue_by_instr.items():
-            if not intents:
-                continue
-            q, replaced, dropped = state.merge_intents_into_queue(instrument=instr, intents=intents)
-            queued.extend(q)
-            replaced_in_queue.extend(replaced)
-            dropped_in_queue.extend(dropped)
+        self._execution_control.merge_to_queue_per_instrument(
+            state=state,
+            to_queue_by_instr=to_queue_by_instr,
+            queued=queued,
+            replaced_in_queue=replaced_in_queue,
+            dropped_in_queue=dropped_in_queue,
+        )
 
         decision = GateDecision(
             ts_ns_local=now_ts_ns_local,
@@ -561,49 +556,6 @@ class RiskEngine:
     # ---------------------------------------------------------------------
     # Internals
     # ---------------------------------------------------------------------
-
-    @staticmethod
-    def _sec(ts_ns: int) -> int:
-        return ts_ns // 1_000_000_000
-
-    def _consume_rate(self, kind: str, ts_ns_local: int, limit_per_sec: float) -> tuple[bool, int]:
-        """Token bucket rate limiting.
-
-        Returns:
-            (allowed_now, wake_ts_ns_local)
-
-        If not allowed, wake_ts is the earliest local timestamp when one token becomes available.
-        """
-        if limit_per_sec <= 0:
-            sec = self._sec(ts_ns_local)
-            return False, (sec + 1) * 1_000_000_000
-
-        state = self._rate_state.setdefault(kind, {"tokens": 0.0, "last_ts": float(ts_ns_local)})
-        now_ts = ts_ns_local
-        last_ts = state["last_ts"]
-
-        dt_sec = max(0.0, (now_ts - last_ts) / 1_000_000_000)
-
-        # Capacity allows bursts up to ~1 second worth of requests.
-        capacity = limit_per_sec
-
-        tokens = state["tokens"]
-        tokens = min(capacity, tokens + dt_sec * limit_per_sec)
-
-        if tokens >= 1.0:
-            tokens -= 1.0
-            state["tokens"] = tokens
-            state["last_ts"] = now_ts
-            return True, ts_ns_local
-
-        deficit = 1.0 - tokens
-        wait_sec = deficit / limit_per_sec
-        wait_ns = int(math.ceil(wait_sec * 1_000_000_000))
-        wake_ts = ts_ns_local + max(1, wait_ns)
-
-        state["tokens"] = tokens
-        state["last_ts"] = now_ts
-        return False, wake_ts
 
     def _validate_intent(self, it: OrderIntent, state: StrategyState) -> tuple[bool, str]:
         """Outbound intent sanity.

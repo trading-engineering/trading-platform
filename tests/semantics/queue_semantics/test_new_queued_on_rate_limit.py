@@ -13,8 +13,10 @@ from trading_framework.core.domain.types import (
     NewOrderIntent,
     NotionalLimits,
     OrderRateLimits,
+    OrderStateEvent,
     Price,
     Quantity,
+    CancelOrderIntent,
 )
 from trading_framework.core.events.sinks.null_event_bus import NullEventBus
 from trading_framework.core.risk.risk_config import RiskConfig
@@ -66,3 +68,67 @@ def test_new_is_queued_when_rate_limit_blocks() -> None:
     assert decision.accepted_now == []
     assert decision.rejected == []
     assert len(decision.queued) == 1
+    # Characterization: rate-limit backpressure sets a "wake up no earlier than" timestamp.
+    # With ts_ns_local=1 and max_orders_per_second=0, wake timestamp is next local-second boundary.
+    assert decision.next_send_ts_ns_local == 1_000_000_000
+
+
+def test_cancel_is_queued_when_cancel_rate_limit_blocks_and_sets_next_send_characterization() -> None:
+    instrument = "BTC-USDC-PERP"
+    client_order_id = "order-1"
+
+    state = StrategyState(event_bus=NullEventBus())
+
+    # A CANCEL only passes existence gating if a working order exists.
+    state.apply_order_state_event(
+        OrderStateEvent(
+            ts_ns_exch=1,
+            ts_ns_local=1,
+            instrument=instrument,
+            client_order_id=client_order_id,
+            order_type="limit",
+            state_type="working",
+            side="buy",
+            intended_price=Price(currency="USDC", value=100.0),
+            filled_price=None,
+            intended_qty=Quantity(unit="contracts", value=1.0),
+            cum_filled_qty=None,
+            remaining_qty=None,
+            time_in_force="GTC",
+            reason=None,
+            raw={"req": 0, "source": "snapshot"},
+        )
+    )
+
+    risk_cfg = RiskConfig(
+        scope="test",
+        trading_enabled=True,
+        notional_limits=NotionalLimits(
+            currency="USDC",
+            max_gross_notional=1e18,
+            max_single_order_notional=1e18,
+        ),
+        order_rate_limits=OrderRateLimits(
+            max_cancels_per_second=0,
+        ),
+    )
+
+    risk_engine = RiskEngine(risk_cfg=risk_cfg, event_bus=NullEventBus())
+
+    cancel_intent = CancelOrderIntent(
+        ts_ns_local=1,
+        instrument=instrument,
+        client_order_id=client_order_id,
+        intents_correlation_id=None,
+    )
+
+    decision = risk_engine.decide_intents(
+        raw_intents=[cancel_intent],
+        state=state,
+        now_ts_ns_local=1,
+    )
+
+    assert decision.accepted_now == []
+    assert decision.rejected == []
+    assert [it.intent_type for it in decision.queued] == ["cancel"]
+    assert decision.next_send_ts_ns_local == 1_000_000_000
