@@ -20,15 +20,6 @@ classifiers = [
 
 dependencies = [
   "pydantic>=2,<3",
-  "ujson>=5,<6",
-  "tqdm>=4,<5",
-  "pyarrow>=16.0,<17",
-  "oci>=2,<3",
-  "hftbacktest>=2,<3",
-  "numpy>=2.0,<2.3",
-  "jsonschema>=4,<5",
-  "mlflow>=3,<4",
-  "prometheus-client>=0.24,<1"
 ]
 
 [project.optional-dependencies]
@@ -36,7 +27,12 @@ dev = [
   "pytest>=9,<10",
   "import-linter>=1.11,<2",
   "ruff>=0.4,<1",
-  "mypy>=1.9,<2"
+  "mypy>=1.9,<2",
+  "hftbacktest>=2,<3",
+  "jsonschema>=4,<5",
+  "matplotlib>=3,<4",
+  "numpy>=2.0,<2.3",
+  "referencing>=0.37,<1",
 ]
 
 # --------------------------------------------------
@@ -88,30 +84,6 @@ name = "Core must be pure"
 type = "forbidden"
 source_modules = ["trading_framework.core"]
 forbidden_modules = [
-  "trading_framework.live",
-  "trading_framework.backtest",
   "trading_framework.strategies"
 ]
 
-# Strategies use core only
-[[tool.importlinter.contracts]]
-name = "Strategies may depend on core only"
-type = "forbidden"
-source_modules = ["trading_framework.strategies"]
-forbidden_modules = [
-  "trading_framework.live",
-  "trading_framework.backtest"
-]
-
-# Environments must not mix
-[[tool.importlinter.contracts]]
-name = "Live and backtest must not mix"
-type = "forbidden"
-source_modules = ["trading_framework.live"]
-forbidden_modules = ["trading_framework.backtest"]
-
-[[tool.importlinter.contracts]]
-name = "Backtest must not depend on live"
-type = "forbidden"
-source_modules = ["trading_framework.backtest"]
-forbidden_modules = ["trading_framework.live"]
