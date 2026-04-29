@@ -11,6 +11,7 @@ from trading_framework.core.domain.types import OrderIntent, RiskConstraints
 from trading_framework.core.execution_control import ExecutionControl
 from trading_framework.core.events.events import RiskDecisionEvent
 from trading_framework.core.ports.venue_policy import VenuePolicy
+from trading_framework.core.risk.risk_policy import RiskPolicy
 
 if TYPE_CHECKING:
     from risk.risk_config import RiskConfig
@@ -81,6 +82,8 @@ class RiskEngine:
             min_order_notional=venue_policy_cfg["min_order_notional"],
             post_only_mode=venue_policy_cfg["post_only_mode"],
         )
+
+        self._risk_policy = RiskPolicy(venue_policy=self._venue_policy)
 
         # Internal execution-control component owns rate state and queue admission logic.
         # RiskEngine must own a single instance to preserve state lifetime semantics.
@@ -225,14 +228,15 @@ class RiskEngine:
             reject_counts[reason] = reject_counts.get(reason, 0) + 1
 
         # --- Trading enabled gate ---
-        if not self.risk_cfg.trading_enabled:
-            for it in raw_intents:
-                if it.intent_type == "cancel":
-                    # Cancels are risk-reducing: allow them through even when disabled
-                    accepted_now.append(it)
-                else:
-                    rejected.append(RejectedIntent(it, RejectReason.TRADING_DISABLED))
-                    _count_reject(RejectReason.TRADING_DISABLED)
+        triggered, policy_accepted, policy_rejected = self._risk_policy.trading_enabled_gate(
+            trading_enabled=self.risk_cfg.trading_enabled,
+            raw_intents=raw_intents,
+        )
+        if triggered:
+            accepted_now.extend(policy_accepted)
+            for it, reason in policy_rejected:
+                rejected.append(RejectedIntent(it, reason))
+                _count_reject(reason)
 
             decision = GateDecision(
                 ts_ns_local=now_ts_ns_local,
@@ -261,81 +265,42 @@ class RiskEngine:
             return decision
 
         # --- Max loss (portfolio drawdown kill-switch) ---
-        max_loss_cfg = self.risk_cfg.max_loss
-        if max_loss_cfg is not None:
-            pnl = state.get_total_pnl()
-            if pnl <= max_loss_cfg.max_drawdown:
-                for it in raw_intents:
-                    if it.intent_type == "cancel":
-                        accepted_now.append(it)
-                    else:
-                        rejected.append(RejectedIntent(it, RejectReason.MAX_LOSS_DRAWDOWN))
-                        _count_reject(RejectReason.MAX_LOSS_DRAWDOWN)
+        triggered, policy_accepted, policy_rejected = self._risk_policy.max_loss_gate(
+            max_loss_cfg=self.risk_cfg.max_loss,
+            raw_intents=raw_intents,
+            state=state,
+            now_ts_ns_local=now_ts_ns_local,
+        )
+        if triggered:
+            accepted_now.extend(policy_accepted)
+            for it, reason in policy_rejected:
+                rejected.append(RejectedIntent(it, reason))
+                _count_reject(reason)
 
-                decision = GateDecision(
-                    ts_ns_local=now_ts_ns_local,
-                    accepted_now=accepted_now,
-                    queued=[],
-                    rejected=rejected,
-                    replaced_in_queue=[],
-                    dropped_in_queue=[],
-                    handled_in_queue=[],
-                    execution_rejected=[],
-                    next_send_ts_ns_local=None,
-                )
-
-                self._event_bus.emit(
-                    RiskDecisionEvent(
-                        ts_ns_local=now_ts_ns_local,
-                        accepted=len(accepted_now),
-                        queued=0,
-                        rejected=len(rejected),
-                        handled=len(handled_in_queue),
-                        reject_reasons=reject_counts,
-                    )
-                )
-
-                return decision
-
-            # Rolling loss kill-switch (equity change over a fixed window)
-            if max_loss_cfg.rolling_loss is not None and max_loss_cfg.rolling_loss_window is not None:
-                window_ns = int(max_loss_cfg.rolling_loss_window * 1_000_000_000)
-                rolling = state.get_rolling_loss(
-                now_ts_ns_local=now_ts_ns_local,
-                window_ns=window_ns,
+            decision = GateDecision(
+                ts_ns_local=now_ts_ns_local,
+                accepted_now=accepted_now,
+                queued=[],
+                rejected=rejected,
+                replaced_in_queue=[],
+                dropped_in_queue=[],
+                handled_in_queue=[],
+                execution_rejected=[],
+                next_send_ts_ns_local=None,
             )
-                if rolling is not None and rolling <= max_loss_cfg.rolling_loss:
-                    for it in raw_intents:
-                        if it.intent_type == "cancel":
-                            accepted_now.append(it)
-                        else:
-                            rejected.append(RejectedIntent(it, RejectReason.MAX_LOSS_ROLLING))
-                            _count_reject(RejectReason.MAX_LOSS_ROLLING)
 
-                    decision = GateDecision(
-                        ts_ns_local=now_ts_ns_local,
-                        accepted_now=accepted_now,
-                        queued=[],
-                        rejected=rejected,
-                        replaced_in_queue=[],
-                        dropped_in_queue=[],
-                        handled_in_queue=[],
-                        execution_rejected=[],
-                        next_send_ts_ns_local=None,
-                    )
+            self._event_bus.emit(
+                RiskDecisionEvent(
+                    ts_ns_local=now_ts_ns_local,
+                    accepted=len(accepted_now),
+                    queued=0,
+                    rejected=len(rejected),
+                    handled=len(handled_in_queue),
+                    reject_reasons=reject_counts,
+                )
+            )
 
-                    self._event_bus.emit(
-                        RiskDecisionEvent(
-                            ts_ns_local=now_ts_ns_local,
-                            accepted=len(accepted_now),
-                            queued=0,
-                            rejected=len(rejected),
-                            handled=len(handled_in_queue),
-                            reject_reasons=reject_counts,
-                        )
-                    )
-
-                    return decision
+            return decision
 
         # --- Rate limits (per second, local time) ---
         rate_cfg = self.risk_cfg.order_rate_limits
@@ -354,16 +319,16 @@ class RiskEngine:
 
         quote_book = None
         if quote_cfg is not None:
-            quote_book = self._quote_book_global(state)
+            quote_book = self._risk_policy.quote_book_global(state)
 
         # Base portfolio gross notional (best-effort)
-        base_gross_notional = self._portfolio_gross_notional(state)
+        base_gross_notional = self._risk_policy.portfolio_gross_notional(state)
 
         # -----------------------------------------------------------------
         # Per-intent decision
         # -----------------------------------------------------------------
         for it in raw_intents:
-            norm = self._venue_policy.normalize_intent(it, state)
+            norm = self._risk_policy.normalize_intent(it, state)
             if norm.reject_reason is not None:
                 rejected.append(RejectedIntent(it, norm.reject_reason))
                 _count_reject(norm.reject_reason)
@@ -470,14 +435,14 @@ class RiskEngine:
                 continue
 
             # 1) Outbound hygiene validation (hard reject)
-            ok, reason = self._validate_intent(it, state)
+            ok, reason = self._risk_policy.validate_intent(it, state)
             if not ok:
                 rejected.append(RejectedIntent(it, reason))
                 _count_reject(reason)
                 continue
 
             # 2) Hard risk checks (hard reject)
-            ok, reason = self._hard_checks(
+            ok, reason = self._risk_policy.hard_checks(
                 it,
                 state,
                 max_pos=max_pos,
@@ -552,176 +517,3 @@ class RiskEngine:
         )
         
         return decision
-
-    # ---------------------------------------------------------------------
-    # Internals
-    # ---------------------------------------------------------------------
-
-    def _validate_intent(self, it: OrderIntent, state: StrategyState) -> tuple[bool, str]:
-        """Outbound intent sanity.
-
-        Even if your schemas allow 0 placeholders, outbound intents should still be sensible.
-        """
-        if it.ts_ns_local <= 0:
-            return False, RejectReason.INVALID_TS
-        if not it.instrument:
-            return False, RejectReason.INVALID_INSTRUMENT
-
-        if it.intent_type == "cancel":
-            return True, "OK"
-
-        # new / replace
-        if it.intended_qty is None or it.intended_qty.value <= 0:
-            return False, RejectReason.INVALID_QTY
-
-        if it.order_type == "limit":
-            if it.intended_price is None or it.intended_price.value <= 0:
-                return False, RejectReason.INVALID_LIMIT_PRICE
-
-        if it.order_type == "market":
-            # if notional checks need a price proxy, require a mid
-            if state.get_mid(it.instrument) <= 0:
-                return False, RejectReason.NO_MID_FOR_MARKET
-
-        return True, "OK"
-
-    # pylint: disable=too-many-locals,too-many-branches,too-many-return-statements
-    def _hard_checks(
-        self,
-        it: OrderIntent,
-        state: StrategyState,
-        *,
-        max_pos: float | None,
-        max_single_order_notional: float | None,
-        max_gross_notional: float | None,
-        base_gross_notional: float | None,
-        quote_cfg: QuoteLimits | None,
-        quote_book: dict[tuple[str, str | None, tuple[float, float]]],
-    ) -> tuple[bool, str]:
-        """Apply hard risk checks. Returns (ok, reason)."""
-
-        # Cancels are always allowed (risk reducing).
-        if it.intent_type == "cancel":
-            return True, "OK"
-
-        qty = it.intended_qty.value
-        px = self._intent_price(it, state) or 0.0
-        contract_size = state.get_contract_size(it.instrument)
-        notional = abs(px * qty * contract_size)
-
-        # Position limit (symmetric absolute), based on account position
-        if max_pos is not None:
-            cur_pos = state.account[it.instrument].position if it.instrument in state.account else 0.0
-            delta = qty if it.side == "buy" else -qty
-            if cur_pos + delta > max_pos or cur_pos + delta < -max_pos:
-                return False, RejectReason.MAX_POSITION
-
-        # Single-order notional
-        if max_single_order_notional is not None and notional > max_single_order_notional:
-            return False, RejectReason.MAX_SINGLE_ORDER_NOTIONAL
-
-        # Portfolio gross notional
-        if max_gross_notional is not None and base_gross_notional is not None:
-            if base_gross_notional + notional > max_gross_notional:
-                return False, RejectReason.MAX_GROSS_NOTIONAL
-
-        # Quote limits (global, queued included)
-        if quote_cfg is not None:
-            book = self._quote_book_global(state) if quote_book is None else quote_book
-            key = (it.instrument, it.client_order_id)
-
-            existing = book.get(key)
-            existing_abs = 0.0 if existing is None else existing[0]
-            existing_signed = 0.0 if existing is None else existing[1]
-
-            active = len(book)
-            gross_q = sum(v[0] for v in book.values())
-            net_q = sum(v[1] for v in book.values())
-
-            # Apply delta for this intent (new or replace).
-            new_abs = notional
-            new_signed = notional if it.side == "buy" else -notional
-
-            active_after = active if existing is not None else active + 1
-            gross_after = gross_q - existing_abs + new_abs
-            net_after = net_q - existing_signed + new_signed
-
-            if quote_cfg.max_active_quotes is not None:
-                if active_after > quote_cfg.max_active_quotes:
-                    return False, RejectReason.MAX_ACTIVE_QUOTES
-
-            if quote_cfg.max_gross_quote_notional is not None:
-                if gross_after > quote_cfg.max_gross_quote_notional:
-                    return False, RejectReason.MAX_GROSS_QUOTE_NOTIONAL
-
-            if quote_cfg.max_net_quote_notional is not None:
-                if abs(net_after) > quote_cfg.max_net_quote_notional:
-                    return False, RejectReason.MAX_NET_QUOTE_NOTIONAL
-
-        return True, "OK"
-
-    def _intent_price(self, it: OrderIntent, state: StrategyState) -> float | None:
-        if it.order_type == "limit":
-            return None if it.intended_price is None else it.intended_price.value
-        mid = state.get_mid(it.instrument)
-        return None if mid <= 0 else mid
-
-    def _portfolio_gross_notional(self, state: StrategyState) -> float | None:
-        total = 0.0
-        for instr, acct in state.account.items():
-            mid = state.get_mid(instr)
-            if mid <= 0:
-                return None
-            total += abs(acct.position * mid * state.get_contract_size(instr))
-        return total
-
-    def _quote_book_global(self, state: StrategyState) -> dict[tuple[str, str], tuple[float, float]]:
-        """Build a best-effort global quote book including queued intents.
-
-        Returns:
-            Mapping (instrument, client_order_id) -> (abs_notional, signed_notional)
-
-        Notes:
-            - Working orders are sourced from StrategyState.orders.
-            - Queued intents in StrategyState.queued_intents are applied on top.
-            - This is used only for quote-limits enforcement.
-        """
-
-        book: dict[tuple[str, str], tuple[float, float]] = {}
-
-        # Working orders
-        for instr, bucket in state.orders.items():
-            contract_size = state.get_contract_size(instr)
-            for oid, o in bucket.items():
-                qty = o.remaining_qty if o.remaining_qty > 0 else o.intended_qty
-                if qty <= 0:
-                    continue
-                px = o.intended_price
-                notional = abs(px * qty * contract_size)
-                signed = notional if o.side == "buy" else -notional
-                book[(instr, oid)] = (notional, signed)
-
-        # Queued intents (apply on top of working)
-        for instr, q in state.queued_intents.items():
-            contract_size = state.get_contract_size(instr)
-            for qi in q:
-                it = qi.intent
-                key = (instr, it.client_order_id)
-
-                if it.intent_type == "cancel":
-                    if key in book:
-                        book.pop(key)
-                    continue
-
-                if it.intent_type not in ("new", "replace"):
-                    continue
-
-                qty_val = it.intended_qty.value
-                px_val = self._intent_price(it, state)
-                if px_val is None:
-                    continue
-                notional = abs(px_val * qty_val * contract_size)
-                signed = notional if it.side == "buy" else -notional
-                book[key] = (notional, signed)
-
-        return book
