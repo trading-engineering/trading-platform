@@ -23,6 +23,7 @@ from tradingchassis_core.core.domain.processing_order import EventStreamEntry, P
 from tradingchassis_core.core.domain.processing_step import (
     ControlTimeQueueReevaluationContext,
     CoreDecisionContext,
+    CorePolicyAdmissionContext,
     CoreStepStrategyContext,
     run_core_step,
 )
@@ -36,11 +37,14 @@ from tradingchassis_core.core.domain.types import (
     MarketEvent,
     NewOrderIntent,
     NotionalLimits,
+    OrderIntent,
     OrderRateLimits,
     OrderStateEvent,
     Price,
     Quantity,
 )
+from tradingchassis_core.core.events.event_bus import EventBus
+from tradingchassis_core.core.events.events import RiskDecisionEvent
 from tradingchassis_core.core.events.sinks.null_event_bus import NullEventBus
 from tradingchassis_core.core.execution_control.types import ControlSchedulingObligation
 from tradingchassis_core.core.risk.risk_config import RiskConfig
@@ -1493,3 +1497,250 @@ def test_run_core_step_does_not_pop_or_gate_when_process_event_entry_fails(
         )
 
     assert calls == {"pop": 0, "risk": 0}
+
+
+def test_run_core_step_policy_admission_context_populates_policy_decision_only() -> None:
+    state = StrategyState(event_bus=NullEventBus())
+    instrument = "BTC-USDC-PERP"
+    queued_intent = _new_intent(client_order_id="queued-passthrough")
+    state.merge_intents_into_queue(instrument, [queued_intent])
+
+    generated_new = _new_intent(client_order_id="generated-new-rejected")
+    generated_cancel = CancelOrderIntent(
+        ts_ns_local=50,
+        instrument=instrument,
+        client_order_id="generated-cancel-accepted",
+        intents_correlation_id="corr-generated-cancel",
+    )
+    risk_cfg = RiskConfig(
+        scope="test",
+        trading_enabled=False,
+        notional_limits=NotionalLimits(
+            currency="USDC",
+            max_gross_notional=1e18,
+            max_single_order_notional=1e18,
+        ),
+    )
+    risk_engine = RiskEngine(risk_cfg=risk_cfg, event_bus=NullEventBus())
+
+    class _Evaluator:
+        def evaluate(self, context: CoreStepStrategyContext) -> list[OrderIntent]:
+            assert context.state._last_processing_position_index == 50
+            return [generated_new, generated_cancel]
+
+    entry = EventStreamEntry(
+        position=ProcessingPosition(index=50),
+        event=_fill_event(
+            instrument=instrument,
+            client_order_id="fill-policy-context",
+            ts_ns_local=50,
+            ts_ns_exch=49,
+        ),
+    )
+    result = run_core_step(
+        state,
+        entry,
+        strategy_evaluator=_Evaluator(),
+        policy_admission_context=CorePolicyAdmissionContext(
+            policy_evaluator=risk_engine,
+            now_ts_ns_local=50,
+        ),
+    )
+
+    assert tuple(record.intent.client_order_id for record in result.candidate_intent_records) == (
+        "generated-cancel-accepted",
+        "queued-passthrough",
+        "generated-new-rejected",
+    )
+    assert result.core_step_decision is not None
+    assert result.core_step_decision.execution_control_decision is None
+    assert tuple(it.client_order_id for it in result.core_step_decision.policy_rejected_intents) == (
+        "generated-new-rejected",
+    )
+    assert result.core_step_decision.policy_risk_decision is not None
+    assert tuple(
+        it.client_order_id
+        for it in result.core_step_decision.policy_risk_decision.accepted_intents
+    ) == ("generated-cancel-accepted",)
+    assert tuple(
+        it.client_order_id
+        for it in result.core_step_decision.policy_risk_decision.rejected_intents
+    ) == ("generated-new-rejected",)
+    assert result.core_step_decision.dispatchable_intents == ()
+    assert result.dispatchable_intents == ()
+    assert result.control_scheduling_obligation is None
+    assert result.compat_gate_decision is None
+
+
+def test_run_core_step_policy_admission_context_queued_only_skips_policy_evaluation() -> None:
+    state = StrategyState(event_bus=NullEventBus())
+    instrument = "BTC-USDC-PERP"
+    state.merge_intents_into_queue(
+        instrument,
+        [_new_intent(client_order_id="queued-only-record")],
+    )
+    calls = {"evaluate": 0}
+
+    class _Evaluator:
+        def evaluate_policy_intent(self, **_: object) -> tuple[bool, str | None]:
+            calls["evaluate"] += 1
+            return True, None
+
+    entry = EventStreamEntry(
+        position=ProcessingPosition(index=51),
+        event=_fill_event(
+            instrument=instrument,
+            client_order_id="fill-queued-only",
+            ts_ns_local=51,
+            ts_ns_exch=50,
+        ),
+    )
+    result = run_core_step(
+        state,
+        entry,
+        policy_admission_context=CorePolicyAdmissionContext(
+            policy_evaluator=_Evaluator(),  # type: ignore[arg-type]
+            now_ts_ns_local=51,
+        ),
+    )
+
+    assert calls == {"evaluate": 0}
+    assert tuple(record.origin for record in result.candidate_intent_records) == (
+        CandidateIntentOrigin.QUEUED,
+    )
+    assert result.core_step_decision is not None
+    assert result.core_step_decision.policy_risk_decision == PolicyRiskDecision()
+    assert result.core_step_decision.policy_rejected_intents == ()
+    assert result.dispatchable_intents == ()
+
+
+def test_run_core_step_policy_admission_context_not_reached_when_process_event_entry_fails(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    state = StrategyState(event_bus=NullEventBus())
+    calls = {"evaluate": 0}
+
+    class _Evaluator:
+        def evaluate_policy_intent(self, **_: object) -> tuple[bool, str | None]:
+            calls["evaluate"] += 1
+            return True, None
+
+    def _boom(*_: object, **__: object) -> None:
+        raise RuntimeError("process boundary failed")
+
+    monkeypatch.setattr(processing_step_module, "process_event_entry", _boom)
+
+    entry = EventStreamEntry(
+        position=ProcessingPosition(index=52),
+        event=_fill_event(
+            instrument="BTC-USDC-PERP",
+            client_order_id="fill-policy-process-fail",
+            ts_ns_local=52,
+            ts_ns_exch=51,
+        ),
+    )
+    with pytest.raises(RuntimeError, match="process boundary failed"):
+        run_core_step(
+            state,
+            entry,
+            policy_admission_context=CorePolicyAdmissionContext(
+                policy_evaluator=_Evaluator(),  # type: ignore[arg-type]
+                now_ts_ns_local=52,
+            ),
+        )
+    assert calls == {"evaluate": 0}
+
+
+def test_run_core_step_policy_admission_context_not_reached_when_strategy_fails() -> None:
+    state = StrategyState(event_bus=NullEventBus())
+    calls = {"evaluate": 0}
+
+    class _EvaluatorBoom:
+        def evaluate(self, context: CoreStepStrategyContext) -> list[NewOrderIntent]:
+            assert context.state._last_processing_position_index == 53
+            raise RuntimeError("strategy evaluator failed")
+
+    class _PolicyEvaluator:
+        def evaluate_policy_intent(self, **_: object) -> tuple[bool, str | None]:
+            calls["evaluate"] += 1
+            return True, None
+
+    entry = EventStreamEntry(
+        position=ProcessingPosition(index=53),
+        event=_fill_event(
+            instrument="BTC-USDC-PERP",
+            client_order_id="fill-policy-strategy-fail",
+            ts_ns_local=53,
+            ts_ns_exch=52,
+        ),
+    )
+    with pytest.raises(RuntimeError, match="strategy evaluator failed"):
+        run_core_step(
+            state,
+            entry,
+            strategy_evaluator=_EvaluatorBoom(),
+            policy_admission_context=CorePolicyAdmissionContext(
+                policy_evaluator=_PolicyEvaluator(),  # type: ignore[arg-type]
+                now_ts_ns_local=53,
+            ),
+        )
+    assert calls == {"evaluate": 0}
+
+
+def test_run_core_step_policy_admission_context_is_side_effect_safe_characterization() -> None:
+    class _CaptureSink:
+        def __init__(self) -> None:
+            self.events: list[object] = []
+
+        def on_event(self, event: object) -> None:
+            self.events.append(event)
+
+    sink = _CaptureSink()
+    event_bus = EventBus(sinks=[sink])
+    state = StrategyState(event_bus=event_bus)
+    risk_cfg = RiskConfig(
+        scope="test",
+        trading_enabled=True,
+        notional_limits=NotionalLimits(
+            currency="USDC",
+            max_gross_notional=1e18,
+            max_single_order_notional=1e18,
+        ),
+        order_rate_limits=OrderRateLimits(max_orders_per_second=0),
+    )
+    risk_engine = RiskEngine(risk_cfg=risk_cfg, event_bus=event_bus)
+
+    generated_intent = _new_intent(client_order_id="side-effect-safe-generated")
+
+    class _Evaluator:
+        def evaluate(self, context: CoreStepStrategyContext) -> list[OrderIntent]:
+            assert context.state._last_processing_position_index == 54
+            return [generated_intent]
+
+    before_rate_state = copy.deepcopy(risk_engine._execution_control._rate_state)
+    before_queue = state.queued_intents_snapshot("BTC-USDC-PERP")
+
+    entry = EventStreamEntry(
+        position=ProcessingPosition(index=54),
+        event=_fill_event(
+            instrument="BTC-USDC-PERP",
+            client_order_id="fill-policy-side-effect-safe",
+            ts_ns_local=54,
+            ts_ns_exch=53,
+        ),
+    )
+    result = run_core_step(
+        state,
+        entry,
+        strategy_evaluator=_Evaluator(),
+        policy_admission_context=CorePolicyAdmissionContext(
+            policy_evaluator=risk_engine,
+            now_ts_ns_local=54,
+        ),
+    )
+
+    assert state.queued_intents_snapshot("BTC-USDC-PERP") == before_queue
+    assert risk_engine._execution_control._rate_state == before_rate_state
+    assert all(not isinstance(event, RiskDecisionEvent) for event in sink.events)
+    assert result.dispatchable_intents == ()
+    assert result.compat_gate_decision is None

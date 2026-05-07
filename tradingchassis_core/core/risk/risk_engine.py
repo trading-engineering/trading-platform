@@ -200,6 +200,88 @@ class RiskEngine:
     # Hard gate decision
     # ---------------------------------------------------------------------
 
+    def evaluate_policy_intent(
+        self,
+        *,
+        intent: OrderIntent,
+        state: StrategyState,
+        now_ts_ns_local: int,
+    ) -> tuple[bool, str | None]:
+        """Evaluate one intent with policy-only checks and no side effects.
+
+        Side-effect contract:
+        - does not call execution-control helpers;
+        - does not mutate queue/rate/inflight state;
+        - does not emit EventBus events.
+        """
+
+        raw_intents = [intent]
+
+        triggered, policy_accepted, policy_rejected = self._risk_policy.trading_enabled_gate(
+            trading_enabled=self.risk_cfg.trading_enabled,
+            raw_intents=raw_intents,
+        )
+        if triggered:
+            if policy_accepted:
+                return True, None
+            if policy_rejected:
+                return False, policy_rejected[0][1]
+            return False, RejectReason.TRADING_DISABLED
+
+        triggered, policy_accepted, policy_rejected = self._risk_policy.max_loss_gate(
+            max_loss_cfg=self.risk_cfg.max_loss,
+            raw_intents=raw_intents,
+            state=state,
+            now_ts_ns_local=now_ts_ns_local,
+        )
+        if triggered:
+            if policy_accepted:
+                return True, None
+            if policy_rejected:
+                return False, policy_rejected[0][1]
+            return False, RejectReason.MAX_LOSS_DRAWDOWN
+
+        norm = self._risk_policy.normalize_intent(intent, state)
+        if norm.reject_reason is not None:
+            return False, norm.reject_reason
+        if norm.dropped:
+            return False, "dropped_by_policy"
+        if norm.normalized is None:
+            return False, RejectReason.INVALID_QTY
+
+        normalized_intent = norm.normalized
+
+        ok, reason = self._risk_policy.validate_intent(normalized_intent, state)
+        if not ok:
+            return False, reason
+
+        pos_cfg = self.risk_cfg.position_limits
+        max_pos = None if (pos_cfg is None or pos_cfg.max_position is None) else pos_cfg.max_position
+
+        notional_cfg = self.risk_cfg.notional_limits
+        max_gross_notional = notional_cfg.max_gross_notional
+        max_single_order_notional = notional_cfg.max_single_order_notional
+
+        quote_cfg = self.risk_cfg.quote_limits
+        quote_book = None
+        if quote_cfg is not None:
+            quote_book = self._risk_policy.quote_book_global(state)
+        base_gross_notional = self._risk_policy.portfolio_gross_notional(state)
+
+        ok, reason = self._risk_policy.hard_checks(
+            normalized_intent,
+            state,
+            max_pos=max_pos,
+            max_single_order_notional=max_single_order_notional,
+            max_gross_notional=max_gross_notional,
+            base_gross_notional=base_gross_notional,
+            quote_cfg=quote_cfg,
+            quote_book=quote_book,
+        )
+        if not ok:
+            return False, reason
+        return True, None
+
     # pylint: disable=too-many-locals,too-many-branches,too-many-statements
     def decide_intents(
         self,

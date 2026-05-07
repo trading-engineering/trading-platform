@@ -16,7 +16,11 @@ from tradingchassis_core.core.domain.configuration import CoreConfiguration
 from tradingchassis_core.core.domain.execution_control_decision import (
     ExecutionControlDecision,
 )
-from tradingchassis_core.core.domain.policy_risk_decision import PolicyRiskDecision
+from tradingchassis_core.core.domain.policy_risk_decision import (
+    PolicyAdmissionResult,
+    PolicyRejectedCandidate,
+    PolicyRiskDecision,
+)
 from tradingchassis_core.core.domain.processing import (
     fold_event_stream_entries,
     process_event_entry,
@@ -28,6 +32,7 @@ from tradingchassis_core.core.domain.processing_order import (
 from tradingchassis_core.core.domain.processing_step import (
     ControlTimeQueueReevaluationContext,
     CoreDecisionContext,
+    CorePolicyAdmissionContext,
     run_core_step,
 )
 
@@ -106,9 +111,12 @@ __all__ = [
     "process_event_entry",
     "run_core_step",
     "CoreDecisionContext",
+    "CorePolicyAdmissionContext",
     "ControlTimeQueueReevaluationContext",
     "ExecutionControlDecision",
     "PolicyRiskDecision",
+    "PolicyRejectedCandidate",
+    "PolicyAdmissionResult",
     "CoreStepDecision",
     "fold_event_stream_entries",
     "CoreStepResult",

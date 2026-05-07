@@ -18,6 +18,8 @@ from tradingchassis_core.core.domain.intent_combination import (
     combine_candidate_intent_records,
 )
 from tradingchassis_core.core.domain.policy_risk_decision import (
+    PolicyIntentEvaluator,
+    apply_policy_to_candidate_records,
     map_compat_gate_decision_to_policy_risk_decision,
 )
 from tradingchassis_core.core.domain.processing import process_event_entry
@@ -78,6 +80,14 @@ class CoreDecisionContext:
     capture_only: bool = True
 
 
+@dataclass(frozen=True, slots=True)
+class CorePolicyAdmissionContext:
+    """Optional side-effect-safe policy admission capture context."""
+
+    policy_evaluator: PolicyIntentEvaluator
+    now_ts_ns_local: int
+
+
 def _select_effective_control_scheduling_obligation(
     decision: GateDecision,
 ) -> ControlSchedulingObligation | None:
@@ -131,6 +141,7 @@ def run_core_step(
     *,
     configuration: CoreConfiguration | None = None,
     control_time_queue_context: ControlTimeQueueReevaluationContext | None = None,
+    policy_admission_context: CorePolicyAdmissionContext | None = None,
     core_decision_context: CoreDecisionContext | None = None,
     strategy_evaluator: CoreStepStrategyEvaluator | None = None,
 ) -> CoreStepResult:
@@ -196,6 +207,34 @@ def run_core_step(
         )
 
     if not isinstance(entry.event, ControlTimeEvent):
+        if (
+            policy_admission_context is not None
+            and core_decision_context is not None
+            and core_decision_context.enable_candidate_intent_decision
+        ):
+            raise ValueError(
+                "policy_admission_context cannot be combined with "
+                "core_decision_context.enable_candidate_intent_decision=True"
+            )
+        if policy_admission_context is not None:
+            policy_result = apply_policy_to_candidate_records(
+                candidate_intent_records,
+                state=state,
+                now_ts_ns_local=policy_admission_context.now_ts_ns_local,
+                policy_evaluator=policy_admission_context.policy_evaluator,
+            )
+            core_step_decision = CoreStepDecision(
+                policy_rejected_intents=tuple(
+                    rejected.record.intent for rejected in policy_result.rejected_generated
+                ),
+                policy_risk_decision=policy_result.policy_risk_decision,
+            )
+            return CoreStepResult(
+                generated_intents=generated_intents,
+                candidate_intent_records=candidate_intent_records,
+                candidate_intents=candidate_intents,
+                core_step_decision=core_step_decision,
+            )
         if (
             core_decision_context is not None
             and core_decision_context.enable_candidate_intent_decision
