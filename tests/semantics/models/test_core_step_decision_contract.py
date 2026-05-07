@@ -11,6 +11,7 @@ from tradingchassis_core.core.domain.event_model import (
     canonical_category_for_type,
     is_canonical_stream_candidate_type,
 )
+from tradingchassis_core.core.domain.policy_risk_decision import PolicyRiskDecision
 from tradingchassis_core.core.domain.processing import process_canonical_event
 from tradingchassis_core.core.domain.state import StrategyState
 from tradingchassis_core.core.domain.step_decision import CoreStepDecision
@@ -37,6 +38,7 @@ def test_default_decision_is_empty_and_none_obligation() -> None:
     decision = CoreStepDecision()
 
     assert decision.policy_rejected_intents == ()
+    assert decision.policy_risk_decision is None
     assert decision.queued_effective_intents == ()
     assert decision.dispatchable_intents == ()
     assert decision.execution_handled_intents == ()
@@ -96,6 +98,18 @@ def test_core_step_decision_can_carry_dispatchable_and_obligation() -> None:
 
     assert decision.dispatchable_intents == (dispatchable,)
     assert decision.control_scheduling_obligation is obligation
+
+
+def test_core_step_decision_can_carry_policy_risk_decision() -> None:
+    accepted = _new_intent(client_order_id="accepted")
+    rejected = _new_intent(client_order_id="rejected")
+    policy = PolicyRiskDecision(
+        accepted_intents=[accepted],
+        rejected_intents=[rejected],
+    )
+    decision = CoreStepDecision(policy_risk_decision=policy)
+
+    assert decision.policy_risk_decision is policy
 
 
 def test_public_root_export_identity_when_root_exported() -> None:

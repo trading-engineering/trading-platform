@@ -13,6 +13,7 @@ from tradingchassis_core.core.domain.event_model import (
     canonical_category_for_type,
     is_canonical_stream_candidate_type,
 )
+from tradingchassis_core.core.domain.policy_risk_decision import PolicyRiskDecision
 from tradingchassis_core.core.domain.processing import process_event_entry
 from tradingchassis_core.core.domain.processing_order import EventStreamEntry, ProcessingPosition
 from tradingchassis_core.core.domain.processing_step import (
@@ -482,6 +483,12 @@ def test_run_core_step_control_time_with_context_processes_canonical_then_queue_
     ) == ("accepted-now",)
     assert result.core_step_decision.control_scheduling_obligation is not None
     assert result.core_step_decision.control_scheduling_obligation.due_ts_ns_local == 17
+    assert isinstance(result.core_step_decision.policy_risk_decision, PolicyRiskDecision)
+    assert tuple(
+        it.client_order_id
+        for it in result.core_step_decision.policy_risk_decision.accepted_intents
+    ) == ("accepted-now",)
+    assert result.core_step_decision.policy_risk_decision.rejected_intents == ()
     assert result.core_step_decision.queued_effective_intents == ()
     assert result.core_step_decision.policy_rejected_intents == ()
     assert result.core_step_decision.execution_handled_intents == ()
@@ -597,6 +604,15 @@ def test_run_core_step_control_time_maps_compat_fields_to_core_step_decision() -
     assert tuple(
         it.client_order_id for it in result.core_step_decision.execution_handled_intents
     ) == ("handled-in-queue",)
+    assert isinstance(result.core_step_decision.policy_risk_decision, PolicyRiskDecision)
+    assert tuple(
+        it.client_order_id
+        for it in result.core_step_decision.policy_risk_decision.accepted_intents
+    ) == ("accepted-now-mapped",)
+    assert tuple(
+        it.client_order_id
+        for it in result.core_step_decision.policy_risk_decision.rejected_intents
+    ) == ("rejected-policy",)
 
 
 def test_run_core_step_includes_queued_snapshot_in_candidate_intents_without_mutation() -> None:
@@ -777,6 +793,11 @@ def test_run_core_step_with_strategy_and_control_time_context_orders_calls_deter
     assert isinstance(result.core_step_decision, CoreStepDecision)
     assert tuple(
         it.client_order_id for it in result.core_step_decision.dispatchable_intents
+    ) == ("accepted-control-time",)
+    assert isinstance(result.core_step_decision.policy_risk_decision, PolicyRiskDecision)
+    assert tuple(
+        it.client_order_id
+        for it in result.core_step_decision.policy_risk_decision.accepted_intents
     ) == ("accepted-control-time",)
 
 

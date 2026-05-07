@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from tradingchassis_core.core.domain.policy_risk_decision import PolicyRiskDecision
 from tradingchassis_core.core.domain.types import OrderIntent
 from tradingchassis_core.core.execution_control.types import ControlSchedulingObligation
 
@@ -13,6 +14,7 @@ class CoreStepDecision:
     """Immutable scaffold decision model for integrated Core-step semantics."""
 
     policy_rejected_intents: tuple[OrderIntent, ...] = ()
+    policy_risk_decision: PolicyRiskDecision | None = None
     queued_effective_intents: tuple[OrderIntent, ...] = ()
     dispatchable_intents: tuple[OrderIntent, ...] = ()
     execution_handled_intents: tuple[OrderIntent, ...] = ()

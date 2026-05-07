@@ -12,6 +12,9 @@ from typing import TYPE_CHECKING, Protocol, Sequence
 
 from tradingchassis_core.core.domain.configuration import CoreConfiguration
 from tradingchassis_core.core.domain.intent_combination import combine_candidate_intents
+from tradingchassis_core.core.domain.policy_risk_decision import (
+    map_compat_gate_decision_to_policy_risk_decision,
+)
 from tradingchassis_core.core.domain.processing import process_event_entry
 from tradingchassis_core.core.domain.processing_order import EventStreamEntry, ProcessingPosition
 from tradingchassis_core.core.domain.state import StrategyState
@@ -89,6 +92,7 @@ def _map_compat_gate_decision_to_core_step_decision(
 ) -> CoreStepDecision:
     return CoreStepDecision(
         policy_rejected_intents=tuple(rejected.intent for rejected in decision.rejected),
+        policy_risk_decision=map_compat_gate_decision_to_policy_risk_decision(decision),
         queued_effective_intents=tuple(decision.queued),
         dispatchable_intents=tuple(decision.accepted_now),
         execution_handled_intents=tuple(decision.handled_in_queue),
