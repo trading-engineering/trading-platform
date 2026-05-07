@@ -21,6 +21,7 @@ from tradingchassis_core.core.domain.processing_step import (
     run_core_step,
 )
 from tradingchassis_core.core.domain.state import StrategyState
+from tradingchassis_core.core.domain.step_decision import CoreStepDecision
 from tradingchassis_core.core.domain.step_result import CoreStepResult
 from tradingchassis_core.core.domain.types import (
     CancelOrderIntent,
@@ -34,7 +35,7 @@ from tradingchassis_core.core.domain.types import (
 )
 from tradingchassis_core.core.events.sinks.null_event_bus import NullEventBus
 from tradingchassis_core.core.execution_control.types import ControlSchedulingObligation
-from tradingchassis_core.core.risk.risk_engine import GateDecision
+from tradingchassis_core.core.risk.risk_engine import GateDecision, RejectedIntent
 
 
 def _book_market_event(*, instrument: str, ts_ns_local: int, ts_ns_exch: int) -> MarketEvent:
@@ -191,6 +192,7 @@ def test_run_core_step_delegates_and_returns_default_core_step_result() -> None:
     assert result.candidate_intents == ()
     assert result.dispatchable_intents == ()
     assert result.control_scheduling_obligation is None
+    assert result.core_step_decision is None
     assert result.compat_gate_decision is None
     assert _state_subset_snapshot(skeleton_state) == _state_subset_snapshot(baseline_state)
 
@@ -213,6 +215,7 @@ def test_run_core_step_omitting_strategy_evaluator_preserves_existing_behavior()
 
     assert result.generated_intents == ()
     assert result.candidate_intents == ()
+    assert result.core_step_decision is None
     assert result == CoreStepResult()
     assert _state_subset_snapshot(no_strategy_state) == _state_subset_snapshot(baseline_state)
 
@@ -340,6 +343,7 @@ def test_run_core_step_calls_strategy_evaluator_once_with_post_reducer_context()
     assert result.generated_intents == (generated_intent,)
     assert result.candidate_intents == (generated_intent,)
     assert result.dispatchable_intents == ()
+    assert result.core_step_decision is None
     assert result.compat_gate_decision is None
 
 
@@ -472,10 +476,23 @@ def test_run_core_step_control_time_with_context_processes_canonical_then_queue_
     assert [it.client_order_id for it in popped_raw_intents[0]] == [queued_intent.client_order_id]
     assert tuple(it.client_order_id for it in result.dispatchable_intents) == ("accepted-now",)
     assert tuple(it.client_order_id for it in result.candidate_intents) == ("queued-1",)
+    assert isinstance(result.core_step_decision, CoreStepDecision)
+    assert tuple(
+        it.client_order_id for it in result.core_step_decision.dispatchable_intents
+    ) == ("accepted-now",)
+    assert result.core_step_decision.control_scheduling_obligation is not None
+    assert result.core_step_decision.control_scheduling_obligation.due_ts_ns_local == 17
+    assert result.core_step_decision.queued_effective_intents == ()
+    assert result.core_step_decision.policy_rejected_intents == ()
+    assert result.core_step_decision.execution_handled_intents == ()
     assert result.compat_gate_decision is not None
     assert result.control_scheduling_obligation is not None
     assert result.control_scheduling_obligation.due_ts_ns_local == 17
     assert result.control_scheduling_obligation.obligation_key == "x-key"
+    assert (
+        result.core_step_decision.control_scheduling_obligation
+        == result.control_scheduling_obligation
+    )
 
 
 def test_run_core_step_non_control_time_ignores_control_time_context() -> None:
@@ -510,6 +527,76 @@ def test_run_core_step_non_control_time_ignores_control_time_context() -> None:
     )
 
     assert result == CoreStepResult()
+    assert result.core_step_decision is None
+
+
+def test_run_core_step_control_time_maps_compat_fields_to_core_step_decision() -> None:
+    state = StrategyState(event_bus=NullEventBus())
+    instrument = "BTC-USDC-PERP"
+    queued_intent = _new_intent(client_order_id="queued-pop-source")
+    state.merge_intents_into_queue(instrument, [queued_intent])
+
+    accepted_now = _new_intent(client_order_id="accepted-now-mapped")
+    queued_effective = _new_intent(client_order_id="queued-effective")
+    rejected_intent = _new_intent(client_order_id="rejected-policy")
+    handled_intent = CancelOrderIntent(
+        ts_ns_local=33,
+        instrument=instrument,
+        client_order_id="handled-in-queue",
+        intents_correlation_id="corr-handled",
+    )
+
+    class _RiskSpy:
+        def decide_intents(
+            self,
+            *,
+            raw_intents: list[NewOrderIntent],
+            state: StrategyState,
+            now_ts_ns_local: int,
+        ) -> GateDecision:
+            assert state is not None
+            assert now_ts_ns_local == 33
+            assert [it.client_order_id for it in raw_intents] == [queued_intent.client_order_id]
+            return GateDecision(
+                ts_ns_local=now_ts_ns_local,
+                accepted_now=[accepted_now],
+                queued=[queued_effective],
+                rejected=[RejectedIntent(intent=rejected_intent, reason="policy_reject")],
+                replaced_in_queue=[],
+                dropped_in_queue=[],
+                handled_in_queue=[handled_intent],
+                execution_rejected=[],
+                next_send_ts_ns_local=None,
+                control_scheduling_obligations=(),
+            )
+
+    entry = EventStreamEntry(
+        position=ProcessingPosition(index=33),
+        event=_control_time_event(due_ts_ns_local=33, realized_ts_ns_local=33),
+    )
+    result = run_core_step(
+        state,
+        entry,
+        control_time_queue_context=ControlTimeQueueReevaluationContext(
+            risk_engine=_RiskSpy(),  # type: ignore[arg-type]
+            instrument=instrument,
+            now_ts_ns_local=33,
+        ),
+    )
+
+    assert result.core_step_decision is not None
+    assert tuple(
+        it.client_order_id for it in result.core_step_decision.dispatchable_intents
+    ) == ("accepted-now-mapped",)
+    assert tuple(
+        it.client_order_id for it in result.core_step_decision.queued_effective_intents
+    ) == ("queued-effective",)
+    assert tuple(
+        it.client_order_id for it in result.core_step_decision.policy_rejected_intents
+    ) == ("rejected-policy",)
+    assert tuple(
+        it.client_order_id for it in result.core_step_decision.execution_handled_intents
+    ) == ("handled-in-queue",)
 
 
 def test_run_core_step_includes_queued_snapshot_in_candidate_intents_without_mutation() -> None:
@@ -687,6 +774,10 @@ def test_run_core_step_with_strategy_and_control_time_context_orders_calls_deter
     assert tuple(it.client_order_id for it in result.dispatchable_intents) == (
         "accepted-control-time",
     )
+    assert isinstance(result.core_step_decision, CoreStepDecision)
+    assert tuple(
+        it.client_order_id for it in result.core_step_decision.dispatchable_intents
+    ) == ("accepted-control-time",)
 
 
 def test_run_core_step_strategy_evaluator_exception_propagates_and_skips_control_time_queue_path(

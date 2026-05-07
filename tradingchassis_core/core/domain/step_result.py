@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from tradingchassis_core.core.domain.step_decision import CoreStepDecision
 from tradingchassis_core.core.domain.types import OrderIntent
 from tradingchassis_core.core.execution_control.types import ControlSchedulingObligation
 from tradingchassis_core.core.risk.risk_engine import GateDecision
@@ -22,6 +23,7 @@ class CoreStepResult:
     candidate_intents: tuple[OrderIntent, ...] = ()
     dispatchable_intents: tuple[OrderIntent, ...] = ()
     control_scheduling_obligation: ControlSchedulingObligation | None = None
+    core_step_decision: CoreStepDecision | None = None
     compat_gate_decision: GateDecision | None = None
 
     def __post_init__(self) -> None:

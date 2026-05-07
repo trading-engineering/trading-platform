@@ -13,6 +13,7 @@ from tradingchassis_core.core.domain.event_model import (
 )
 from tradingchassis_core.core.domain.processing import process_canonical_event
 from tradingchassis_core.core.domain.state import StrategyState
+from tradingchassis_core.core.domain.step_decision import CoreStepDecision
 from tradingchassis_core.core.domain.step_result import CoreStepResult
 from tradingchassis_core.core.domain.types import (
     CancelOrderIntent,
@@ -47,6 +48,7 @@ def test_default_result_is_empty_and_none_compat() -> None:
     assert result.candidate_intents == ()
     assert result.dispatchable_intents == ()
     assert result.control_scheduling_obligation is None
+    assert result.core_step_decision is None
     assert result.compat_gate_decision is None
 
 
@@ -168,6 +170,29 @@ def test_can_carry_optional_compat_gate_decision() -> None:
     result = CoreStepResult(compat_gate_decision=compat_decision)
 
     assert result.compat_gate_decision is compat_decision
+
+
+def test_can_carry_optional_core_step_decision() -> None:
+    dispatchable = _new_intent(client_order_id="dispatchable")
+    decision = CoreStepDecision(dispatchable_intents=[dispatchable])
+
+    result = CoreStepResult(core_step_decision=decision)
+
+    assert result.core_step_decision is decision
+
+
+def test_core_step_result_dispatchable_intents_are_independent_from_core_step_decision() -> None:
+    top_level_dispatchable = _new_intent(client_order_id="top-level")
+    decision_dispatchable = _new_intent(client_order_id="decision")
+    decision = CoreStepDecision(dispatchable_intents=[decision_dispatchable])
+    result = CoreStepResult(
+        dispatchable_intents=[top_level_dispatchable],
+        core_step_decision=decision,
+    )
+
+    assert result.dispatchable_intents == (top_level_dispatchable,)
+    assert result.core_step_decision is decision
+    assert result.core_step_decision.dispatchable_intents == (decision_dispatchable,)
 
 
 def test_core_step_result_is_non_canonical_and_not_classified() -> None:

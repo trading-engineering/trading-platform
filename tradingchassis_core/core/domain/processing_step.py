@@ -15,6 +15,7 @@ from tradingchassis_core.core.domain.intent_combination import combine_candidate
 from tradingchassis_core.core.domain.processing import process_event_entry
 from tradingchassis_core.core.domain.processing_order import EventStreamEntry, ProcessingPosition
 from tradingchassis_core.core.domain.state import StrategyState
+from tradingchassis_core.core.domain.step_decision import CoreStepDecision
 from tradingchassis_core.core.domain.step_result import CoreStepResult
 from tradingchassis_core.core.domain.types import ControlTimeEvent, OrderIntent
 from tradingchassis_core.core.execution_control.types import ControlSchedulingObligation
@@ -81,6 +82,20 @@ def _resolve_candidate_instrument(
     return None
 
 
+def _map_compat_gate_decision_to_core_step_decision(
+    *,
+    decision: GateDecision,
+    control_scheduling_obligation: ControlSchedulingObligation | None,
+) -> CoreStepDecision:
+    return CoreStepDecision(
+        policy_rejected_intents=tuple(rejected.intent for rejected in decision.rejected),
+        queued_effective_intents=tuple(decision.queued),
+        dispatchable_intents=tuple(decision.accepted_now),
+        execution_handled_intents=tuple(decision.handled_in_queue),
+        control_scheduling_obligation=control_scheduling_obligation,
+    )
+
+
 def run_core_step(
     state: StrategyState,
     entry: EventStreamEntry,
@@ -143,10 +158,15 @@ def run_core_step(
         now_ts_ns_local=control_time_queue_context.now_ts_ns_local,
     )
     selected_obligation = _select_effective_control_scheduling_obligation(decision)
+    core_step_decision = _map_compat_gate_decision_to_core_step_decision(
+        decision=decision,
+        control_scheduling_obligation=selected_obligation,
+    )
     return CoreStepResult(
         generated_intents=generated_intents,
         candidate_intents=candidate_intents,
         dispatchable_intents=tuple(decision.accepted_now),
         control_scheduling_obligation=selected_obligation,
+        core_step_decision=core_step_decision,
         compat_gate_decision=decision,
     )
