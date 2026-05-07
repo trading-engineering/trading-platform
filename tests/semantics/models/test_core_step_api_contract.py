@@ -14,6 +14,10 @@ from tradingchassis_core.core.domain.event_model import (
     canonical_category_for_type,
     is_canonical_stream_candidate_type,
 )
+from tradingchassis_core.core.domain.execution_control_apply import (
+    ExecutionControlApplyResult,
+    ExecutionControlDispatchableRecord,
+)
 from tradingchassis_core.core.domain.execution_control_decision import (
     ExecutionControlDecision,
 )
@@ -23,6 +27,7 @@ from tradingchassis_core.core.domain.processing_order import EventStreamEntry, P
 from tradingchassis_core.core.domain.processing_step import (
     ControlTimeQueueReevaluationContext,
     CoreDecisionContext,
+    CoreExecutionControlApplyContext,
     CorePolicyAdmissionContext,
     CoreStepStrategyContext,
     run_core_step,
@@ -46,6 +51,7 @@ from tradingchassis_core.core.domain.types import (
 from tradingchassis_core.core.events.event_bus import EventBus
 from tradingchassis_core.core.events.events import RiskDecisionEvent
 from tradingchassis_core.core.events.sinks.null_event_bus import NullEventBus
+from tradingchassis_core.core.execution_control.execution_control import ExecutionControl
 from tradingchassis_core.core.execution_control.types import ControlSchedulingObligation
 from tradingchassis_core.core.risk.risk_config import RiskConfig
 from tradingchassis_core.core.risk.risk_engine import GateDecision, RejectedIntent, RiskEngine
@@ -182,6 +188,7 @@ def test_run_core_step_public_exports_identity() -> None:
     assert domain_run_core_step is run_core_step
     assert hasattr(tc, "run_core_step")
     assert tc.run_core_step is run_core_step
+    assert hasattr(tc, "CoreExecutionControlApplyContext")
 
 
 def test_run_core_step_delegates_and_returns_default_core_step_result() -> None:
@@ -1865,3 +1872,408 @@ def test_run_core_step_policy_admission_context_is_side_effect_safe_characteriza
     assert all(not isinstance(event, RiskDecisionEvent) for event in sink.events)
     assert result.dispatchable_intents == ()
     assert result.compat_gate_decision is None
+
+
+def test_run_core_step_apply_context_requires_policy_admission_context() -> None:
+    state = StrategyState(event_bus=NullEventBus())
+    entry = EventStreamEntry(
+        position=ProcessingPosition(index=57),
+        event=_fill_event(
+            instrument="BTC-USDC-PERP",
+            client_order_id="fill-apply-without-policy",
+            ts_ns_local=57,
+            ts_ns_exch=56,
+        ),
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="execution_control_apply_context requires policy_admission_context",
+    ):
+        run_core_step(
+            state,
+            entry,
+            execution_control_apply_context=CoreExecutionControlApplyContext(
+                execution_control=ExecutionControl(),
+                now_ts_ns_local=57,
+            ),
+        )
+
+
+def test_run_core_step_apply_context_rejects_control_time_event_path() -> None:
+    state = StrategyState(event_bus=NullEventBus())
+    entry = EventStreamEntry(
+        position=ProcessingPosition(index=58),
+        event=_control_time_event(due_ts_ns_local=58, realized_ts_ns_local=58),
+    )
+
+    class _ControlTimeRiskMustNotRun:
+        def decide_intents(self, **_: object) -> GateDecision:
+            raise AssertionError("control-time compatibility risk must not run")
+
+    class _PolicyEvaluator:
+        def evaluate_policy_intent(self, **_: object) -> tuple[bool, str | None]:
+            return True, None
+
+    with pytest.raises(
+        ValueError,
+        match="execution_control_apply_context is not supported for ControlTimeEvent",
+    ):
+        run_core_step(
+            state,
+            entry,
+            control_time_queue_context=ControlTimeQueueReevaluationContext(
+                risk_engine=_ControlTimeRiskMustNotRun(),  # type: ignore[arg-type]
+                instrument="BTC-USDC-PERP",
+                now_ts_ns_local=58,
+            ),
+            policy_admission_context=CorePolicyAdmissionContext(
+                policy_evaluator=_PolicyEvaluator(),  # type: ignore[arg-type]
+                now_ts_ns_local=58,
+            ),
+            execution_control_apply_context=CoreExecutionControlApplyContext(
+                execution_control=ExecutionControl(),
+                now_ts_ns_local=58,
+            ),
+        )
+
+
+def test_run_core_step_apply_integration_orders_policy_plan_apply_and_maps_result() -> None:
+    state = StrategyState(event_bus=NullEventBus())
+    instrument = "BTC-USDC-PERP"
+    queued_intent = _new_intent(client_order_id="queued-passthrough")
+    state.merge_intents_into_queue(instrument, [queued_intent])
+    generated_new = _new_intent(client_order_id="generated-new-rejected")
+    generated_cancel = CancelOrderIntent(
+        ts_ns_local=59,
+        instrument=instrument,
+        client_order_id="generated-cancel-accepted",
+        intents_correlation_id="corr-generated-cancel-accepted",
+    )
+    calls: list[str] = []
+    observed_apply_active_ids: list[tuple[str, ...]] = []
+
+    class _Evaluator:
+        def evaluate(self, context: CoreStepStrategyContext) -> list[OrderIntent]:
+            assert context.state._last_processing_position_index == 59
+            return [generated_new, generated_cancel]
+
+    class _PolicyEvaluator:
+        def evaluate_policy_intent(
+            self,
+            *,
+            intent: OrderIntent,
+            state: StrategyState,
+            now_ts_ns_local: int,
+        ) -> tuple[bool, str | None]:
+            assert state is not None
+            assert now_ts_ns_local == 59
+            return intent.client_order_id == "generated-cancel-accepted", "policy_rejected"
+
+    original_policy = processing_step_module.apply_policy_to_candidate_records
+    original_plan = processing_step_module.plan_execution_control_candidates
+    obligation = ControlSchedulingObligation(
+        due_ts_ns_local=88,
+        reason="rate_limit",
+        scope_key=f"instrument:{instrument}",
+        source="execution_control_rate_limit",
+    )
+
+    def _policy_spy(*args: object, **kwargs: object) -> object:
+        calls.append("policy")
+        return original_policy(*args, **kwargs)
+
+    def _plan_spy(*args: object, **kwargs: object) -> object:
+        calls.append("plan")
+        return original_plan(*args, **kwargs)
+
+    def _apply_spy(*args: object, **kwargs: object) -> ExecutionControlApplyResult:
+        calls.append("apply")
+        plan = args[0]
+        context = args[1]
+        assert context.state is state
+        observed_apply_active_ids.append(
+            tuple(record.intent.client_order_id for record in plan.active_records)
+        )
+        dispatchable = (
+            ExecutionControlDispatchableRecord(record=plan.active_records[0]),
+        )
+        decision = ExecutionControlDecision(
+            queued_effective_intents=tuple(record.intent for record in plan.active_records),
+            dispatchable_intents=tuple(item.record.intent for item in dispatchable),
+            execution_handled_intents=(),
+            control_scheduling_obligation=obligation,
+        )
+        return ExecutionControlApplyResult(
+            queued_effective_records=tuple(plan.active_records),
+            dispatchable_records=dispatchable,
+            execution_handled_records=(),
+            blocked_records=(),
+            control_scheduling_obligation=obligation,
+            execution_control_decision=decision,
+        )
+
+    monkeypatch = pytest.MonkeyPatch()
+    monkeypatch.setattr(
+        processing_step_module,
+        "apply_policy_to_candidate_records",
+        _policy_spy,
+    )
+    monkeypatch.setattr(
+        processing_step_module,
+        "plan_execution_control_candidates",
+        _plan_spy,
+    )
+    monkeypatch.setattr(
+        processing_step_module,
+        "apply_execution_control_plan",
+        _apply_spy,
+    )
+    try:
+        entry = EventStreamEntry(
+            position=ProcessingPosition(index=59),
+            event=_fill_event(
+                instrument=instrument,
+                client_order_id="fill-apply-ordering",
+                ts_ns_local=59,
+                ts_ns_exch=58,
+            ),
+        )
+        result = run_core_step(
+            state,
+            entry,
+            strategy_evaluator=_Evaluator(),
+            policy_admission_context=CorePolicyAdmissionContext(
+                policy_evaluator=_PolicyEvaluator(),  # type: ignore[arg-type]
+                now_ts_ns_local=59,
+            ),
+            execution_control_apply_context=CoreExecutionControlApplyContext(
+                execution_control=ExecutionControl(),
+                now_ts_ns_local=59,
+                activate_dispatchable_outputs=False,
+            ),
+        )
+    finally:
+        monkeypatch.undo()
+
+    assert calls == ["policy", "plan", "apply"]
+    assert observed_apply_active_ids == [
+        ("generated-cancel-accepted", "queued-passthrough"),
+    ]
+    assert result.core_step_decision is not None
+    assert result.core_step_decision.execution_control_decision is not None
+    assert tuple(
+        it.client_order_id
+        for it in result.core_step_decision.execution_control_decision.dispatchable_intents
+    ) == ("generated-cancel-accepted",)
+    assert result.core_step_decision.control_scheduling_obligation == obligation
+    assert result.control_scheduling_obligation == obligation
+    assert result.dispatchable_intents == ()
+    assert result.compat_gate_decision is None
+
+
+def test_run_core_step_apply_integration_can_activate_top_level_dispatchables() -> None:
+    state = StrategyState(event_bus=NullEventBus())
+    generated_intent = _new_intent(client_order_id="generated-dispatchable-activated")
+
+    class _Evaluator:
+        def evaluate(self, context: CoreStepStrategyContext) -> list[NewOrderIntent]:
+            assert context.state._last_processing_position_index == 60
+            return [generated_intent]
+
+    class _PolicyEvaluator:
+        def evaluate_policy_intent(self, **_: object) -> tuple[bool, str | None]:
+            return True, None
+
+    entry = EventStreamEntry(
+        position=ProcessingPosition(index=60),
+        event=_fill_event(
+            instrument="BTC-USDC-PERP",
+            client_order_id="fill-apply-dispatchable-activation",
+            ts_ns_local=60,
+            ts_ns_exch=59,
+        ),
+    )
+    result = run_core_step(
+        state,
+        entry,
+        strategy_evaluator=_Evaluator(),
+        policy_admission_context=CorePolicyAdmissionContext(
+            policy_evaluator=_PolicyEvaluator(),  # type: ignore[arg-type]
+            now_ts_ns_local=60,
+        ),
+        execution_control_apply_context=CoreExecutionControlApplyContext(
+            execution_control=ExecutionControl(),
+            now_ts_ns_local=60,
+            activate_dispatchable_outputs=True,
+        ),
+    )
+
+    assert tuple(it.client_order_id for it in result.dispatchable_intents) == (
+        "generated-dispatchable-activated",
+    )
+    assert result.core_step_decision is not None
+    assert result.core_step_decision.execution_control_decision is not None
+    assert tuple(
+        it.client_order_id
+        for it in result.core_step_decision.execution_control_decision.dispatchable_intents
+    ) == ("generated-dispatchable-activated",)
+    assert result.compat_gate_decision is None
+
+
+def test_run_core_step_apply_context_not_reached_when_process_event_entry_fails(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    state = StrategyState(event_bus=NullEventBus())
+    calls = {"apply": 0}
+
+    class _PolicyEvaluator:
+        def evaluate_policy_intent(self, **_: object) -> tuple[bool, str | None]:
+            return True, None
+
+    def _boom(*_: object, **__: object) -> None:
+        raise RuntimeError("process boundary failed")
+
+    def _apply_spy(*_: object, **__: object) -> object:
+        calls["apply"] += 1
+        raise AssertionError("apply must not run when boundary fails")
+
+    monkeypatch.setattr(processing_step_module, "process_event_entry", _boom)
+    monkeypatch.setattr(
+        processing_step_module,
+        "apply_execution_control_plan",
+        _apply_spy,
+    )
+
+    entry = EventStreamEntry(
+        position=ProcessingPosition(index=61),
+        event=_fill_event(
+            instrument="BTC-USDC-PERP",
+            client_order_id="fill-apply-process-fail",
+            ts_ns_local=61,
+            ts_ns_exch=60,
+        ),
+    )
+    with pytest.raises(RuntimeError, match="process boundary failed"):
+        run_core_step(
+            state,
+            entry,
+            policy_admission_context=CorePolicyAdmissionContext(
+                policy_evaluator=_PolicyEvaluator(),  # type: ignore[arg-type]
+                now_ts_ns_local=61,
+            ),
+            execution_control_apply_context=CoreExecutionControlApplyContext(
+                execution_control=ExecutionControl(),
+                now_ts_ns_local=61,
+            ),
+        )
+    assert calls == {"apply": 0}
+
+
+def test_run_core_step_apply_context_not_reached_when_strategy_fails() -> None:
+    state = StrategyState(event_bus=NullEventBus())
+    calls = {"apply": 0}
+
+    class _EvaluatorBoom:
+        def evaluate(self, context: CoreStepStrategyContext) -> list[NewOrderIntent]:
+            assert context.state._last_processing_position_index == 62
+            raise RuntimeError("strategy evaluator failed")
+
+    class _PolicyEvaluator:
+        def evaluate_policy_intent(self, **_: object) -> tuple[bool, str | None]:
+            return True, None
+
+    def _apply_spy(*_: object, **__: object) -> object:
+        calls["apply"] += 1
+        raise AssertionError("apply must not run when strategy fails")
+
+    monkeypatch = pytest.MonkeyPatch()
+    monkeypatch.setattr(
+        processing_step_module,
+        "apply_execution_control_plan",
+        _apply_spy,
+    )
+    try:
+        entry = EventStreamEntry(
+            position=ProcessingPosition(index=62),
+            event=_fill_event(
+                instrument="BTC-USDC-PERP",
+                client_order_id="fill-apply-strategy-fail",
+                ts_ns_local=62,
+                ts_ns_exch=61,
+            ),
+        )
+        with pytest.raises(RuntimeError, match="strategy evaluator failed"):
+            run_core_step(
+                state,
+                entry,
+                strategy_evaluator=_EvaluatorBoom(),
+                policy_admission_context=CorePolicyAdmissionContext(
+                    policy_evaluator=_PolicyEvaluator(),  # type: ignore[arg-type]
+                    now_ts_ns_local=62,
+                ),
+                execution_control_apply_context=CoreExecutionControlApplyContext(
+                    execution_control=ExecutionControl(),
+                    now_ts_ns_local=62,
+                ),
+            )
+    finally:
+        monkeypatch.undo()
+
+    assert calls == {"apply": 0}
+
+
+def test_run_core_step_apply_path_does_not_call_risk_decide_intents_or_emit_risk_events(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class _CaptureSink:
+        def __init__(self) -> None:
+            self.events: list[object] = []
+
+        def on_event(self, event: object) -> None:
+            self.events.append(event)
+
+    sink = _CaptureSink()
+    state = StrategyState(event_bus=EventBus(sinks=[sink]))
+    generated_intent = _new_intent(client_order_id="apply-no-risk-decide")
+
+    class _Evaluator:
+        def evaluate(self, context: CoreStepStrategyContext) -> list[NewOrderIntent]:
+            assert context.state._last_processing_position_index == 63
+            return [generated_intent]
+
+    class _PolicyEvaluator:
+        def evaluate_policy_intent(self, **_: object) -> tuple[bool, str | None]:
+            return True, None
+
+    def _boom(*_: object, **__: object) -> object:
+        raise AssertionError("RiskEngine.decide_intents must not run in apply path")
+
+    monkeypatch.setattr(RiskEngine, "decide_intents", _boom)
+
+    entry = EventStreamEntry(
+        position=ProcessingPosition(index=63),
+        event=_fill_event(
+            instrument="BTC-USDC-PERP",
+            client_order_id="fill-apply-no-risk-decide",
+            ts_ns_local=63,
+            ts_ns_exch=62,
+        ),
+    )
+    result = run_core_step(
+        state,
+        entry,
+        strategy_evaluator=_Evaluator(),
+        policy_admission_context=CorePolicyAdmissionContext(
+            policy_evaluator=_PolicyEvaluator(),  # type: ignore[arg-type]
+            now_ts_ns_local=63,
+        ),
+        execution_control_apply_context=CoreExecutionControlApplyContext(
+            execution_control=ExecutionControl(),
+            now_ts_ns_local=63,
+        ),
+    )
+
+    assert result.core_step_decision is not None
+    assert result.compat_gate_decision is None
+    assert all(not isinstance(event, RiskDecisionEvent) for event in sink.events)

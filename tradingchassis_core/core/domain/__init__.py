@@ -21,6 +21,7 @@ from tradingchassis_core.core.domain.policy_risk_decision import (
 from tradingchassis_core.core.domain.processing_step import (
     ControlTimeQueueReevaluationContext,
     CoreDecisionContext,
+    CoreExecutionControlApplyContext,
     CorePolicyAdmissionContext,
     run_core_step,
 )
@@ -43,6 +44,7 @@ __all__ = [
     "CoreStepDecision",
     "CoreStepResult",
     "CoreDecisionContext",
+    "CoreExecutionControlApplyContext",
     "CorePolicyAdmissionContext",
     "ControlTimeQueueReevaluationContext",
     "run_core_step",

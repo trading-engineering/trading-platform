@@ -11,6 +11,10 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Protocol, Sequence
 
 from tradingchassis_core.core.domain.configuration import CoreConfiguration
+from tradingchassis_core.core.domain.execution_control_apply import (
+    ExecutionControlApplyContext,
+    apply_execution_control_plan,
+)
 from tradingchassis_core.core.domain.execution_control_decision import (
     map_compat_gate_decision_to_execution_control_decision,
 )
@@ -35,6 +39,7 @@ from tradingchassis_core.core.domain.types import ControlTimeEvent, OrderIntent
 from tradingchassis_core.core.execution_control.types import ControlSchedulingObligation
 
 if TYPE_CHECKING:
+    from tradingchassis_core.core.execution_control.execution_control import ExecutionControl
     from tradingchassis_core.core.risk.risk_engine import GateDecision, RiskEngine
 
 
@@ -92,6 +97,17 @@ class CorePolicyAdmissionContext:
     now_ts_ns_local: int
 
 
+@dataclass(frozen=True, slots=True)
+class CoreExecutionControlApplyContext:
+    """Optional mutable execution-control apply context for one Core step."""
+
+    execution_control: ExecutionControl
+    now_ts_ns_local: int
+    max_orders_per_sec: float | None = None
+    max_cancels_per_sec: float | None = None
+    activate_dispatchable_outputs: bool = False
+
+
 def _select_effective_control_scheduling_obligation(
     decision: GateDecision,
 ) -> ControlSchedulingObligation | None:
@@ -146,6 +162,7 @@ def run_core_step(
     configuration: CoreConfiguration | None = None,
     control_time_queue_context: ControlTimeQueueReevaluationContext | None = None,
     policy_admission_context: CorePolicyAdmissionContext | None = None,
+    execution_control_apply_context: CoreExecutionControlApplyContext | None = None,
     core_decision_context: CoreDecisionContext | None = None,
     strategy_evaluator: CoreStepStrategyEvaluator | None = None,
 ) -> CoreStepResult:
@@ -157,6 +174,17 @@ def run_core_step(
     - optionally captures compatibility decision projections via core_decision_context;
     - preserves the existing control-time queue reevaluation compatibility path.
     """
+    if execution_control_apply_context is not None and policy_admission_context is None:
+        raise ValueError(
+            "execution_control_apply_context requires policy_admission_context"
+        )
+    if execution_control_apply_context is not None and isinstance(
+        entry.event, ControlTimeEvent
+    ):
+        raise ValueError(
+            "execution_control_apply_context is not supported for ControlTimeEvent"
+        )
+
     process_event_entry(state, entry, configuration=configuration)
 
     generated_intents: tuple[OrderIntent, ...] = ()
@@ -233,17 +261,63 @@ def run_core_step(
                     passthrough_queued=policy_result.passthrough_queued,
                 )
             )
+            apply_result = None
+            if execution_control_apply_context is not None:
+                apply_result = apply_execution_control_plan(
+                    execution_control_plan,
+                    ExecutionControlApplyContext(
+                        state=state,
+                        execution_control=execution_control_apply_context.execution_control,
+                        now_ts_ns_local=execution_control_apply_context.now_ts_ns_local,
+                        max_orders_per_sec=execution_control_apply_context.max_orders_per_sec,
+                        max_cancels_per_sec=execution_control_apply_context.max_cancels_per_sec,
+                    ),
+                )
             core_step_decision = CoreStepDecision(
                 policy_rejected_intents=tuple(
                     rejected.record.intent for rejected in policy_result.rejected_generated
                 ),
                 policy_risk_decision=policy_result.policy_risk_decision,
-                execution_control_decision=execution_control_plan.execution_control_decision,
+                execution_control_decision=(
+                    execution_control_plan.execution_control_decision
+                    if apply_result is None
+                    else apply_result.execution_control_decision
+                ),
+                queued_effective_intents=(
+                    ()
+                    if apply_result is None
+                    else apply_result.execution_control_decision.queued_effective_intents
+                ),
+                dispatchable_intents=(
+                    ()
+                    if apply_result is None
+                    else apply_result.execution_control_decision.dispatchable_intents
+                ),
+                execution_handled_intents=(
+                    ()
+                    if apply_result is None
+                    else apply_result.execution_control_decision.execution_handled_intents
+                ),
+                control_scheduling_obligation=(
+                    None
+                    if apply_result is None
+                    else apply_result.control_scheduling_obligation
+                ),
             )
+            dispatchable_intents: tuple[OrderIntent, ...] = ()
+            control_scheduling_obligation = None
+            if apply_result is not None:
+                control_scheduling_obligation = apply_result.control_scheduling_obligation
+                if execution_control_apply_context.activate_dispatchable_outputs:
+                    dispatchable_intents = tuple(
+                        record.record.intent for record in apply_result.dispatchable_records
+                    )
             return CoreStepResult(
                 generated_intents=generated_intents,
                 candidate_intent_records=candidate_intent_records,
                 candidate_intents=candidate_intents,
+                dispatchable_intents=dispatchable_intents,
+                control_scheduling_obligation=control_scheduling_obligation,
                 core_step_decision=core_step_decision,
             )
         if (
