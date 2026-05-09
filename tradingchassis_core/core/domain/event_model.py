@@ -16,6 +16,7 @@ from tradingchassis_core.core.domain.types import (
     ControlTimeEvent,
     FillEvent,
     MarketEvent,
+    OrderExecutionFeedbackEvent,
     OrderStateEvent,
     OrderSubmittedEvent,
 )
@@ -50,6 +51,7 @@ CANONICAL_STREAM_CANDIDATE_CATEGORY_BY_TYPE: dict[type[object], CanonicalEventCa
     MarketEvent: CanonicalEventCategory.MARKET,
     OrderSubmittedEvent: CanonicalEventCategory.INTENT_RELATED,
     FillEvent: CanonicalEventCategory.EXECUTION,
+    OrderExecutionFeedbackEvent: CanonicalEventCategory.EXECUTION,
     ControlTimeEvent: CanonicalEventCategory.CONTROL,
 }
 

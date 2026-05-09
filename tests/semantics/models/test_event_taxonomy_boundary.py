@@ -17,6 +17,7 @@ from tradingchassis_core.core.domain.types import (
     ControlTimeEvent,
     FillEvent,
     MarketEvent,
+    OrderExecutionFeedbackEvent,
     OrderStateEvent,
     OrderSubmittedEvent,
 )
@@ -52,6 +53,12 @@ def test_canonical_stream_candidate_classification_current_slice() -> None:
 
     assert is_canonical_stream_candidate_type(FillEvent) is True
     assert canonical_category_for_type(FillEvent) == CanonicalEventCategory.EXECUTION
+
+    assert is_canonical_stream_candidate_type(OrderExecutionFeedbackEvent) is True
+    assert (
+        canonical_category_for_type(OrderExecutionFeedbackEvent)
+        == CanonicalEventCategory.EXECUTION
+    )
 
     assert is_canonical_stream_candidate_type(OrderSubmittedEvent) is True
     assert (

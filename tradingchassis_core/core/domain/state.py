@@ -38,6 +38,8 @@ if TYPE_CHECKING:
         ControlTimeEvent,
         FillEvent,
         NewOrderIntent,
+        OrderExecutionFeedbackEvent,
+        OrderExecutionFeedbackSnapshot,
         OrderIntent,
         OrderSubmittedEvent,
     )
@@ -859,6 +861,58 @@ class StrategyState:
 
         self._event_bus.emit(event)
 
+    def apply_order_execution_feedback_event(
+        self,
+        event: OrderExecutionFeedbackEvent,
+    ) -> None:
+        """Reduce canonical order/account feedback into compatibility state reducers."""
+        self.update_account(
+            instrument=event.instrument,
+            position=event.position,
+            balance=event.balance,
+            fee=event.fee,
+            trading_volume=event.trading_volume,
+            trading_value=event.trading_value,
+            num_trades=event.num_trades,
+        )
+        self.ingest_normalized_order_snapshots(
+            event.instrument,
+            event.order_snapshots,
+        )
+
+    def _map_snapshot_status(
+        self,
+        *,
+        instrument: str,
+        status: int,
+        req: int,
+        client_order_id: str,
+    ) -> str:
+        if status == 3:
+            return "filled"
+        if status == 4:
+            return "canceled"
+        if status == 5:
+            return "expired"
+
+        if req != 0:
+            inflight_bucket = self.inflight.get(instrument)
+            inflight_info = (
+                None if inflight_bucket is None else inflight_bucket.get(client_order_id)
+            )
+            if inflight_info is not None and inflight_info.action == "new":
+                return "pending_new"
+            return "accepted"
+
+        if status == 0:
+            return "accepted"
+        if status == 1:
+            return "working"
+        if status == 2:
+            return "partially_filled"
+
+        return "rejected"
+
     def ingest_order_snapshots(self, instrument: str, orders_snapshot_iter: Iterable[object]) -> None:
         """Ingest runtime order snapshots and reduce them into internal state.
 
@@ -870,35 +924,12 @@ class StrategyState:
         """
 
         def map_status(status: int, req: int, client_order_id: str) -> str:
-            """Best-effort mapping from runtime snapshot (status, req) to schema state.
-
-            Design: terminal status wins. If a request marker is present (req!=0),
-            treat this as "in-flight". In that case, "pending_new" is used only
-            for in-flight NEW actions; all other in-flight actions map to "accepted".
-            """
-
-            if status == 3:
-                return "filled"
-            if status == 4:
-                return "canceled"
-            if status == 5:
-                return "expired"
-
-            if req != 0:
-                inflight_bucket = self.inflight.get(instrument)
-                inflight_info = None if inflight_bucket is None else inflight_bucket.get(client_order_id)
-                if inflight_info is not None and inflight_info.action == "new":
-                    return "pending_new"
-                return "accepted"
-
-            if status == 0:
-                return "accepted"
-            if status == 1:
-                return "working"
-            if status == 2:
-                return "partially_filled"
-
-            return "rejected"
+            return self._map_snapshot_status(
+                instrument=instrument,
+                status=status,
+                req=req,
+                client_order_id=str(client_order_id),
+            )
 
         # Some runtimes expose custom iterators with has_next/get semantics.
         if hasattr(orders_snapshot_iter, "has_next") and hasattr(orders_snapshot_iter, "get"):
@@ -918,11 +949,60 @@ class StrategyState:
         for o in orders_snapshot_iter:
             self._ingest_one_snapshot_order(instrument, o, map_status)
 
+    def ingest_normalized_order_snapshots(
+        self,
+        instrument: str,
+        snapshots: Iterable[OrderExecutionFeedbackSnapshot],
+    ) -> None:
+        """Ingest normalized snapshot rows carried by canonical feedback events."""
+
+        def map_status(status: int, req: int, client_order_id: str) -> str:
+            return self._map_snapshot_status(
+                instrument=instrument,
+                status=status,
+                req=req,
+                client_order_id=str(client_order_id),
+            )
+
+        for snapshot in snapshots:
+            class _SnapshotRow:
+                __slots__ = (
+                    "order_id",
+                    "order_type",
+                    "side",
+                    "time_in_force",
+                    "status",
+                    "req",
+                    "price",
+                    "qty",
+                    "exec_price",
+                    "exec_qty",
+                    "leaves_qty",
+                    "exch_timestamp",
+                    "local_timestamp",
+                )
+
+            row = _SnapshotRow()
+            row.order_id = snapshot.order_id
+            row.order_type = snapshot.order_type
+            row.side = snapshot.side
+            row.time_in_force = snapshot.time_in_force
+            row.status = snapshot.status
+            row.req = snapshot.req
+            row.price = snapshot.price
+            row.qty = snapshot.qty
+            row.exec_price = snapshot.exec_price
+            row.exec_qty = snapshot.exec_qty
+            row.leaves_qty = snapshot.leaves_qty
+            row.exch_timestamp = snapshot.ts_ns_exch
+            row.local_timestamp = snapshot.ts_ns_local
+            self._ingest_one_snapshot_order(instrument, row, map_status)
+
     def _ingest_one_snapshot_order(
         self,
         instrument: str,
         o: object,
-        map_status: Callable[[int, int, int], str],
+        map_status: Callable[[int, int, str], str],
     ) -> None:
         """Translate a single runtime order snapshot object into an OrderStateEvent."""
 

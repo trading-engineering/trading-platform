@@ -15,6 +15,8 @@ from tradingchassis_core.core.domain.types import (
     ControlTimeEvent,
     FillEvent,
     MarketEvent,
+    OrderExecutionFeedbackEvent,
+    OrderExecutionFeedbackSnapshot,
     OrderStateEvent,
     OrderSubmittedEvent,
     Price,
@@ -141,6 +143,42 @@ def _order_submitted_event(
     )
 
 
+def _order_execution_feedback_event(
+    *,
+    instrument: str,
+    ts_ns_local_feedback: int,
+    order_id: str = "101",
+) -> OrderExecutionFeedbackEvent:
+    return OrderExecutionFeedbackEvent(
+        ts_ns_local_feedback=ts_ns_local_feedback,
+        instrument=instrument,
+        position=1.25,
+        balance=10_000.0,
+        fee=3.5,
+        trading_volume=20.0,
+        trading_value=2_050.0,
+        num_trades=7,
+        order_snapshots=(
+            OrderExecutionFeedbackSnapshot(
+                order_id=order_id,
+                order_type=0,
+                side=1,
+                time_in_force=0,
+                status=1,
+                req=0,
+                price=100.0,
+                qty=1.0,
+                exec_price=100.25,
+                exec_qty=0.25,
+                leaves_qty=0.75,
+                ts_ns_exch=ts_ns_local_feedback - 1,
+                ts_ns_local=ts_ns_local_feedback,
+            ),
+        ),
+        runtime_correlation={"source": "unit-test"},
+    )
+
+
 def _control_time_event(
     *,
     ts_ns_local_control: int,
@@ -262,6 +300,44 @@ def test_process_canonical_event_accepts_fill_event_with_processing_position() -
     assert fills[0] == event
     assert state.fill_cum_qty["BTC-USDC-PERP"]["order-1"] == 0.25
     assert state._last_processing_position_index == 12
+
+
+def test_process_canonical_event_accepts_order_execution_feedback_event() -> None:
+    state = StrategyState(event_bus=NullEventBus())
+    event = _order_execution_feedback_event(
+        instrument="BTC-USDC-PERP",
+        ts_ns_local_feedback=250,
+    )
+
+    process_canonical_event(state, event)
+
+    account = state.account["BTC-USDC-PERP"]
+    assert account.position == 1.25
+    assert account.balance == 10_000.0
+    assert account.fee == 3.5
+    assert account.trading_volume == 20.0
+    assert account.trading_value == 2_050.0
+    assert account.num_trades == 7
+    assert state.orders["BTC-USDC-PERP"]["101"].state_type == "working"
+
+
+def test_process_canonical_event_accepts_order_execution_feedback_event_with_position() -> None:
+    state = StrategyState(event_bus=NullEventBus())
+    event = _order_execution_feedback_event(
+        instrument="BTC-USDC-PERP",
+        ts_ns_local_feedback=260,
+        order_id="102",
+    )
+
+    process_canonical_event(
+        state,
+        event,
+        position=ProcessingPosition(index=13),
+    )
+
+    assert state._last_processing_position_index == 13
+    assert state.account["BTC-USDC-PERP"].num_trades == 7
+    assert state.orders["BTC-USDC-PERP"]["102"].state_type == "working"
 
 
 def test_process_canonical_event_accepts_order_submitted_event() -> None:

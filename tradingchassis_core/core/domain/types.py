@@ -6,6 +6,8 @@ order intents, risk constraints, and execution feedback.
 Semantic notes for this refactor slice:
 - ``MarketEvent`` is a canonical Market Event candidate.
 - ``FillEvent`` is tracked as a canonical Execution Event candidate.
+- ``OrderExecutionFeedbackEvent`` is a canonical execution-feedback event
+  candidate used for normalized rc3 runtime feedback migration.
 - ``OrderStateEvent`` remains a compatibility execution-feedback /
   snapshot-materialization record for now.
 
@@ -332,6 +334,50 @@ class FillEvent(BaseModel):
     liquidity_flag: Literal["maker", "taker", "unknown"]
 
     fee: Money | None = None
+
+    model_config = ConfigDict(extra="forbid")
+
+
+# ---------------------------------------------------------------------------
+# OrderExecutionFeedbackEvent model (normalized rc3 feedback event)
+# ---------------------------------------------------------------------------
+
+
+class OrderExecutionFeedbackSnapshot(BaseModel):
+    order_id: str = Field(..., min_length=1)
+    order_type: int
+    side: int
+    time_in_force: int
+    status: int
+    req: int
+
+    price: float
+    qty: float = Field(..., ge=0)
+    exec_price: float
+    exec_qty: float = Field(..., ge=0)
+    leaves_qty: float = Field(..., ge=0)
+
+    ts_ns_exch: int = Field(..., gt=0)
+    ts_ns_local: int = Field(..., gt=0)
+
+    model_config = ConfigDict(extra="forbid")
+
+
+class OrderExecutionFeedbackEvent(BaseModel):
+    ts_ns_local_feedback: int = Field(..., gt=0)
+    instrument: str = Field(..., min_length=1)
+
+    position: float
+    balance: float
+    fee: float
+    trading_volume: float
+    trading_value: float
+    num_trades: int
+
+    order_snapshots: tuple[OrderExecutionFeedbackSnapshot, ...] = Field(
+        default_factory=tuple
+    )
+    runtime_correlation: dict[str, str | int | float | bool | None] | None = None
 
     model_config = ConfigDict(extra="forbid")
 

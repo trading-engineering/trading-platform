@@ -29,6 +29,7 @@ from tradingchassis_core.core.domain.types import (
     ControlTimeEvent,
     FillEvent,
     MarketEvent,
+    OrderExecutionFeedbackEvent,
     OrderSubmittedEvent,
 )
 
@@ -110,6 +111,7 @@ def process_canonical_event(
     - ``MarketEvent`` (category: ``market``)
     - ``OrderSubmittedEvent`` (category: ``intent_related``)
     - ``FillEvent`` (category: ``execution``)
+    - ``OrderExecutionFeedbackEvent`` (category: ``execution``)
     - ``ControlTimeEvent`` (category: ``control``)
 
     ``ProcessingPosition`` is accepted as Processing Order metadata at this
@@ -177,6 +179,15 @@ def process_canonical_event(
         if position is not None:
             state._advance_processing_position(position)
         state.apply_fill_event(event)
+        return
+
+    if (
+        category == CanonicalEventCategory.EXECUTION
+        and isinstance(event, OrderExecutionFeedbackEvent)
+    ):
+        if position is not None:
+            state._advance_processing_position(position)
+        state.apply_order_execution_feedback_event(event)
         return
 
     if (
