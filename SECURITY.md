@@ -1,72 +1,44 @@
 # Security Policy
 
-## Supported Versions
+## Supported Versions and Status
 
-Only the latest version on the `main` branch is actively maintained.
+The active supported line is the current `main` branch and accepted MVP baseline for this Core
+repository.
 
-Older commits and historical states of the repository may not receive security updates or patches.
-
----
+Older commits may not receive security fixes.
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability, please **do not open a public GitHub issue**.
+Do not report vulnerabilities in public issues.
 
-Instead, report it responsibly via:
+Use a private security advisory workflow if available for this repository, or contact project
+maintainers through the project's configured private channel.
 
-- GitHub Security Advisories
-- Direct contact with the repository owner (if necessary)
+Include:
 
-When submitting a report, please include:
+- affected component(s)
+- reproduction details and impact
+- suggested mitigations (if known)
 
-- A clear description of the vulnerability
-- Steps to reproduce (if applicable)
-- Potential impact and affected components
-- Any suggested mitigation or fix
+## Scope
 
-Valid reports will be acknowledged in a timely manner and handled through responsible disclosure.
+This policy covers the Core package in this repository, including:
 
----
+- semantic event-processing contracts
+- state and decision model handling
+- package integrity and dependency usage in Core
 
-## Security Scope
+## Out of Scope and Disclaimers
 
-This repository provides:
+- No financial or trading performance guarantee is provided
+- Safe live trading operation is not guaranteed without runtime/venue-specific validation
 
-- Deterministic backtesting architecture
-- Risk-aware execution simulation
-- Event-driven domain modeling
+## Secrets and Credentials
 
-It does **not** currently provide production-grade live trading infrastructure.
+Never commit live secrets to this repository, including:
 
-Live exchange connectivity is under development and not feature-complete.
+- API keys and venue credentials
+- account identifiers tied to real accounts
+- private trading data dumps
 
----
-
-## Dependency Security
-
-- Dependencies are explicitly defined
-- Python version is pinned (3.11.x)
-- External libraries should be kept up to date
-
-Security-related dependency updates are prioritized.
-
----
-
-## Responsible Usage
-
-This code is intended for research and controlled environments.
-
-Users are responsible for:
-
-- Secure handling of API credentials
-- Secure deployment of live trading components
-- Validation of risk configurations
-
-This repository does not assume liability for financial losses
-resulting from misuse or incorrect configuration.
-
----
-
-## Disclosure Policy
-
-Please allow reasonable time for investigation and remediation before public disclosure of any reported vulnerabilities.
+Tests and documentation examples must use synthetic or non-sensitive data only.

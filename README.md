@@ -1,192 +1,63 @@
-# TradingChassis — Core
+# TradingChassis Core
 
-![CI](https://github.com/TradingChassis/core/actions/workflows/tests.yaml/badge.svg)
-![Python](https://img.shields.io/badge/python-3.11+-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
+Deterministic semantic core package for TradingChassis.
 
-Deterministic semantic Core library for TradingChassis.
+This repository provides `tradingchassis_core`, the reusable core library that defines canonical
+event processing contracts, state reduction boundaries, and CoreStep/CoreWakeupStep APIs.
 
-This repository provides the reusable Core package (`tradingchassis_core`) that defines
-event-driven processing semantics, state derivation boundaries, strategy interfaces, risk policy
-contracts, and execution control primitives.
+## What This Package Is
 
----
+- A deterministic core processing library for canonical event-driven semantics
+- The home of CoreStep/CoreWakeupStep orchestration contracts
+- A package that returns runtime-facing outputs such as
+  `CoreStepResult.dispatchable_intents` and compatibility bridge data where needed
 
-## Overview
+## What This Package Is Not
 
-Core is a library, not a runtime shell.
+- Not venue/runtime I/O ownership
+- Not a venue adapter or hftbacktest runtime shell
+- Not a complete final live trading stack by itself
 
-- Canonical processing model: Event Stream + Configuration -> derived State
-- Explicit Strategy, Risk Engine, and Execution Control boundaries
-- Deterministic behavior under identical Event Stream and Configuration
-- Runtime environments consume this package and provide integration wiring
+## Current Status (Accepted MVP Baseline)
 
----
+- The CoreStep MVP baseline is accepted and frozen
+- Migrated paths exist behind flags that remain default `false`
+- Runtime dispatches `CoreStepResult.dispatchable_intents` on migrated flag-on paths
+- Runtime does not productively use runtime `risk.decide_intents` or `GateDecision` on migrated
+  flag-on paths
+- `GateDecision` remains a temporary compatibility mechanism for legacy/default-off paths
+- This MVP is not the final architecture
 
-## What Core is
-
-Core provides:
-
-- semantic/domain types and value models
-- processing-order and state-derivation primitives
-- risk-policy interfaces and enforcement boundaries
-- execution-control abstractions
-- strategy interfaces for emitting Intents from derived State
-
----
-
-## What Core is not
-
-Core does not provide:
-
-- local/cluster runtime entrypoints
-- Kubernetes or Argo orchestration
-- runtime image/deployment plumbing
-- full runtime ingress, replay, or storage infrastructure
-
-Those responsibilities live in Core Runtime (`core-runtime`).
-
----
-
-## Current semantic status
-
-The transitional semantic upgrade milestone is closed.
-
-Core remains the canonical semantic library, and current runtime usage focuses on canonical
-`MarketEvent`, `OrderSubmittedEvent`, and `ControlTimeEvent` paths.
-
-Compatibility/deferred runtime capabilities still exist and are intentionally not described here as
-fully complete canonical coverage.
-
----
-
-## Key concepts
-
-Terminology follows `docs/docs/00-guides/terminology.md`:
-
-- Event
-- Event Stream
-- Processing Order
-- Configuration
-- State
-- Intent
-- Risk Engine
-- Queue
-- Queue Processing
-- Execution Control
-- Order
-- Core
-- Runtime
-- Venue Adapter
-
----
-
-## Canonical boundary
-
-Core guarantees deterministic semantics and reusable contracts.
-
-Runtimes supply environment-specific concerns such as:
-
-- ingress wiring
-- adapter implementations
-- orchestration entrypoints
-- persistence/replay infrastructure
-
----
-
-## Canonical vs compatibility artifacts
-
-At the Core level:
-
-- Canonical artifacts are semantic models and deterministic processing contracts
-- Compatibility artifacts are transitional runtime-facing paths maintained for migration parity
-
-The runtime-level capability matrix is documented in `core-runtime/README.md`.
-
----
-
-## Package and import names
-
-- Human-facing concept name: Core
-- Distribution/project name: `tradingchassis-core`
-- Python import package: `tradingchassis_core`
-
-Install:
-
-```bash
-python -m pip install -e .
-```
-
-Install with dev extras:
-
-```bash
-python -m pip install -e ".[dev]"
-```
-
----
-
-## Repository structure
-
-```text
-tradingchassis_core/               Core package root
-tradingchassis_core/core/          Domain and semantic primitives
-tradingchassis_core/strategies/    Strategy interfaces and config
-tests/                             Core test suites
-scripts/                           Developer helper scripts
-```
-
----
-
-## Development setup
-
-Requirements:
-
-- Python 3.11+
-
-Recommended local setup:
-
-```bash
-python -m pip install -e ".[dev]"
-```
-
----
-
-## Test commands
+## Quickstart
 
 From the `core` repository root:
 
 ```bash
+python -m pip install -e ".[dev]"
 python -m pytest
 ```
 
-From a monorepo parent containing `core/`:
+Runtime integration tests may require separate runtime dependencies/environment setup. Keep core
+package validation centered on `core` tests in this repository.
 
-```bash
-python -m pytest -q core/tests
-```
+## Architecture Entry Points
 
----
+- Docs start page: `docs/README.md`
+- CoreStep MVP baseline: `docs/core-step-mvp-baseline.md`
+- Core vs Runtime responsibilities: `docs/core-runtime-responsibility-model.md`
+- Event model: `docs/event-model.md`
+- Risk vs execution control boundary: `docs/risk-vs-execution-control.md`
+- GateDecision compatibility status: `docs/gate-decision-compatibility.md`
 
-## Relationship to Core Runtime
+## Minimal Public API Orientation
 
-Core Runtime (`core-runtime`) provides runtime execution around Core, including:
+- Step entry points: `run_core_step`, `run_core_wakeup_step`
+- Runtime-facing dispatch output: `CoreStepResult.dispatchable_intents`
+- Canonical event models include `MarketEvent`, `ControlTimeEvent`, `OrderSubmittedEvent`, and
+  `OrderExecutionFeedbackEvent`
 
-- local backtest-runtime execution entrypoints
-- Argo/runtime orchestration entrypoints
-- runtime configuration and environment wiring
-- local output artifacts under `.runtime/local/results/`
+## Repository Guidance
 
-Core provides the deterministic semantics those runtime paths consume.
-
----
-
-## Documentation index
-
-- Terminology source of truth: `docs/docs/00-guides/terminology.md`
-- Runtime capabilities and entrypoints: `core-runtime/README.md`
-
----
-
-## License and versioning
-
-MIT licensed. Versioning follows semantic versioning.
+- Contributing guide: `CONTRIBUTING.md`
+- Changelog: `CHANGELOG.md`
+- Security policy: `SECURITY.md`

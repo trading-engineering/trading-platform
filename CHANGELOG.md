@@ -1,60 +1,40 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+All notable changes to the TradingChassis Core package are documented in this file.
 
-The format is based on Keep a Changelog
-and this project adheres to Semantic Versioning.
+The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project
+adheres to Semantic Versioning.
 
 ## [Unreleased]
 
-## [0.1.0] - 2026-02-17
-
-Initial public release of the core.
-
 ### Added
 
-#### Core Domain
-- Explicit order state machine
-- Structured domain types and reject reasons
-- Slot-based order tracking
-- Event bus and event sink abstractions
-- JSON schema validation for domain events
+- CoreStep MVP baseline documentation index alignment in `docs/README.md`.
 
-#### Risk Layer
-- Configurable risk engine
-- Risk constraint enforcement
-- Deterministic risk gating before execution
+### Changed
 
-#### Backtest Layer
-- Integration with an external backtest runtime
-- Strategy runner abstraction
-- Venue adapter interface
-- Deterministic event processing pipeline
+- Recorded accepted and frozen CoreStep MVP baseline behavior:
+  - MarketEvent CoreStep path behind `enable_core_step_market_dispatch`
+  - ControlTimeEvent CoreStep path behind `enable_core_step_control_time_dispatch`
+  - Mixed wakeup collapse behind `enable_core_step_wakeup_collapse`
+  - rc `== 3` order/execution feedback CoreStep path behind
+    `enable_core_step_order_feedback_dispatch`
+- Clarified runtime dispatch contract for migrated flag-on paths:
+  runtime dispatches `CoreStepResult.dispatchable_intents`.
+- Clarified `OrderSubmittedEvent` dispatch-success emission boundary and ordering before
+  `mark_intent_sent`.
 
-#### Orchestration
-- Segment-based execution model
-- Parameter sweep runtime
-- Experiment and segment entrypoints
-- Prometheus metrics integration
-- MLflow-compatible logging hooks
+### Compatibility
 
-#### Execution Modes
-- Fully local execution example
-- Cloud-native runtime entrypoints
-- S3-compatible storage adapter
+- `ControlSchedulingObligation` remains non-canonical Core output.
+- Runtime continues to own pending obligation realization and `ControlTimeEvent` injection.
+- `GateDecision` remains compatibility-only for legacy/default-off paths.
+- Migration flags remain default `false`.
 
-#### Strategy
-- Base strategy interface
-- Structured strategy configuration
+### Documentation
 
-#### Testing
-- Semantic invariant test suite
-- Order state transition validation
-- Queue dominance rules
-- Risk constraint validation
-- Schema conformance tests
+- Root repository documentation aligned to current MVP baseline language and boundaries.
 
-#### Tooling
-- Dev container configuration
-- Development validation scripts
-- Dependency compilation helper
+## [0.1.0] - 2026-02-17
+
+Initial public release of `tradingchassis_core`.
