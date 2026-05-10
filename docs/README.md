@@ -2,21 +2,44 @@
 
 This directory is the current documentation start point for the `core` repository.
 
-Documentation intent follows a Concept -> Flow -> Code -> API progression. In this phase, docs are
-still kept in a flat layout. A later phase will reorganize structure and add dedicated code-map and
-reference pages.
+Documentation intent follows a Concept -> Flow -> Code -> API progression.
 
-## Start Here
+Manual Markdown is used for now. MkDocs, mkdocstrings, and Mermaid are optional future tooling
+choices and are not part of this baseline.
 
-1. [CoreStep MVP Baseline](core-step-mvp-baseline.md)
-2. [Runtime/Core Responsibility Model](core-runtime-responsibility-model.md)
-3. [Event Model](event-model.md)
-4. [Risk vs ExecutionControl](risk-vs-execution-control.md)
-5. [Control Time and Scheduling](control-time-and-scheduling.md)
-6. [OrderSubmittedEvent](order-submitted-event.md)
-7. [OrderExecutionFeedbackEvent (rc3 MVP path)](order-execution-feedback-event.md)
-8. [GateDecision Compatibility](gate-decision-compatibility.md)
-9. [Post-MVP Roadmap](post-mvp-roadmap.md)
+## Recommended Reading Order
+
+### MVP and status
+
+1. [CoreStep MVP Baseline](mvp/core-step-mvp-baseline.md)
+2. [Compatibility Matrix](mvp/compatibility-matrix.md)
+
+### Concepts
+
+3. [Runtime/Core Responsibility Model](concepts/core-runtime-responsibility-model.md)
+4. [Event Model](concepts/event-model.md)
+5. [Risk vs ExecutionControl](concepts/risk-vs-execution-control.md)
+6. [GateDecision Compatibility](concepts/gate-decision-compatibility.md)
+
+### Flows
+
+7. [Control Time and Scheduling](flows/control-time-and-scheduling.md)
+8. [OrderSubmittedEvent](flows/order-submitted-event.md)
+9. [OrderExecutionFeedbackEvent (rc3 MVP path)](flows/order-execution-feedback-event.md)
+
+### Code map
+
+10. [Repository Map](code-map/repository-map.md)
+11. [Core Pipeline Map](code-map/core-pipeline-map.md)
+
+### Reference
+
+12. [Public API Reference](reference/public-api.md)
+13. [Events Reference](reference/events-reference.md)
+
+### Roadmap
+
+14. [Post-MVP Roadmap](roadmap/post-mvp-roadmap.md)
 
 ## Current Status Notes
 
