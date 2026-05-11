@@ -37,7 +37,7 @@ Use this guide when introducing a new canonical Core event in the MVP architectu
 - Canonical taxonomy test (recognized as canonical or explicitly non-canonical).
 - Canonical processing boundary test (accepted/rejected at correct boundary).
 - Reducer/state transition test for deterministic effects.
-- Guardrail test/search for no runtime/hftbacktest dependency creep in Core.
+- Guardrail test/search for no runtime dependency creep in Core.
 - Compatibility rejection/segregation tests where relevant.
 
 ## Documentation checklist

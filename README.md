@@ -15,7 +15,7 @@ event processing contracts, state reduction boundaries, and CoreStep/CoreWakeupS
 ## What This Package Is Not
 
 - Not venue/runtime I/O ownership
-- Not a venue adapter or hftbacktest runtime shell
+- Not a venue adapter or venue runtime shell
 - Not a complete final live trading stack by itself
 
 ## Current Status (Accepted MVP Baseline)

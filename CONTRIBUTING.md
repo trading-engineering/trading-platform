@@ -1,6 +1,6 @@
 # Contributing to TradingChassis Core
 
-Thanks for contributing to `tradingchassis_core`.
+Thank you for contributing to `tradingchassis_core`.
 
 This repository is the Core semantic package. Keep changes deterministic, explicit, and scoped to
 Core responsibilities.
@@ -27,7 +27,7 @@ Use Python 3.11+.
 
 Contributions must preserve the accepted MVP baseline and boundaries:
 
-- Core must not depend on runtime/hftbacktest integration layers
+- Core must not depend on runtime integration layers
 - Core consumes canonical events and returns deterministic Core outputs
 - Runtime owns external I/O, dispatch execution, and scheduling realization timing
 - For migrated flag-on paths, runtime dispatches from `CoreStepResult.dispatchable_intents`

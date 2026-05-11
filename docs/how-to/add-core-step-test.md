@@ -57,7 +57,7 @@ Use this guide when adding behavior coverage for Core step orchestration.
 
 - Testing runtime I/O behavior inside Core-only tests.
 - Treating `GateDecision` as the final migrated-path contract.
-- Pulling hftbacktest/runtime dependencies into Core tests.
+- Pulling runtime dependencies into Core tests.
 - Using broad brittle end-to-end tests for small semantic changes.
 
 ## Related docs
