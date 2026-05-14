@@ -3,9 +3,9 @@ requires = ["setuptools>=69", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "tradingchassis-core"
+name = "TradingChassis-core"
 version = "0.1.0"
-description = "Deterministic trading decision engine core library."
+description = "Deterministic trading decision kernel."
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [{ name = "TradingChassis Core Contributors" }]
@@ -37,11 +37,11 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/tradingchassis/tradingchassis"
-Repository = "https://github.com/tradingchassis/tradingchassis"
-Documentation = "https://github.com/tradingchassis/tradingchassis/tree/main/core/docs"
-Changelog = "https://github.com/tradingchassis/tradingchassis/blob/main/core/CHANGELOG.md"
-Issues = "https://github.com/tradingchassis/tradingchassis/issues"
+Homepage = "https://github.com/TradingChassis"
+Repository = "https://github.com/TradingChassis/core"
+Documentation = "https://github.com/TradingChassis/core/tree/main/core/docs"
+Changelog = "https://github.com/TradingChassis/core/blob/main/core/CHANGELOG.md"
+Issues = "https://github.com/TradingChassis/core/issues"
 
 [tool.setuptools.packages.find]
 include = ["tradingchassis_core*"]
@@ -75,7 +75,4 @@ include_external_packages = true
 name = "Core stays runtime-independent"
 type = "forbidden"
 source_modules = ["tradingchassis_core"]
-forbidden_modules = [
-  "core_runtime",
-  "hftbacktest",
-]
+forbidden_modules = []

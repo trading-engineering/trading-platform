@@ -3,13 +3,16 @@
 Contributions should preserve TradingChassis Core as a deterministic,
 runtime-agnostic library.
 
+> Terminology: Definitions and related terms match the [canonical
+> terminology](https://tradingchassis.github.io/docs/latest/00-guides/terminology/).
+
 ## Package Scope
 
-- Core owns canonical events, state reduction, strategy evaluation boundary,
-  candidate reconciliation, policy admission, execution-control plan/apply,
+- Core owns canonical Events, State reduction, Strategy evaluation boundary,
+  candidate reconciliation, policy admission, Execution Control plan/apply,
   and `CoreStepResult`.
-- Core does not own runtime orchestration, venue adapters, dispatch lifecycle,
-  `hftbacktest`, or deployment/config wiring.
+- Core does not own Runtime orchestration, Venue Adapters, dispatch lifecycle,
+  or deployment/config wiring.
 
 ## Development Setup
 
@@ -31,19 +34,17 @@ python -m build
 
 ## Architecture Rules
 
-- Core accepts canonical events through `EventStreamEntry` and
+- Core accepts canonical Events through `EventStreamEntry` and
   `process_event_entry` / `process_canonical_event`.
-- Core returns deterministic `CoreStepResult`; runtime dispatch happens later.
-- Do not introduce runtime/backtest imports (`core_runtime`, `hftbacktest`).
-- Do not restore `GateDecision`, snapshot lifecycle compatibility, or
-  runtime-owned decision contracts.
+- Core returns deterministic `CoreStepResult`; Runtime dispatches.
+- Do not introduce Runtime imports.
 - Pydantic models are the source of truth for contract structure.
 
 ## Changing Core Behavior
 
-### Canonical events
+### Canonical Events
 
-- Add event models in `tradingchassis_core/core/domain/types.py`.
+- Add Event models in `tradingchassis_core/core/domain/types.py`.
 - Register canonical category handling in `core/domain/event_model.py`.
 - Update canonical reduction behavior in `core/domain/processing.py`.
 
@@ -56,9 +57,9 @@ python -m build
 
 - Implement policy checks in `core/risk/` and wire through
   `evaluate_policy_intent`.
-- Keep risk admission as policy-only; no dispatch/runtime side effects.
+- Keep risk admission as policy-only; no dispatch/Runtime side effects.
 
-### Execution-control behavior
+### Execution Control behavior
 
 - Update plan/apply stages in `core/domain/execution_control_plan.py` and
   `core/domain/execution_control_apply.py`.
@@ -77,4 +78,3 @@ python -m build
 - [ ] `python -m pytest -q` passes.
 - [ ] `python -m build` succeeds.
 - [ ] README/docs/changelog updated to match behavior.
-

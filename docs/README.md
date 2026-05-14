@@ -38,6 +38,4 @@ source of truth for canonical event/intent schemas.
 ## Out of Scope
 
 - runtime orchestration and order lifecycle ownership
-- venue adapters, live/backtest I/O, external dispatch
-- `hftbacktest` and `core_runtime` dependencies
-- legacy GateDecision and snapshot lifecycle compatibility layers
+- Venue Adapters, Backtesting/Live I/O, external dispatch

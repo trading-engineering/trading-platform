@@ -8,9 +8,7 @@ candidate Intents, optional `dispatchable_intents`, and optional
 Control Scheduling Obligations. It does not perform Venue I/O,
 Execution (adapter-side dispatch), or Runtime orchestration.
 
-> Terminology: Definitions for Core, Runtime, Event Stream,
-> Processing Order, Intent, Risk Engine, Execution Control,
-> Queue, Backtesting, Live, and related terms match the [canonical
+> Terminology: Definitions and related terms match the [canonical
 > terminology](https://tradingchassis.github.io/docs/latest/00-guides/terminology/).
 
 ## Why this exists
@@ -147,7 +145,7 @@ result = tc.run_core_step(
     ),
 )
 print(result.generated_intents, result.dispatchable_intents)
-# Expected: () () — no strategy or policy/EC path in this snippet.
+# Expected: () () — no Strategy or policy/EC path in this snippet.
 ```
 
 See `examples/core_step_quickstart.py` for a full runnable walkthrough.

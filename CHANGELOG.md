@@ -2,14 +2,14 @@
 
 This changelog starts from the clean Core package baseline.
 
-## [0.1.0] - 2026-05-14
+## [Unreleased]
 
 ### Added
 
 - Deterministic `run_core_step` and `run_core_wakeup_step` architecture.
-- Canonical event input models and `EventStreamEntry`/`ProcessingPosition`.
+- Canonical Event input models and `EventStreamEntry`/`ProcessingPosition`.
 - Intent candidate record pipeline with dominance/reconciliation.
-- Policy-only risk admission and execution-control plan/apply integration.
+- Policy-only risk admission and Execution Control plan/apply integration.
 - `CoreStepResult.dispatchable_intents` and `ControlSchedulingObligation` outputs.
 - Core-only quickstart example and focused semantics test coverage.
 
