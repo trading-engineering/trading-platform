@@ -94,7 +94,7 @@ Execution Control itself.
 
 ```text
 EventStreamEntry
----> Runtime reduces to canonical Events
+> Runtime reduces to canonical Events
   -> process_event_entry / process_canonical_event
   -> Strategy evaluator
   -> generated Intents
@@ -103,7 +103,7 @@ EventStreamEntry
   -> policy admission
   -> Execution Control plan/apply
   -> CoreStepResult.dispatchable_intents
----> Runtime dispatches Intents into Orders
+> Runtime dispatches Intents into Orders
 ```
 
 ## Input / Core / Output / Not Owned By Core
