@@ -11,12 +11,12 @@ Execution (adapter-side dispatch), or Runtime orchestration.
 > Terminology: Definitions for Core, Runtime, Event Stream,
 > Processing Order, Intent, Risk Engine, Execution Control,
 > Queue, Backtesting, Live, and related terms match the [canonical
-> glossary](https://tradingchassis.github.io/docs/latest/00-guides/terminology/).
+> terminology](https://tradingchassis.github.io/docs/latest/00-guides/terminology/).
 
 ## Why this exists
 
-Trading systems often drift when backtest logic, live logic, policy limits, and
-execution throttling are implemented in different places. TradingChassis Core
+Trading systems often drift when Backtesting logic, Live logic, risk (policy) limits, and
+Strategy throttling are implemented in different places. TradingChassis Core
 centralizes deterministic decision semantics—state reduction, Strategy
 evaluation, Risk Engine (policy) admission, and Execution Control
 (planning apply over reconciled Intents)—in one library. Runtime
