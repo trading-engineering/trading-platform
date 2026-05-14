@@ -1,7 +1,7 @@
 # Contributing to TradingChassis Core
 
 Contributions should preserve TradingChassis Core as a deterministic,
-runtime-agnostic library.
+Runtime-agnostic library.
 
 > Terminology: Definitions and related terms match the [canonical
 > terminology](https://tradingchassis.github.io/docs/latest/00-guides/terminology/).
@@ -9,7 +9,7 @@ runtime-agnostic library.
 ## Package Scope
 
 - Core owns canonical Events, State reduction, Strategy evaluation boundary,
-  candidate reconciliation, policy admission, Execution Control plan/apply,
+  candidate reconciliation, Risk Engine (policy), Execution Control plan/apply,
   and `CoreStepResult`.
 - Core does not own Runtime orchestration, Venue Adapters, dispatch lifecycle,
   or deployment/config wiring.
@@ -53,11 +53,11 @@ python -m build
 - Update `core/domain/processing_step.py` for deterministic flow changes.
 - Keep reconciliation/policy/apply transitions explicit and side-effect-safe.
 
-### Policy and risk behavior
+### Risk Engine (policy) behavior
 
 - Implement policy checks in `core/risk/` and wire through
   `evaluate_policy_intent`.
-- Keep risk admission as policy-only; no dispatch/Runtime side effects.
+- Keep Risk Engine admission as policy-only; no dispatch/Runtime side effects.
 
 ### Execution Control behavior
 

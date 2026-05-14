@@ -1,12 +1,12 @@
 # Events and Intents Reference
 
-TradingChassis Core accepts canonical event contracts and produces intent/decision
+TradingChassis Core accepts canonical Event contracts and produces Intent/decision
 contracts. Pydantic models are the schema source of truth.
 
 ## Canonical Event Models
 
 - `MarketEvent`: book/trade market data input for state reduction
-- `ControlTimeEvent`: control-time wakeup and scheduling context
+- `ControlTimeEvent`: Control-Time Event wakeup and scheduling context
 - `OrderSubmittedEvent`: canonical submitted-order acknowledgement
 - `OrderExecutionFeedbackEvent`: canonical account/execution feedback
 - `FillEvent`: canonical fill lifecycle update

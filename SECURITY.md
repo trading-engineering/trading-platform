@@ -24,7 +24,7 @@ Include:
 
 This policy covers the Core package in this repository, including:
 
-- canonical event and intent contracts
+- canonical Event and Intent contracts
 - deterministic CoreStep/CoreWakeupStep decision pipeline
 - package integrity and dependency usage in `tradingchassis_core`
 
@@ -32,7 +32,7 @@ This policy covers the Core package in this repository, including:
 
 Never commit live secrets or account-sensitive data, including:
 
-- API keys and venue credentials
+- API keys and Venue credentials
 - account identifiers tied to real accounts
 - private trading data dumps
 
@@ -42,7 +42,7 @@ Tests and documentation examples must use synthetic or non-sensitive data only.
 
 - TradingChassis Core is a library and does not guarantee safe live trading by
   itself.
-- Runtime orchestration, venue behavior, and deployment hardening remain outside
+- Runtime orchestration, Venue behavior, and deployment hardening remain outside
   this package scope and require separate validation.
 
 ## No Financial Performance Guarantee

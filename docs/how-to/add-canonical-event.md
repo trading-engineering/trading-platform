@@ -12,5 +12,5 @@
 Rules:
 
 - Keep canonical processing deterministic.
-- Do not introduce runtime adapter or dispatch logic in reducers.
+- Do not introduce Venue Adapter or dispatch logic in reducers.
 - Keep Pydantic contracts as source of truth.

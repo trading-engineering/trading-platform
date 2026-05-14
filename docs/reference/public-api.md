@@ -2,7 +2,7 @@
 
 The public package boundary is the `tradingchassis_core` root import.
 
-## Canonical events
+## Canonical Events
 
 - `MarketEvent`
 - `ControlTimeEvent`
@@ -52,7 +52,7 @@ The public package boundary is the `tradingchassis_core` root import.
 ## Runtime-safe utilities
 
 - `NullEventBus`
-- `RiskEngine` (policy-only evaluator)
+- `RiskEngine` (Risk Engine; policy-only)
 - `RiskConfig`
 
 ## Publicly absent by design

@@ -9,7 +9,7 @@ This changelog starts from the clean Core package baseline.
 - Deterministic `run_core_step` and `run_core_wakeup_step` architecture.
 - Canonical Event input models and `EventStreamEntry`/`ProcessingPosition`.
 - Intent candidate record pipeline with dominance/reconciliation.
-- Policy-only risk admission and Execution Control plan/apply integration.
+- Risk Engine (policy-only) admission and Execution Control plan/apply integration.
 - `CoreStepResult.dispatchable_intents` and `ControlSchedulingObligation` outputs.
 - Core-only quickstart example and focused semantics test coverage.
 

@@ -3,9 +3,9 @@
 `tradingchassis_core` is the stable deterministic trading decision kernel
 for TradingChassis: an event-step engine that applies ordered canonical Events
 (the Event Stream under Processing Order and Configuration)
-and produces `CoreStepResult` outputs—including strategy-generated and
+and produces `CoreStepResult` outputs—including Strategy-generated and
 candidate Intents, optional `dispatchable_intents`, and optional
-Control Scheduling Obligations. It does not perform Venue I/O,
+Control Scheduling Obligation output. It does not perform Venue I/O,
 Execution (adapter-side dispatch), or Runtime orchestration.
 
 > Terminology: Definitions and related terms match the [canonical
@@ -15,37 +15,37 @@ Execution (adapter-side dispatch), or Runtime orchestration.
 
 Trading systems often drift when Backtesting logic, Live logic, policy limits, and
 Strategy throttling are implemented in different places. TradingChassis Core
-centralizes deterministic decision semantics—state reduction, Strategy
+centralizes deterministic decision semantics—State reduction, Strategy
 evaluation, Risk Engine (policy) admission, and Execution Control
 (planning apply over reconciled Intents)—in one library. Runtime
-environments (Backtesting, Live, research tooling, Kubernetes-backed
+environments (Backtesting, Live, Research tooling, Kubernetes-backed
 deployments, different Venue Adapters) may change; Core should not.
 
 ## What this gives you
 
 | What you get | Why it matters |
 | --- | --- |
-| One deterministic Core pipeline | Same event-step path for reduction → evaluation → candidates → policy → execution-control apply |
+| One deterministic Core pipeline | Same Event-step path for reduction → evaluation → candidates → Risk Engine → Execution Control apply |
 | Canonical Event input model (`EventStreamEntry`) | Aligns with Event Stream + Processing Order; State is `f(Event Stream, Configuration)` |
-| Strategy output as Intents | Internal, order/venue-agnostic commands before adapter-specific shapes |
-| Risk Engine separated from Execution Control | Policy admission vs Queue / scheduling / rate-aware presentation split, as in the intent pipeline (Strategy → Risk → Queue → Adapter) |
+| Strategy output as Intents | Internal, order/Venue-agnostic commands before Venue Adapter-specific shapes |
+| Risk Engine separated from Execution Control | Risk Engine (policy) vs Queue / scheduling / rate-aware presentation split, as in the intent pipeline (Strategy → Risk → Queue → Adapter) |
 | `dispatchable_intents` + optional Control Scheduling Obligation | Runtime performs Execution and injects Control-Time Events when obligations are realized |
 | Runtime-independent package | Test trading semantics without production I/O; explicit ownership boundary |
-| Shared kernel across environments | Serious Backtesting-Live parity for the decision engine—no secondary copy of Strategy/Risk Engine/Execution-Control code elsewhere |
+| Shared kernel across environments | Serious Backtesting and Live parity for the decision engine—no secondary copy of Strategy/Risk Engine/Execution Control code elsewhere |
 
 ## Why this matters for trading
 
 The gap between tested behavior and real behavior can dominate outcomes.
 Backtesting is useful when the same Core semantics—given comparable
 Event Stream and Configuration—drive decisions in simulation and
-production. Deterministic, canonical-event-driven Core logic makes Strategy,
-policy, and Execution Control behavior reproducible and unit-testable.
-Wall-clock scheduling, Venue behavior, adapter mapping, and infrastructure
+production. Deterministic Core logic driven by canonical Events makes Strategy,
+Risk Engine, and Execution Control behavior reproducible and unit-testable.
+Wall-clock scheduling, Venue behavior, Venue Adapter mapping, and infrastructure
 stay in the Runtime and Venue Adapter, not in Core.
 
 ## How it fits into a full system
 
-Runtimes normalize inputs into canonical Events and feed the Core.
+Each Runtime normalizes inputs into canonical Events and feeds the Core.
 The Core always returns the same result type (`CoreStepResult`) for a given step;
 each Runtime handles environment-specific Execution, scheduling glue, and Control-Time Event
 injection when a Control Scheduling Obligation is realized.
@@ -54,15 +54,15 @@ injection when a Control Scheduling Obligation is realized.
 flowchart TB
     R1["Runtime:<br/>canonical Event"] --> Entry["EventStreamEntry:<br/>canonical Event + ProcessingPosition"]
     Entry --> Core["TradingChassis Core:<br/>CoreStep / CoreWakeupStep"]
-    Core --> Result["CoreStepResult:<br/>dispatchable Intents + scheduling obligation"]
+    Core --> Result["CoreStepResult:<br/>dispatchable Intents + Control Scheduling Obligation"]
     Result --> R2["Runtime:<br/>dispatch / scheduling / I/O"]
 ```
 
-## Backtesting-Live parity
+## Backtesting and Live parity
 
 Core is designed to reduce decision-logic drift between Backtesting
 and Live: the same canonical Event + `run_core_step` / reduction APIs
-can drive both worlds when Runtimes construct comparable `EventStreamEntry`
+can drive both worlds when each Runtime constructs comparable `EventStreamEntry`
 sequences under the same Configuration. Normalizing feeds, timestamps, and
 control semantics before they enter Core narrows unnecessary divergence.
 
@@ -77,16 +77,16 @@ Execution Control itself.
 
 - Building an internal trading system where Backtesting and Live should share decision semantics.
 - Wanting a deterministic Strategy / Risk Engine / Execution Control kernel.
-- Separating trading semantics from adapters, I/O, and Kubernetes wiring.
+- Separating trading semantics from Venue Adapters, I/O, and Kubernetes wiring.
 - Testing decisions and Intents without Runtime harnesses.
 - Sharing one decision path across simulation and production.
 
 ## When not to use this package
 
-- You only need a one-off notebook Backtesting experiment.
+- You only need a one-off Backtesting notebook experiment.
 - You want a complete Venue connector or turnkey Live implementation.
 - You expect this to ship a full Kubernetes Runtime, deployment manifests, or operations.
-- You expect Core to execute orders, talk to Venues, or replace adapters / Runtime dispatch.
+- You expect Core to execute orders, talk to Venues, or replace Venue Adapters / Runtime dispatch.
 
 ## Full pipeline
 
@@ -94,11 +94,11 @@ Execution Control itself.
 Runtime reduces to canonical Events
 
   -> process_event_entry / process_canonical_event
-  -> Strategy evaluator
+  -> Strategy evaluation
   -> generated Intents
   -> candidate records
   -> dominance / reconciliation
-  -> policy admission
+  -> Risk Engine (policy)
   -> Execution Control plan/apply
   -> CoreStepResult.dispatchable_intents
 
@@ -109,7 +109,7 @@ Runtime dispatches Intents into Orders
 
 - Input: `EventStreamEntry` values with canonical Events and Event Stream position.
 - Core does: deterministic reduction, Strategy evaluation boundary, candidate
-  merge/dominance, policy admission, Execution Control planning/apply.
+  merge/dominance, Risk Engine (policy), Execution Control planning/apply.
 - Output: `CoreStepResult` with generated/candidate Intents, optional
   `dispatchable_intents`, and optional `control_scheduling_obligation`.
 - Not owned by Core: raw market/feed I/O, Venue Adapters, external dispatch,
@@ -145,7 +145,7 @@ result = tc.run_core_step(
     ),
 )
 print(result.generated_intents, result.dispatchable_intents)
-# Expected: () () — no Strategy or policy/EC path in this snippet.
+# Expected: () () — no Strategy or Risk Engine/Execution Control path in this snippet.
 ```
 
 See `examples/core_step_quickstart.py` for a full runnable walkthrough.
@@ -156,7 +156,7 @@ See `examples/core_step_quickstart.py` for a full runnable walkthrough.
 | --- | --- |
 | `run_core_step` | One-entry deterministic reduce/evaluate/decide/apply step |
 | `run_core_wakeup_reduction` | Multi-entry reduction phase for one wakeup |
-| `run_core_wakeup_decision` | Wakeup-level candidate/policy/Execution Control decision phase |
+| `run_core_wakeup_decision` | Wakeup-level candidate/Risk Engine/Execution Control decision phase |
 | `run_core_wakeup_step` | Convenience wrapper for reduction + decision |
 | `process_event_entry` | Reduce one `EventStreamEntry` into `StrategyState` |
 | `process_canonical_event` | Reduce one canonical Event into `StrategyState` |
@@ -167,9 +167,9 @@ See `examples/core_step_quickstart.py` for a full runnable walkthrough.
 | --- | --- |
 | canonical models/contracts | raw I/O and feed adapters |
 | State reduction and ordering | Venue Adapters and transport |
-| Strategy evaluator boundary | external dispatch Execution |
+| Strategy evaluation boundary | adapter-side Execution |
 | candidate Intents and reconciliation | credentials/env wiring |
-| risk admission | Backtesting/Live orchestration |
+| Risk Engine (policy) | Backtesting/Live orchestration |
 | Execution Control | Kubernetes/deployment |
 | `CoreStepResult` decision contract | Runtime lifecycle glue |
 
@@ -180,7 +180,6 @@ From root:
 ```bash
 python -m pip install -e ".[dev]"
 python examples/core_step_quickstart.py
-python -m pytest -q
-python -m mypy tradingchassis_core tests
+./scripts/check.sh
 python -m build
 ```

@@ -1,8 +1,8 @@
-# How To Update Policy and Execution Control
+# How To Update Risk Engine and Execution Control
 
-Policy admission and execution-control are separate deterministic phases.
+The Risk Engine (policy) and Execution Control are separate deterministic phases.
 
-## Policy updates
+## Risk Engine updates
 
 - Policy contract entrypoint:
   `PolicyIntentEvaluator.evaluate_policy_intent(...)`
@@ -11,13 +11,13 @@ Policy admission and execution-control are separate deterministic phases.
 - Built-in policy-only evaluator:
   `core/risk/risk_engine.py`
 
-When updating policy:
+When updating Risk Engine policy behavior:
 
 1. Keep evaluation side-effect-free.
 2. Return explicit accept/reject with reason.
 3. Validate behavior with semantics tests.
 
-## Execution-control updates
+## Execution Control updates
 
 - Planning model:
   `core/domain/execution_control_plan.py`
@@ -26,8 +26,8 @@ When updating policy:
 - Runtime-facing non-canonical output:
   `ControlSchedulingObligation`
 
-When updating execution-control:
+When updating Execution Control:
 
-1. Keep queue/dispatchability decisions deterministic.
+1. Keep Queue/dispatchability decisions deterministic.
 2. Preserve `CoreStepResult.dispatchable_intents` contract.
 3. Use `ControlSchedulingObligation` for deferred control signals.
