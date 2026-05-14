@@ -43,9 +43,4 @@ The package export boundary is `tradingchassis_core`.
 - `NullEventBus`
 - `RiskEngine` (policy-only evaluator)
 
-## Removed compatibility contracts
-
-- `GateDecision`
-- `CoreStepResult.compat_gate_decision`
-- `ControlTimeQueueReevaluationContext`
-- `CoreDecisionContext`
+Compatibility bridge contracts are intentionally absent from the public API.

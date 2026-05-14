@@ -1,4 +1,7 @@
-"""Core shared data models and schemas."""
+"""Core shared data models.
+
+Pydantic models in this module are the source of truth for Core contracts.
+"""
 
 # pylint: disable=line-too-long,missing-class-docstring,missing-function-docstring
 from __future__ import annotations
@@ -183,23 +186,6 @@ class FillEvent(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
-class OrderExecutionFeedbackSnapshot(BaseModel):
-    order_id: str = Field(..., min_length=1)
-    order_type: int
-    side: int
-    time_in_force: int
-    status: int
-    req: int
-    price: float
-    qty: float = Field(..., ge=0)
-    exec_price: float
-    exec_qty: float = Field(..., ge=0)
-    leaves_qty: float = Field(..., ge=0)
-    ts_ns_exch: int = Field(..., gt=0)
-    ts_ns_local: int = Field(..., gt=0)
-    model_config = ConfigDict(extra="forbid")
-
-
 class OrderExecutionFeedbackEvent(BaseModel):
     ts_ns_local_feedback: int = Field(..., gt=0)
     instrument: str = Field(..., min_length=1)
@@ -209,9 +195,6 @@ class OrderExecutionFeedbackEvent(BaseModel):
     trading_volume: float
     trading_value: float
     num_trades: int
-    order_snapshots: tuple[OrderExecutionFeedbackSnapshot, ...] = Field(
-        default_factory=tuple
-    )
     runtime_correlation: dict[str, str | int | float | bool | None] | None = None
     model_config = ConfigDict(extra="forbid")
 

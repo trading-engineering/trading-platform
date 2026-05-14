@@ -138,8 +138,8 @@ def run_core_step(
         )
         generated_intents = tuple(strategy_evaluator.evaluate(strategy_context))
 
-    snapshot_instrument = _resolve_candidate_instrument(entry=entry)
-    queued_snapshot = state.queued_intents_snapshot(snapshot_instrument)
+    queued_instrument = _resolve_candidate_instrument(entry=entry)
+    queued_snapshot = state.queued_intents_snapshot(queued_instrument)
     candidate_intent_records = combine_candidate_intent_records(
         generated_intents=generated_intents,
         queued_intents=queued_snapshot,
@@ -242,7 +242,7 @@ def run_core_wakeup_decision(
     state: StrategyState,
     reduction: CoreWakeupReductionResult,
     *,
-    snapshot_instrument: str | None = None,
+    queued_instrument: str | None = None,
     policy_admission_context: CorePolicyAdmissionContext | None = None,
     execution_control_apply_context: CoreExecutionControlApplyContext | None = None,
 ) -> CoreStepResult:
@@ -253,7 +253,7 @@ def run_core_wakeup_decision(
             "execution_control_apply_context requires policy_admission_context"
         )
 
-    queued_snapshot = state.queued_intents_snapshot(snapshot_instrument)
+    queued_snapshot = state.queued_intents_snapshot(queued_instrument)
     candidate_intent_records = combine_candidate_intent_records(
         generated_intents=reduction.generated_intents,
         queued_intents=queued_snapshot,
@@ -325,7 +325,7 @@ def run_core_wakeup_step(
     configuration: CoreConfiguration | None = None,
     strategy_evaluator: CoreStepStrategyEvaluator | None = None,
     strategy_event_filter: Callable[[object], bool] | None = None,
-    snapshot_instrument: str | None = None,
+    queued_instrument: str | None = None,
     policy_admission_context: CorePolicyAdmissionContext | None = None,
     execution_control_apply_context: CoreExecutionControlApplyContext | None = None,
 ) -> CoreStepResult:
@@ -341,7 +341,7 @@ def run_core_wakeup_step(
     return run_core_wakeup_decision(
         state,
         reduction,
-        snapshot_instrument=snapshot_instrument,
+        queued_instrument=queued_instrument,
         policy_admission_context=policy_admission_context,
         execution_control_apply_context=execution_control_apply_context,
     )

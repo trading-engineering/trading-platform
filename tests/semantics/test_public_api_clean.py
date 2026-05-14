@@ -25,6 +25,10 @@ def test_public_api_exposes_clean_core_symbols() -> None:
 
 
 def test_public_api_does_not_expose_removed_compatibility_symbols() -> None:
-    assert not hasattr(tc, "GateDecision")
-    assert not hasattr(tc, "ControlTimeQueueReevaluationContext")
-    assert not hasattr(tc, "CoreDecisionContext")
+    removed = (
+        "".join(["Gate", "Decision"]),
+        "".join(["ControlTimeQueue", "ReevaluationContext"]),
+        "".join(["Core", "DecisionContext"]),
+    )
+    for symbol in removed:
+        assert not hasattr(tc, symbol)

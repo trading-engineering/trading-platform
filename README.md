@@ -11,6 +11,7 @@ It owns one architecture:
 Core owns:
 
 - canonical event models (`MarketEvent`, `ControlTimeEvent`, `OrderSubmittedEvent`, `OrderExecutionFeedbackEvent`, `FillEvent`)
+- Pydantic contract models as the schema source of truth
 - deterministic state reduction
 - strategy evaluator protocol
 - candidate intent combination + provenance

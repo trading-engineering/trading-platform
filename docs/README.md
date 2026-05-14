@@ -17,3 +17,8 @@ The only supported processing architecture is:
 5. policy admission
 6. execution-control planning/apply
 7. `CoreStepResult` outputs for runtime dispatch/scheduling
+
+## Contract source of truth
+
+Core contract models are defined in Pydantic classes under
+`tradingchassis_core/core/domain/types.py`.

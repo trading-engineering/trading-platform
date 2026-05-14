@@ -22,11 +22,7 @@ from tradingchassis_core.core.execution_control.types import ControlSchedulingOb
 
 @dataclass(frozen=True, slots=True)
 class ExecutionControlApplyContext:
-    """Mutable apply inputs for one deterministic apply operation.
-
-    The context keeps references to mutable runtime objects (state and execution
-    control) while the dataclass itself stays immutable as a value container.
-    """
+    """Mutable apply inputs for one deterministic apply operation."""
 
     state: StrategyState
     execution_control: ExecutionControl
@@ -61,7 +57,7 @@ class ExecutionControlHandledRecord:
 
 @dataclass(frozen=True, slots=True)
 class ExecutionControlApplyResult:
-    """Result of mutable execution-control apply over one plan snapshot."""
+    """Result of mutable execution-control apply over one plan state."""
 
     queued_effective_records: tuple[CandidateIntentRecord, ...] = ()
     dispatchable_records: tuple[ExecutionControlDispatchableRecord, ...] = ()
@@ -137,8 +133,8 @@ def apply_execution_control_plan(
     """Apply mutable execution-control semantics over planned active records.
 
     This function mutates only StrategyState queue data and ExecutionControl
-    rate state. It does not call RiskEngine.decide_intents, does not perform
-    venue dispatch, and does not emit canonical events.
+    rate state. It does not perform venue dispatch and does not emit canonical
+    events.
     """
 
     state = context.state

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "tradingchassis-core"
 version = "0.1.0"
-description = "Deterministic, event-driven core, with explicit risk management, order state machines, queue semantics, and research orchestration."
+description = "Deterministic event-driven core package for intent policy and execution control."
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [{ name = "tradingeng@protonmail.com" }]
@@ -28,29 +28,18 @@ dev = [
   "import-linter>=1.11,<2",
   "ruff>=0.4,<1",
   "mypy>=1.9,<2",
-  "jsonschema>=4,<5",
   "matplotlib>=3,<4",
   "numpy>=2.0,<2.3",
-  "referencing>=0.37,<1",
 ]
 
-# --------------------------------------------------
-# Explicit package discovery
-# --------------------------------------------------
 [tool.setuptools.packages.find]
 include = ["tradingchassis_core*"]
 
-# --------------------------------------------------
-# Pytest
-# --------------------------------------------------
 [tool.pytest.ini_options]
 minversion = "9.0"
 addopts = "-ra"
 testpaths = ["tests"]
 
-# --------------------------------------------------
-# Ruff
-# --------------------------------------------------
 [tool.ruff]
 target-version = "py311"
 line-length = 100
@@ -59,9 +48,6 @@ line-length = 100
 select = ["E", "F", "I"]
 ignore = ["E501"]
 
-# --------------------------------------------------
-# MyPy (static typing)
-# --------------------------------------------------
 [tool.mypy]
 python_version = "3.11"
 warn_unused_configs = true
@@ -70,14 +56,10 @@ pretty = true
 show_error_codes = true
 ignore_errors = true
 
-# --------------------------------------------------
-# Import Linter
-# --------------------------------------------------
 [tool.importlinter]
 root_package = "tradingchassis_core"
 include_external_packages = true
 
-# Core stays pure
 [[tool.importlinter.contracts]]
 name = "Core must be pure"
 type = "forbidden"
@@ -85,4 +67,3 @@ source_modules = ["tradingchassis_core.core"]
 forbidden_modules = [
   "tradingchassis_core.strategies"
 ]
-

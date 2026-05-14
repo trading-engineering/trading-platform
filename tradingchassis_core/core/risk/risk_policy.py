@@ -11,7 +11,10 @@ from typing import TYPE_CHECKING
 
 from tradingchassis_core.core.domain.reject_reasons import RejectReason
 from tradingchassis_core.core.domain.types import OrderIntent
-from tradingchassis_core.core.ports.venue_policy import NormalizationOutcome, VenuePolicy
+from tradingchassis_core.core.risk.execution_constraints_policy import (
+    ExecutionConstraintsPolicy,
+    NormalizationOutcome,
+)
 
 if TYPE_CHECKING:
     from tradingchassis_core.core.domain.state import StrategyState
@@ -21,8 +24,8 @@ if TYPE_CHECKING:
 class RiskPolicy:
     """Pure policy layer used by RiskEngine."""
 
-    def __init__(self, *, venue_policy: VenuePolicy) -> None:
-        self._venue_policy = venue_policy
+    def __init__(self, *, constraints_policy: ExecutionConstraintsPolicy) -> None:
+        self._constraints_policy = constraints_policy
 
     def trading_enabled_gate(
         self,
@@ -101,7 +104,7 @@ class RiskPolicy:
         return accepted_now, rejected
 
     def normalize_intent(self, it: OrderIntent, state: StrategyState) -> NormalizationOutcome:
-        return self._venue_policy.normalize_intent(it, state)
+        return self._constraints_policy.normalize_intent(it, state)
 
     def validate_intent(self, it: OrderIntent, state: StrategyState) -> tuple[bool, str]:
         """Outbound intent sanity.

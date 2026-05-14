@@ -6,7 +6,9 @@ from typing import TYPE_CHECKING
 
 from tradingchassis_core.core.domain.reject_reasons import RejectReason
 from tradingchassis_core.core.domain.types import OrderIntent, RiskConstraints
-from tradingchassis_core.core.ports.venue_policy import VenuePolicy
+from tradingchassis_core.core.risk.execution_constraints_policy import (
+    ExecutionConstraintsPolicy,
+)
 from tradingchassis_core.core.risk.risk_policy import RiskPolicy
 
 if TYPE_CHECKING:
@@ -24,15 +26,15 @@ class RiskEngine:
     def __init__(self, risk_cfg: RiskConfig) -> None:
         self.risk_cfg = risk_cfg
 
-        venue_policy_cfg = self._parse_venue_policy_config(risk_cfg)
-        self._venue_policy = VenuePolicy(
-            min_order_notional=venue_policy_cfg["min_order_notional"],
-            post_only_mode=venue_policy_cfg["post_only_mode"],
+        constraints_cfg = self._parse_execution_constraints_config(risk_cfg)
+        self._constraints_policy = ExecutionConstraintsPolicy(
+            min_order_notional=constraints_cfg["min_order_notional"],
+            post_only_mode=constraints_cfg["post_only_mode"],
         )
-        self._risk_policy = RiskPolicy(venue_policy=self._venue_policy)
+        self._risk_policy = RiskPolicy(constraints_policy=self._constraints_policy)
 
     @staticmethod
-    def _parse_venue_policy_config(risk_cfg: RiskConfig) -> dict[str, object]:
+    def _parse_execution_constraints_config(risk_cfg: RiskConfig) -> dict[str, object]:
         cfg: dict[str, object] = {
             "min_order_notional": 0.0,
             "post_only_mode": "reject",
@@ -42,27 +44,35 @@ class RiskEngine:
         if not isinstance(extra, dict):
             return cfg
 
-        vp = extra["venue_policy"] if "venue_policy" in extra else None
-        if isinstance(vp, dict):
-            if "min_order_notional" in vp:
+        constraints = (
+            extra["execution_constraints"]
+            if "execution_constraints" in extra
+            else None
+        )
+        if isinstance(constraints, dict):
+            if "min_order_notional" in constraints:
                 try:
-                    cfg["min_order_notional"] = float(vp["min_order_notional"])
+                    cfg["min_order_notional"] = float(
+                        constraints["min_order_notional"]
+                    )
                 except (TypeError, ValueError):
                     pass
-            if "post_only_mode" in vp:
-                mode = str(vp["post_only_mode"])
+            if "post_only_mode" in constraints:
+                mode = str(constraints["post_only_mode"])
                 if mode in {"reject", "drop"}:
                     cfg["post_only_mode"] = mode
             return cfg
 
-        if "venue_policy_min_order_notional" in extra:
+        if "execution_constraints_min_order_notional" in extra:
             try:
-                cfg["min_order_notional"] = float(extra["venue_policy_min_order_notional"])
+                cfg["min_order_notional"] = float(
+                    extra["execution_constraints_min_order_notional"]
+                )
             except (TypeError, ValueError):
                 pass
 
-        if "venue_policy_post_only_mode" in extra:
-            mode = str(extra["venue_policy_post_only_mode"])
+        if "execution_constraints_post_only_mode" in extra:
+            mode = str(extra["execution_constraints_post_only_mode"])
             if mode in {"reject", "drop"}:
                 cfg["post_only_mode"] = mode
 
@@ -75,11 +85,15 @@ class RiskEngine:
 
         normalized: dict[str, object] = {}
         for key, value in extra.items():
-            if key == "venue_policy" and isinstance(value, dict):
+            if key == "execution_constraints" and isinstance(value, dict):
                 if "min_order_notional" in value:
-                    normalized["venue_policy_min_order_notional"] = value["min_order_notional"]
+                    normalized["execution_constraints_min_order_notional"] = value[
+                        "min_order_notional"
+                    ]
                 if "post_only_mode" in value:
-                    normalized["venue_policy_post_only_mode"] = value["post_only_mode"]
+                    normalized["execution_constraints_post_only_mode"] = value[
+                        "post_only_mode"
+                    ]
                 continue
 
             if value is None or isinstance(value, (str, float, bool)):

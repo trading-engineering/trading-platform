@@ -1,8 +1,8 @@
 """Deterministic Core strategy state.
 
 This state container keeps canonical reducer-owned data and execution-control
-supporting structures (queue + inflight tracking). It intentionally excludes
-snapshot-era order lifecycle compatibility reducers.
+supporting structures (queue + inflight tracking). Runtime snapshot parsing and
+venue lifecycle adaptation are intentionally out of scope for Core.
 """
 
 from __future__ import annotations
