@@ -37,20 +37,19 @@ deployments, different Venue Adapters) may change; Core should not.
 
 ## Why this matters for trading
 
-The gap between tested behavior and live behavior can dominate outcomes.
+The gap between tested behavior and real behavior can dominate outcomes.
 Backtesting is useful when the same Core semantics—given comparable
-Event Stream and Configuration—drive decisions in research and
-production. Deterministic, canonical-event-driven Core logic makes strategy,
+Event Stream and Configuration—drive decisions in simulation and
+production. Deterministic, canonical-event-driven Core logic makes Strategy,
 policy, and Execution Control behavior reproducible and unit-testable.
 Wall-clock scheduling, Venue behavior, adapter mapping, and infrastructure
 stay in the Runtime and Venue Adapter, not in Core.
 
 ## How it fits into a full system
 
-Runtimes normalize inputs
-into canonical Events and feed the Core. The Core always returns the same
-result type (`CoreStepResult`) for a given step; each Runtime handles
-environment-specific Execution, scheduling glue, and Control-Time Event
+Runtimes normalize inputs into canonical Events and feed the Core.
+The Core always returns the same result type (`CoreStepResult`) for a given step;
+each Runtime handles environment-specific Execution, scheduling glue, and Control-Time Event
 injection when a Control Scheduling Obligation is realized.
 
 ```mermaid
@@ -70,11 +69,11 @@ can drive both worlds when Runtimes construct comparable `EventStreamEntry`
 sequences under the same Configuration. Normalizing feeds, timestamps, and
 control semantics before they enter Core narrows unnecessary divergence.
 
-Core does not remove every simulation-vs-production gap. Venue
+Core does not remove every simulation-vs-production gap. Individual Venue
 behavior, latency, fills and liquidity, market-data quality, Venue Adapter
 behavior, Runtime scheduling, and infrastructure failure modes can still
 differ and must be modeled outside Core. What Core removes is a major
-source of mismatch—duplicating or subtly diverging the Strategy/Risk Engine/
+source of mismatch—duplicating and subtly diverging Strategy/Risk Engine/
 Execution Control itself.
 
 ## When to use this package
@@ -88,8 +87,8 @@ Execution Control itself.
 ## When not to use this package
 
 - You only need a one-off notebook Backtesting experiment.
-- You want a complete Venue connector or turnkey Live execution stack (Execution is adapter + Runtime responsibility).
-- You expect this repo to ship a full Kubernetes Runtime, deployment manifests, or operational stack.
+- You want a complete Venue connector or turnkey Live implementation.
+- You expect this to ship a full Kubernetes Runtime, deployment manifests, or operations.
 - You expect Core to execute orders, talk to Venues, or replace adapters / Runtime dispatch.
 
 ## Core In One Picture
@@ -123,23 +122,23 @@ EventStreamEntry
 
 ## Input / Core / Output / Not Owned By Core
 
-- Input: `EventStreamEntry` values with canonical events and stream position.
-- Core does: deterministic reduction, strategy evaluation boundary, candidate
+- Input: `EventStreamEntry` values with canonical Events and Event Stream position.
+- Core does: deterministic reduction, Strategy evaluation boundary, candidate
   merge/dominance, policy admission, Execution Control planning/apply.
-- Output: `CoreStepResult` with generated/candidate intents, optional
+- Output: `CoreStepResult` with generated/candidate Intents, optional
   `dispatchable_intents`, and optional `control_scheduling_obligation`.
-- Not owned by Core: raw market/feed I/O, venue adapters, external dispatch,
-  credentials/environment wiring, runtime orchestration, Kubernetes/deployment.
+- Not owned by Core: raw market/feed I/O, Venue Adapters, external dispatch,
+  credentials/environment wiring, Runtime orchestration, Kubernetes/deployment.
 
 ## Quickstart
 
-Run the Core-only quickstart from `core`:
+Run the quickstart
 
 ```bash
 python examples/core_step_quickstart.py
 ```
 
-Minimal shape:
+or minimal shape:
 
 ```python
 import tradingchassis_core as tc
@@ -161,9 +160,10 @@ result = tc.run_core_step(
     ),
 )
 print(result.generated_intents, result.dispatchable_intents)
+# Expected: () () — no strategy or policy/EC path in this snippet.
 ```
 
-See `examples/core_step_quickstart.py` for the full runnable walkthrough.
+See `examples/core_step_quickstart.py` for a full runnable walkthrough.
 
 ## Public Entrypoints
 
@@ -171,26 +171,26 @@ See `examples/core_step_quickstart.py` for the full runnable walkthrough.
 | --- | --- |
 | `run_core_step` | One-entry deterministic reduce/evaluate/decide/apply step |
 | `run_core_wakeup_reduction` | Multi-entry reduction phase for one wakeup |
-| `run_core_wakeup_decision` | Wakeup-level candidate/policy/execution decision phase |
+| `run_core_wakeup_decision` | Wakeup-level candidate/policy/Execution Control decision phase |
 | `run_core_wakeup_step` | Convenience wrapper for reduction + decision |
 | `process_event_entry` | Reduce one `EventStreamEntry` into `StrategyState` |
-| `process_canonical_event` | Reduce one canonical event into `StrategyState` |
+| `process_canonical_event` | Reduce one canonical Event into `StrategyState` |
 
 ## Ownership Boundary
 
 | Core owns | Runtime owns |
 | --- | --- |
 | canonical models/contracts | raw I/O and feed adapters |
-| state reduction and ordering | venue adapters and transport |
-| strategy evaluator boundary | external dispatch execution |
+| state reduction and ordering | Venue Adapters and transport |
+| strategy evaluator boundary | external dispatch Execution |
 | candidate intents and reconciliation | credentials/env wiring |
-| policy admission | live/backtest orchestration |
+| policy admission | Backtesting/Live orchestration |
 | Execution Control | Kubernetes/deployment |
-| `CoreStepResult` decision contract | runtime lifecycle glue |
+| `CoreStepResult` decision contract | Runtime lifecycle glue |
 
 ## Developer Commands
 
-From the `core` directory:
+From root directory:
 
 ```bash
 python -m pip install -e ".[dev]"
