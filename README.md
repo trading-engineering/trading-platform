@@ -22,7 +22,7 @@ simulation, Live trading, Venue Adapters, and infrastructure around you change.
 > In-repo pointers: [`core/docs/README.md`](docs/README.md) and
 > [`core/docs/code-map/core-pipeline-map.md`](docs/code-map/core-pipeline-map.md).
 
-## Why this is relevant
+## Why it is relevant
 
 Trading systems often drift when Backtesting logic, Live logic, policy limits, and
 Strategy throttling are implemented in different places. TradingChassis Core
@@ -41,7 +41,7 @@ canonical Events, invoke Core, and perform Execution and dispatch outside Core u
 and Execution Control semantics stay identical across those Runtimes when the
 Event Stream and Configuration match.
 
-## What this gives you
+## What it gives you
 
 | What you get | Why it matters |
 | --- | --- |
@@ -58,7 +58,7 @@ Control split, dispatchable Intents plus optional Control Scheduling Obligation 
 the Runtime, and a boundary that makes parity and testing practical—not a second
 copy of decision logic per environment.
 
-## Why this matters for trading
+## Why it matters for trading
 
 The gap between tested behavior and Live trading behavior can dominate outcomes. **Backtesting**
 is only a reliable guide if the **same** Core decision logic—Strategy,
@@ -111,7 +111,7 @@ differ and must be modeled outside Core. What Core removes is a major
 source of mismatch—duplicating and subtly diverging Strategy/Risk Engine/
 Execution Control itself.
 
-## When to use this package
+## When to use `tradingchassis_core`
 
 - Building an internal trading system where Backtesting and Live should share decision semantics.
 - Wanting a deterministic Strategy / Risk Engine / Execution Control kernel.
@@ -119,7 +119,7 @@ Execution Control itself.
 - Testing decisions and Intents without full Backtesting or Live machinery.
 - Sharing one decision path across simulation and production.
 
-## When not to use this package
+## When not to use `tradingchassis_core`
 
 - You only need a one-off Backtesting notebook experiment.
 - You want a complete Venue connector or turnkey Live implementation.
