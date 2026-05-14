@@ -15,7 +15,7 @@ Execution (adapter-side dispatch), or Runtime orchestration.
 
 ## Why this exists
 
-Trading systems often drift when Backtesting logic, Live logic, risk (policy) limits, and
+Trading systems often drift when Backtesting logic, Live logic, policy limits, and
 Strategy throttling are implemented in different places. TradingChassis Core
 centralizes deterministic decision semantics—state reduction, Strategy
 evaluation, Risk Engine (policy) admission, and Execution Control
@@ -54,11 +54,10 @@ injection when a Control Scheduling Obligation is realized.
 
 ```mermaid
 flowchart TB
-    Backtesting["Backtesting Runtime"] --> Canonical["Canonical Events"]
-    Live["Live Runtime"] --> Canonical
-    Canonical --> Core["TradingChassis Core<br/>deterministic decision kernel"]
-    Core --> Result["CoreStepResult<br/>dispatchable intents + scheduling obligation"]
-    Result --> Runtime["Runtime dispatch / scheduling / I/O"]
+    R1["Runtime:<br/>canonical Event"] --> Entry["EventStreamEntry:<br/>canonical Event + ProcessingPosition"]
+    Entry --> Core["TradingChassis Core:<br/>CoreStep / CoreWakeupStep"]
+    Core --> Result["CoreStepResult:<br/>dispatchable Intents + scheduling obligation"]
+    Result --> R2["Runtime:<br/>dispatch / scheduling / I/O"]
 ```
 
 ## Backtesting-Live parity
@@ -91,20 +90,7 @@ Execution Control itself.
 - You expect this to ship a full Kubernetes Runtime, deployment manifests, or operations.
 - You expect Core to execute orders, talk to Venues, or replace adapters / Runtime dispatch.
 
-## Core In One Picture
-
-The diagram shows one step: how `EventStreamEntry` flows through
-Core and hands outcomes back to the Runtime.
-
-```mermaid
-flowchart TB
-    Runtime["Runtime / Adapter"] --> Entry["EventStreamEntry<br/>Canonical Event + ProcessingPosition"]
-    Entry --> Core["tradingchassis_core<br/>CoreStep / CoreWakeupStep"]
-    Core --> Result["CoreStepResult<br/>dispatchable_intents<br/>control_scheduling_obligation"]
-    Result --> RuntimeDispatch["Runtime dispatches later"]
-```
-
-## Pipeline
+## Full pipeline
 
 ```text
 EventStreamEntry
@@ -181,10 +167,10 @@ See `examples/core_step_quickstart.py` for a full runnable walkthrough.
 | Core owns | Runtime owns |
 | --- | --- |
 | canonical models/contracts | raw I/O and feed adapters |
-| state reduction and ordering | Venue Adapters and transport |
-| strategy evaluator boundary | external dispatch Execution |
-| candidate intents and reconciliation | credentials/env wiring |
-| policy admission | Backtesting/Live orchestration |
+| State reduction and ordering | Venue Adapters and transport |
+| Strategy evaluator boundary | external dispatch Execution |
+| candidate Intents and reconciliation | credentials/env wiring |
+| risk admission | Backtesting/Live orchestration |
 | Execution Control | Kubernetes/deployment |
 | `CoreStepResult` decision contract | Runtime lifecycle glue |
 
