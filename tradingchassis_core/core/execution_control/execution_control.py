@@ -1,8 +1,10 @@
 """Execution control (internal extraction from RiskEngine).
 
 Owns:
-- token bucket rate limiting state & math
-- inflight gating that routes NEW/REPLACE to queue
+- token bucket rate limiting state & math (time-dependent deferral may surface
+  a ``ControlSchedulingObligation`` from the apply stage; see docs on control time)
+- inflight gating that routes NEW/REPLACE to queue (feedback-dependent; no
+  scheduling obligation by default)
 - queue admission via StrategyState.merge_intents_into_queue(...)
 - queue-only local handling for certain CANCEL/REPLACE cases
 """

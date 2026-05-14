@@ -135,6 +135,11 @@ def apply_execution_control_plan(
     This function mutates only StrategyState queue data and ExecutionControl
     rate state. It does not perform venue dispatch and does not emit canonical
     events.
+
+    ``control_scheduling_obligation`` is selected only from **rate-limit**
+    deferrals (time-dependent). **Inflight** gating queues or blocks work without
+    adding a scheduling obligation; that case is resolved when later canonical
+    events update sendability (not via a Core-derived wake time in this slice).
     """
 
     state = context.state

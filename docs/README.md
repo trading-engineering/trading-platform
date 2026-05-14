@@ -6,6 +6,7 @@ This documentation set describes the standalone clean Core package baseline.
 
 - `reference/public-api.md`: supported root exports and package boundary
 - `reference/events-reference.md`: canonical Events and Intent contracts
+- `flows/control-time-and-scheduling.md`: rate-limit vs inflight deferral and obligations
 - `code-map/core-pipeline-map.md`: deterministic pipeline walkthrough
 - `code-map/repository-map.md`: package layout and ownership map
 - `how-to/add-canonical-event.md`: extending canonical Event contracts
@@ -27,8 +28,10 @@ canonical contracts, State reduction, and step-level decision outputs.
 6. Risk Engine (policy)
 7. Execution Control plan/apply
 8. `CoreStepResult` outputs (`dispatchable_intents`,
-   `control_scheduling_obligation`)
-9. Runtime dispatch happens later
+   optional `control_scheduling_obligation` for **rate-limit** deferral only—see
+   `flows/control-time-and-scheduling.md`)
+9. Runtime dispatch happens later; Runtime injects canonical Events (including
+   optional `ControlTimeEvent` when an obligation is realized)
 
 ## Contract source of truth
 

@@ -44,20 +44,22 @@ class AllowAllPolicy:
     def evaluate_policy_intent(
         self,
         *,
-        Intent: tc.OrderIntent,
+        intent: tc.OrderIntent,
         state: tc.StrategyState,
         now_ts_ns_local: int,
     ) -> tuple[bool, str | None]:
-        _ = (Intent, state, now_ts_ns_local)
+        _ = (intent, state, now_ts_ns_local)
         return True, None
 
 
 def _control_time_entry(*, index: int, ts_ns_local: int) -> tc.EventStreamEntry:
     # EventStreamEntry is the ordered Core input unit: a canonical Event plus
     # ProcessingPosition telling Core where this Event sits in the Event Stream.
+    # ControlTimeEvent here is only a driver Event; scheduling obligations come
+    # from execution-control apply (e.g. rate-limit deferral), not from every step.
     return tc.EventStreamEntry(
         position=tc.ProcessingPosition(index=index),
-        Event=tc.ControlTimeEvent(
+        event=tc.ControlTimeEvent(
             ts_ns_local_control=ts_ns_local,
             reason="scheduled_control_recheck",
             due_ts_ns_local=ts_ns_local,

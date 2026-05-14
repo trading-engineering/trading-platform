@@ -12,7 +12,13 @@ from tradingchassis_core.core.execution_control.types import ControlSchedulingOb
 
 @dataclass(frozen=True, slots=True)
 class CoreStepResult:
-    """Immutable result object for deterministic Core step APIs."""
+    """Immutable result object for deterministic Core step APIs.
+
+    ``control_scheduling_obligation`` is set only when execution-control apply
+    defers for **rate limits** (time-dependent). It is ``None`` for inflight-only
+    deferral and other cases without a Core-derived wake time. Only injected
+    ``ControlTimeEvent`` values are canonical stream input for control time.
+    """
 
     generated_intents: tuple[OrderIntent, ...] = ()
     candidate_intent_records: tuple[CandidateIntentRecord, ...] = ()

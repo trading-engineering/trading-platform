@@ -38,7 +38,8 @@ The public package boundary is the `tradingchassis_core` root import.
 - `PolicyRiskDecision`
 - `ExecutionControlDecision`
 - `ExecutionControl`
-- `ControlSchedulingObligation`
+- `ControlSchedulingObligation` (non-canonical; **rate-limit** recheck hint in the
+  current slice—see `../flows/control-time-and-scheduling.md`)
 
 ## Intents and numeric models
 

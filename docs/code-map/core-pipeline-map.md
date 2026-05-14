@@ -13,8 +13,11 @@ TradingChassis Core.
 6. Risk Engine (policy) accepts/rejects generated candidates.
 7. Execution Control plan/apply computes Queue/dispatch/scheduling outputs.
 8. `CoreStepResult` returns `dispatchable_intents` and optional
-   `control_scheduling_obligation`.
-9. Runtime can dispatch later; Core does not dispatch.
+   `control_scheduling_obligation` (non-canonical; **rate-limit** deferral only
+   in the current slice—see `../flows/control-time-and-scheduling.md`).
+9. Runtime can dispatch later and inject further canonical Events (including
+   `ControlTimeEvent` when an obligation is realized); Core does not perform
+   external dispatch or mutate queues outside this pipeline.
 
 ## Core APIs
 

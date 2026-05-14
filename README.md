@@ -49,7 +49,16 @@ Event Stream and Configuration match.
 | Canonical Event input model (`EventStreamEntry`) | Aligns with Event Stream + Processing Order; State is `f(Event Stream, Configuration)` |
 | Strategy output as Intents | Internal, order/Venue-agnostic commands before Venue Adapter-specific shapes |
 | Risk Engine separated from Execution Control | Risk Engine (policy) vs Queue / scheduling / rate-aware presentation split, as in the intent pipeline (Strategy → Risk → Queue → Adapter) |
-| `dispatchable_intents` + optional Control Scheduling Obligation | Runtime performs Execution and injects Control-Time Events when obligations are realized |
+| `dispatchable_intents` + optional Control Scheduling Obligation | Runtime performs Execution and may inject canonical `ControlTimeEvent` when a **rate-limit** obligation is realized ([`docs/flows/control-time-and-scheduling.md`](docs/flows/control-time-and-scheduling.md)); inflight deferral does not emit that obligation by default |
+
+## Control time and scheduling (Core)
+
+`ControlSchedulingObligation` is a **non-canonical**, time-dependent hint produced
+when execution-control **apply** defers for **rate limits**. **Inflight** gating is
+**feedback-dependent** and does not, by default, produce this obligation; queued
+work is reconsidered after canonical execution Events update state. Runtimes must
+not flush Core queues outside the normal `run_core_step` / execution-control apply
+path. See [`docs/flows/control-time-and-scheduling.md`](docs/flows/control-time-and-scheduling.md).
 | Runtime-independent package | Test trading semantics without production I/O; explicit ownership boundary |
 | Shared kernel across environments | Serious Backtesting and Live parity for the decision engine—no secondary copy of Strategy/Risk Engine/Execution Control code elsewhere |
 
