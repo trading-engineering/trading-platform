@@ -10,7 +10,9 @@ Execution (adapter-side dispatch), or Runtime orchestration.
 
 **What it is:** a shared library for the decision path only—canonical Event in,
 deterministic Strategy / Risk Engine / Execution Control processing, Intents and
-Execution Control outputs out. **What it is not:** a one-off Backtesting script, a Venue
+Execution Control outputs out.
+
+**What it is not:** a one-off Backtesting script, a Venue
 connector, a Live or Kubernetes Runtime, or anything that performs external
 dispatch. The same Core is meant to stay stable while local Research, Backtesting,
 simulation, Live trading, Venue Adapters, and infrastructure around you change.
@@ -20,7 +22,7 @@ simulation, Live trading, Venue Adapters, and infrastructure around you change.
 > In-repo pointers: [`core/docs/README.md`](docs/README.md) and
 > [`core/docs/code-map/core-pipeline-map.md`](docs/code-map/core-pipeline-map.md).
 
-## Why this exists
+## Why this is relevant
 
 Trading systems often drift when Backtesting logic, Live logic, policy limits, and
 Strategy throttling are implemented in different places. TradingChassis Core
@@ -81,7 +83,7 @@ into canonical Events, build `EventStreamEntry` sequences, and call the same
 Execution, scheduling glue, and Control-Time Event injection when a Control Scheduling Obligation is realized.
 
 ```mermaid
-flowchart LR
+flowchart TB
     BT["Backtesting Runtime"] --> CE["Canonical Events"]
     LV["Live Runtime"] --> CE
     RS["Research / local"] --> CE
@@ -127,6 +129,8 @@ Execution Control itself.
 - You expect Core to execute orders, talk to Venues, replace Venue Adapters, or perform external dispatch.
 
 ## Full pipeline
+
+Internal processing pipeline, in sequential order:
 
 ```text
 Runtime reduces to canonical Events
