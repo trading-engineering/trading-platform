@@ -26,23 +26,21 @@ class RiskEngine:
     def __init__(self, risk_cfg: RiskConfig) -> None:
         self.risk_cfg = risk_cfg
 
-        constraints_cfg = self._parse_execution_constraints_config(risk_cfg)
+        min_order_notional, post_only_mode = self._parse_execution_constraints_config(risk_cfg)
         self._constraints_policy = ExecutionConstraintsPolicy(
-            min_order_notional=constraints_cfg["min_order_notional"],
-            post_only_mode=constraints_cfg["post_only_mode"],
+            min_order_notional=min_order_notional,
+            post_only_mode=post_only_mode,
         )
         self._risk_policy = RiskPolicy(constraints_policy=self._constraints_policy)
 
     @staticmethod
-    def _parse_execution_constraints_config(risk_cfg: RiskConfig) -> dict[str, object]:
-        cfg: dict[str, object] = {
-            "min_order_notional": 0.0,
-            "post_only_mode": "reject",
-        }
+    def _parse_execution_constraints_config(risk_cfg: RiskConfig) -> tuple[float, str]:
+        min_order_notional = 0.0
+        post_only_mode = "reject"
 
         extra = risk_cfg.extra
         if not isinstance(extra, dict):
-            return cfg
+            return min_order_notional, post_only_mode
 
         constraints = (
             extra["execution_constraints"]
@@ -52,20 +50,18 @@ class RiskEngine:
         if isinstance(constraints, dict):
             if "min_order_notional" in constraints:
                 try:
-                    cfg["min_order_notional"] = float(
-                        constraints["min_order_notional"]
-                    )
+                    min_order_notional = float(constraints["min_order_notional"])
                 except (TypeError, ValueError):
                     pass
             if "post_only_mode" in constraints:
                 mode = str(constraints["post_only_mode"])
                 if mode in {"reject", "drop"}:
-                    cfg["post_only_mode"] = mode
-            return cfg
+                    post_only_mode = mode
+            return min_order_notional, post_only_mode
 
         if "execution_constraints_min_order_notional" in extra:
             try:
-                cfg["min_order_notional"] = float(
+                min_order_notional = float(
                     extra["execution_constraints_min_order_notional"]
                 )
             except (TypeError, ValueError):
@@ -74,16 +70,16 @@ class RiskEngine:
         if "execution_constraints_post_only_mode" in extra:
             mode = str(extra["execution_constraints_post_only_mode"])
             if mode in {"reject", "drop"}:
-                cfg["post_only_mode"] = mode
+                post_only_mode = mode
 
-        return cfg
+        return min_order_notional, post_only_mode
 
     @staticmethod
-    def _constraints_extra(extra: object) -> dict[str, object]:
+    def _constraints_extra(extra: object) -> dict[str, str | float | bool | None]:
         if not isinstance(extra, dict):
             return {}
 
-        normalized: dict[str, object] = {}
+        normalized: dict[str, str | float | bool | None] = {}
         for key, value in extra.items():
             if key == "execution_constraints" and isinstance(value, dict):
                 if "min_order_notional" in value:
@@ -171,8 +167,12 @@ class RiskEngine:
         max_pos = None if (pos_cfg is None or pos_cfg.max_position is None) else pos_cfg.max_position
 
         notional_cfg = self.risk_cfg.notional_limits
-        max_gross_notional = notional_cfg.max_gross_notional
-        max_single_order_notional = notional_cfg.max_single_order_notional
+        max_gross_notional = (
+            None if notional_cfg is None else notional_cfg.max_gross_notional
+        )
+        max_single_order_notional = (
+            None if notional_cfg is None else notional_cfg.max_single_order_notional
+        )
 
         quote_cfg = self.risk_cfg.quote_limits
         quote_book = None

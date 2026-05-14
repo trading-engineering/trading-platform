@@ -193,7 +193,10 @@ def run_core_step(
     control_scheduling_obligation = None
     if apply_result is not None:
         control_scheduling_obligation = apply_result.control_scheduling_obligation
-        if execution_control_apply_context.activate_dispatchable_outputs:
+        if (
+            execution_control_apply_context is not None
+            and execution_control_apply_context.activate_dispatchable_outputs
+        ):
             dispatchable_intents = tuple(
                 record.record.intent for record in apply_result.dispatchable_records
             )
@@ -304,7 +307,10 @@ def run_core_wakeup_decision(
     control_scheduling_obligation = None
     if apply_result is not None:
         control_scheduling_obligation = apply_result.control_scheduling_obligation
-        if execution_control_apply_context.activate_dispatchable_outputs:
+        if (
+            execution_control_apply_context is not None
+            and execution_control_apply_context.activate_dispatchable_outputs
+        ):
             dispatchable_intents = tuple(
                 record.record.intent for record in apply_result.dispatchable_records
             )

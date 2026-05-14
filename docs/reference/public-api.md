@@ -1,6 +1,6 @@
 # Public API Reference
 
-The package export boundary is `tradingchassis_core`.
+The public package boundary is the `tradingchassis_core` root import.
 
 ## Canonical events
 
@@ -12,6 +12,8 @@ The package export boundary is `tradingchassis_core`.
 
 ## Step APIs
 
+- `process_canonical_event`
+- `process_event_entry`
 - `run_core_step`
 - `run_core_wakeup_reduction`
 - `run_core_wakeup_decision`
@@ -38,9 +40,27 @@ The package export boundary is `tradingchassis_core`.
 - `ExecutionControl`
 - `ControlSchedulingObligation`
 
-## Utility exports
+## Intents and numeric models
+
+- `OrderIntent`
+- `NewOrderIntent`
+- `CancelOrderIntent`
+- `ReplaceOrderIntent`
+- `Price`
+- `Quantity`
+
+## Runtime-safe utilities
 
 - `NullEventBus`
 - `RiskEngine` (policy-only evaluator)
+- `RiskConfig`
 
-Compatibility bridge contracts are intentionally absent from the public API.
+## Publicly absent by design
+
+- `GateDecision`
+- `compat_gate_decision`
+- `ControlTimeQueueReevaluationContext`
+- `CoreDecisionContext`
+- `OrderStateEvent`
+- `DerivedFillEvent`
+- `VenueAdapter` / `VenuePolicy`

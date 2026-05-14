@@ -1,18 +1,18 @@
 # Security Policy
 
-## Supported Versions and Status
+## Supported Baseline
 
-The active supported line is the current `main` branch and accepted MVP baseline for this Core
-repository.
+The supported baseline is the clean standalone Core package line (`0.1.x` and
+forward on the active mainline branch).
 
-Older commits may not receive security fixes.
+Older historical commits may not receive fixes.
 
 ## Reporting a Vulnerability
 
 Do not report vulnerabilities in public issues.
 
-Use a private security advisory workflow if available for this repository, or contact project
-maintainers through the project's configured private channel.
+Use a private security advisory workflow if available for this repository, or
+contact project maintainers through the configured private channel.
 
 Include:
 
@@ -24,21 +24,34 @@ Include:
 
 This policy covers the Core package in this repository, including:
 
-- semantic event-processing contracts
-- state and decision model handling
-- package integrity and dependency usage in Core
+- canonical event and intent contracts
+- deterministic CoreStep/CoreWakeupStep decision pipeline
+- package integrity and dependency usage in `tradingchassis_core`
 
-## Out of Scope and Disclaimers
+## Secrets and Credentials Policy
 
-- No financial or trading performance guarantee is provided
-- Safe live trading operation is not guaranteed without runtime/venue-specific validation
-
-## Secrets and Credentials
-
-Never commit live secrets to this repository, including:
+Never commit live secrets or account-sensitive data, including:
 
 - API keys and venue credentials
 - account identifiers tied to real accounts
 - private trading data dumps
 
 Tests and documentation examples must use synthetic or non-sensitive data only.
+
+## Runtime and Trading Caveat
+
+- TradingChassis Core is a library and does not guarantee safe live trading by
+  itself.
+- Runtime orchestration, venue behavior, and deployment hardening remain outside
+  this package scope and require separate validation.
+
+## No Financial Performance Guarantee
+
+This package provides deterministic software behavior, not financial advice or
+performance guarantees.
+
+## Dependency Vulnerability Handling
+
+- Keep dependencies minimal and pinned by compatible ranges.
+- Review dependency advisories and patch vulnerable versions promptly.
+- Prefer removing unused dependencies over adding new tooling.

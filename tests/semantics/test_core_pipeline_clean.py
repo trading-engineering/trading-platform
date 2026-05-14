@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import tradingchassis_core as tc
+from tradingchassis_core.core.domain.types import BookLevel, BookPayload
 
 
 class _OneIntentEvaluator:
@@ -10,6 +11,7 @@ class _OneIntentEvaluator:
         _ = context
         return [
             tc.NewOrderIntent(
+                intent_type="new",
                 ts_ns_local=10,
                 instrument="BTC-USDC-PERP",
                 client_order_id="intent-1",
@@ -51,6 +53,7 @@ class _DuplicateIntentEvaluator:
     def evaluate(self, context: object) -> list[tc.NewOrderIntent]:
         _ = context
         first = tc.NewOrderIntent(
+            intent_type="new",
             ts_ns_local=10,
             instrument="BTC-USDC-PERP",
             client_order_id="dup-intent",
@@ -62,6 +65,7 @@ class _DuplicateIntentEvaluator:
             time_in_force="GTC",
         )
         second = tc.NewOrderIntent(
+            intent_type="new",
             ts_ns_local=11,
             instrument="BTC-USDC-PERP",
             client_order_id="dup-intent",
@@ -160,6 +164,7 @@ def test_candidate_reconciliation_prefers_latest_same_key_generated_intent() -> 
     assert len(result.generated_intents) == 2
     assert len(result.candidate_intent_records) == 1
     winner = result.candidate_intent_records[0].intent
+    assert isinstance(winner, tc.NewOrderIntent)
     assert winner.client_order_id == "dup-intent"
     assert winner.intended_qty.value == 2.0
 
@@ -205,3 +210,36 @@ def test_execution_control_deferral_returns_scheduling_obligation() -> None:
     assert result.dispatchable_intents == ()
     assert result.control_scheduling_obligation is not None
     assert result.control_scheduling_obligation.reason == "rate_limit"
+
+
+def test_process_canonical_event_reduces_market_event() -> None:
+    state = tc.StrategyState(event_bus=tc.NullEventBus())
+    tc.process_canonical_event(
+        state,
+        tc.MarketEvent(
+            ts_ns_exch=200,
+            ts_ns_local=201,
+            instrument="BTC-USDC-PERP",
+            event_type="book",
+            book=BookPayload(
+                book_type="snapshot",
+                bids=[
+                    BookLevel(
+                        price=tc.Price(currency="USDC", value=99.0),
+                        quantity=tc.Quantity(value=1.0, unit="contracts"),
+                    )
+                ],
+                asks=[
+                    BookLevel(
+                        price=tc.Price(currency="USDC", value=101.0),
+                        quantity=tc.Quantity(value=2.0, unit="contracts"),
+                    )
+                ],
+                depth=1,
+            ),
+        ),
+    )
+    assert state.sim_ts_ns_local == 201
+    market = state.market["BTC-USDC-PERP"]
+    assert market.best_bid == 99.0
+    assert market.best_ask == 101.0

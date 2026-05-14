@@ -24,6 +24,7 @@ def _risk_config() -> tc.RiskConfig:
 
 def _intent() -> tc.NewOrderIntent:
     return tc.NewOrderIntent(
+        intent_type="new",
         ts_ns_local=10,
         instrument="BTC-USDC-PERP",
         client_order_id="risk-intent-1",

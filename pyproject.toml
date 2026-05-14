@@ -5,16 +5,21 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "tradingchassis-core"
 version = "0.1.0"
-description = "Deterministic event-driven core package for intent policy and execution control."
+description = "Deterministic trading decision engine core library."
 readme = "README.md"
 requires-python = ">=3.11"
-authors = [{ name = "tradingeng@protonmail.com" }]
-license = { text = "MIT" }
+authors = [{ name = "TradingChassis Core Contributors" }]
+maintainers = [{ name = "TradingChassis Core Maintainers" }]
+license = "MIT"
+keywords = ["trading", "deterministic", "pydantic", "event-driven", "strategy"]
 
 classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Topic :: Office/Business :: Financial :: Investment",
+  "Topic :: Software Development :: Libraries",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.11",
-  "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent"
 ]
 
@@ -28,9 +33,15 @@ dev = [
   "import-linter>=1.11,<2",
   "ruff>=0.4,<1",
   "mypy>=1.9,<2",
-  "matplotlib>=3,<4",
-  "numpy>=2.0,<2.3",
+  "build>=1,<2",
 ]
+
+[project.urls]
+Homepage = "https://github.com/tradingchassis/tradingchassis"
+Repository = "https://github.com/tradingchassis/tradingchassis"
+Documentation = "https://github.com/tradingchassis/tradingchassis/tree/main/core/docs"
+Changelog = "https://github.com/tradingchassis/tradingchassis/blob/main/core/CHANGELOG.md"
+Issues = "https://github.com/tradingchassis/tradingchassis/issues"
 
 [tool.setuptools.packages.find]
 include = ["tradingchassis_core*"]
@@ -39,6 +50,7 @@ include = ["tradingchassis_core*"]
 minversion = "9.0"
 addopts = "-ra"
 testpaths = ["tests"]
+pythonpath = ["."]
 
 [tool.ruff]
 target-version = "py311"
@@ -54,16 +66,16 @@ warn_unused_configs = true
 ignore_missing_imports = true
 pretty = true
 show_error_codes = true
-ignore_errors = true
 
 [tool.importlinter]
 root_package = "tradingchassis_core"
 include_external_packages = true
 
 [[tool.importlinter.contracts]]
-name = "Core must be pure"
+name = "Core stays runtime-independent"
 type = "forbidden"
-source_modules = ["tradingchassis_core.core"]
+source_modules = ["tradingchassis_core"]
 forbidden_modules = [
-  "tradingchassis_core.strategies"
+  "core_runtime",
+  "hftbacktest",
 ]

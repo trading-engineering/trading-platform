@@ -10,7 +10,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from tradingchassis_core.core.domain.reject_reasons import RejectReason
-from tradingchassis_core.core.domain.types import OrderIntent
+from tradingchassis_core.core.domain.types import NewOrderIntent, OrderIntent, ReplaceOrderIntent
 from tradingchassis_core.core.risk.execution_constraints_policy import (
     ExecutionConstraintsPolicy,
     NormalizationOutcome,
@@ -69,10 +69,11 @@ class RiskPolicy:
 
         pnl = state.get_total_pnl()
         if pnl <= max_loss_cfg.max_drawdown:
-            return True, self._accept_cancels_reject_others(
+            accepted_now, rejected = self._accept_cancels_reject_others(
                 raw_intents,
                 RejectReason.MAX_LOSS_DRAWDOWN,
             )
+            return True, accepted_now, rejected
 
         # Rolling loss kill-switch (equity change over a fixed window)
         if max_loss_cfg.rolling_loss is not None and max_loss_cfg.rolling_loss_window is not None:
@@ -82,10 +83,11 @@ class RiskPolicy:
                 window_ns=window_ns,
             )
             if rolling is not None and rolling <= max_loss_cfg.rolling_loss:
-                return True, self._accept_cancels_reject_others(
+                accepted_now, rejected = self._accept_cancels_reject_others(
                     raw_intents,
                     RejectReason.MAX_LOSS_ROLLING,
                 )
+                return True, accepted_now, rejected
 
         return False, [], []
 
@@ -145,7 +147,7 @@ class RiskPolicy:
         max_gross_notional: float | None,
         base_gross_notional: float | None,
         quote_cfg: QuoteLimits | None,
-        quote_book: dict[tuple[str, str | None, tuple[float, float]]],
+        quote_book: dict[tuple[str, str], tuple[float, float]] | None,
     ) -> tuple[bool, str]:
         """Apply hard risk checks. Returns (ok, reason)."""
 
@@ -210,6 +212,8 @@ class RiskPolicy:
         return True, "OK"
 
     def intent_price(self, it: OrderIntent, state: StrategyState) -> float | None:
+        if not isinstance(it, (NewOrderIntent, ReplaceOrderIntent)):
+            return None
         if it.order_type == "limit":
             return None if it.intended_price is None else it.intended_price.value
         mid = state.get_mid(it.instrument)

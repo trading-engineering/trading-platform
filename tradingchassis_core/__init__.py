@@ -27,6 +27,7 @@ from tradingchassis_core.core.domain.policy_risk_decision import (
 )
 from tradingchassis_core.core.domain.processing import (
     fold_event_stream_entries,
+    process_canonical_event,
     process_event_entry,
 )
 from tradingchassis_core.core.domain.processing_order import (
@@ -52,6 +53,7 @@ from tradingchassis_core.core.domain.state import StrategyState
 from tradingchassis_core.core.domain.step_decision import CoreStepDecision
 from tradingchassis_core.core.domain.step_result import CoreStepResult
 from tradingchassis_core.core.domain.types import (
+    CancelOrderIntent,
     ControlTimeEvent,
     FillEvent,
     MarketEvent,
@@ -67,6 +69,7 @@ from tradingchassis_core.core.domain.types import (
 )
 from tradingchassis_core.core.events.sinks.null_event_bus import NullEventBus
 from tradingchassis_core.core.execution_control.execution_control import ExecutionControl
+from tradingchassis_core.core.execution_control.types import ControlSchedulingObligation
 from tradingchassis_core.core.risk.risk_config import RiskConfig
 from tradingchassis_core.core.risk.risk_engine import RiskEngine
 
@@ -84,6 +87,7 @@ __all__ = [
     "NotionalLimits",
     "OrderIntent",
     "NewOrderIntent",
+    "CancelOrderIntent",
     "ReplaceOrderIntent",
     "Price",
     "Quantity",
@@ -93,6 +97,7 @@ __all__ = [
     "CandidateIntentRecord",
     "ProcessingPosition",
     "EventStreamEntry",
+    "process_canonical_event",
     "process_event_entry",
     "fold_event_stream_entries",
     "run_core_step",
@@ -117,6 +122,7 @@ __all__ = [
     "CoreStepDecision",
     "CoreStepResult",
     "ExecutionControl",
+    "ControlSchedulingObligation",
     "NullEventBus",
     "__version__",
 ]

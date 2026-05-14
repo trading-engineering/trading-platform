@@ -11,7 +11,13 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from tradingchassis_core.core.domain.reject_reasons import RejectReason
-from tradingchassis_core.core.domain.types import NewOrderIntent, OrderIntent
+from tradingchassis_core.core.domain.types import (
+    NewOrderIntent,
+    OrderIntent,
+    Price,
+    Quantity,
+    ReplaceOrderIntent,
+)
 
 if TYPE_CHECKING:
     from tradingchassis_core.core.domain.state import StrategyState
@@ -45,9 +51,16 @@ class ExecutionConstraintsPolicy:
         if intent.intent_type == "cancel":
             return NormalizationOutcome(normalized=intent, reject_reason=None, dropped=False)
 
+        if not isinstance(intent, (NewOrderIntent, ReplaceOrderIntent)):
+            return NormalizationOutcome(
+                normalized=None,
+                reject_reason=RejectReason.INVALID_QTY,
+                dropped=False,
+            )
+
         tick_size = state.get_tick_size(intent.instrument)
         lot_size = state.get_lot_size(intent.instrument)
-        qty = 0.0 if intent.intended_qty is None else float(intent.intended_qty.value)
+        qty = float(intent.intended_qty.value)
         qty_norm = self._round_qty(qty, lot_size)
         if qty_norm <= 0.0:
             return NormalizationOutcome(normalized=None, reject_reason=None, dropped=True)
@@ -69,9 +82,10 @@ class ExecutionConstraintsPolicy:
                     reject_reason=RejectReason.INVALID_LIMIT_PRICE,
                     dropped=False,
                 )
-            post_only_outcome = self._enforce_post_only(intent, state, px_norm)
-            if post_only_outcome is not None:
-                return post_only_outcome
+            if isinstance(intent, NewOrderIntent):
+                post_only_outcome = self._enforce_post_only(intent, state, px_norm)
+                if post_only_outcome is not None:
+                    return post_only_outcome
 
         min_notional_outcome = self._enforce_min_notional(intent, state, qty_norm, px_norm)
         if min_notional_outcome is not None:
@@ -91,11 +105,11 @@ class ExecutionConstraintsPolicy:
 
     def _enforce_post_only(
         self,
-        intent: OrderIntent,
+        intent: NewOrderIntent,
         state: StrategyState,
         px_norm: float,
     ) -> NormalizationOutcome | None:
-        if intent.intent_type != "new" or intent.time_in_force != "POST_ONLY":
+        if intent.time_in_force != "POST_ONLY":
             return None
         market = state.market[intent.instrument] if intent.instrument in state.market else None
         if market is None:
@@ -117,7 +131,7 @@ class ExecutionConstraintsPolicy:
 
     def _enforce_min_notional(
         self,
-        intent: OrderIntent,
+        intent: NewOrderIntent | ReplaceOrderIntent,
         state: StrategyState,
         qty_norm: float,
         px_norm: float | None,
@@ -161,26 +175,34 @@ class ExecutionConstraintsPolicy:
         return float(rounded)
 
     @staticmethod
-    def _clone_new(intent: OrderIntent, qty: float, px: float | None) -> NewOrderIntent:
-        qty_unit = "contracts" if intent.intended_qty is None else intent.intended_qty.unit
-        price_ccy = "UNKNOWN" if intent.intended_price is None else intent.intended_price.currency
+    def _clone_new(intent: NewOrderIntent, qty: float, px: float | None) -> NewOrderIntent:
+        price = intent.intended_price.value if px is None else px
         return NewOrderIntent(
+            intent_type="new",
             ts_ns_local=intent.ts_ns_local,
             instrument=intent.instrument,
             client_order_id=intent.client_order_id,
             intents_correlation_id=intent.intents_correlation_id,
             side=intent.side,
             order_type=intent.order_type,
-            intended_qty={"unit": qty_unit, "value": qty},
-            intended_price=None if px is None else {"currency": price_ccy, "value": px},
+            intended_qty=Quantity(unit=intent.intended_qty.unit, value=qty),
+            intended_price=Price(currency=intent.intended_price.currency, value=price),
             time_in_force=intent.time_in_force,
         )
 
     @staticmethod
-    def _clone_replace(intent: OrderIntent, qty: float, px: float | None) -> OrderIntent:
-        payload = intent.model_dump()
-        qty_unit = "contracts" if intent.intended_qty is None else intent.intended_qty.unit
-        payload["intended_qty"] = {"unit": qty_unit, "value": qty}
-        price_ccy = "UNKNOWN" if intent.intended_price is None else intent.intended_price.currency
-        payload["intended_price"] = None if px is None else {"currency": price_ccy, "value": px}
-        return type(intent).model_validate(payload)
+    def _clone_replace(
+        intent: ReplaceOrderIntent, qty: float, px: float | None
+    ) -> ReplaceOrderIntent:
+        price = intent.intended_price.value if px is None else px
+        return ReplaceOrderIntent(
+            intent_type="replace",
+            ts_ns_local=intent.ts_ns_local,
+            instrument=intent.instrument,
+            client_order_id=intent.client_order_id,
+            intents_correlation_id=intent.intents_correlation_id,
+            side=intent.side,
+            order_type=intent.order_type,
+            intended_qty=Quantity(unit=intent.intended_qty.unit, value=qty),
+            intended_price=Price(currency=intent.intended_price.currency, value=price),
+        )

@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable
 
 from tradingchassis_core.core.domain.reject_reasons import RejectReason
-from tradingchassis_core.core.domain.types import NewOrderIntent, OrderIntent
+from tradingchassis_core.core.domain.types import NewOrderIntent, OrderIntent, ReplaceOrderIntent
 from tradingchassis_core.core.execution_control.types import ControlSchedulingObligation
 
 if TYPE_CHECKING:
@@ -169,6 +169,8 @@ class ExecutionControl:
         has_queued = state.has_queued_intent(it.instrument, it.client_order_id)
 
         if it.intent_type == "replace":
+            if not isinstance(it, ReplaceOrderIntent):
+                return False, RejectReason.INVALID_QTY
             if has_working:
                 working = state.get_working_order_snapshot(it.instrument, it.client_order_id)
                 if working is not None:
@@ -210,6 +212,8 @@ class ExecutionControl:
                 return False, RejectReason.ORDER_NOT_FOUND
 
         if it.intent_type == "replace":
+            if not isinstance(it, ReplaceOrderIntent):
+                return False, RejectReason.INVALID_QTY
             if not has_working:
                 queued_new = state.find_queued_new_intent(it.instrument, it.client_order_id)
                 if queued_new is None:
@@ -255,7 +259,7 @@ class ExecutionControl:
 
     def handle_replace_against_queued_new(
         self,
-        it: OrderIntent,
+        it: ReplaceOrderIntent,
         *,
         state: StrategyState,
         queued_new: NewOrderIntent,
@@ -270,6 +274,7 @@ class ExecutionControl:
             replaced_in_queue.append((qi.intent, it))
 
         updated_new = NewOrderIntent(
+            intent_type="new",
             ts_ns_local=it.ts_ns_local,
             instrument=it.instrument,
             client_order_id=it.client_order_id,
@@ -294,7 +299,7 @@ class ExecutionControl:
     @staticmethod
     def is_replace_noop_against_working(
         *,
-        replace_intent: OrderIntent,
+        replace_intent: ReplaceOrderIntent,
         working_intended_price: float,
         working_intended_qty: float,
         float_equal: Callable[[float, float], bool],
@@ -306,7 +311,7 @@ class ExecutionControl:
     @staticmethod
     def is_replace_noop_against_queued_new(
         *,
-        replace_intent: OrderIntent,
+        replace_intent: ReplaceOrderIntent,
         queued_new: NewOrderIntent,
         float_equal: Callable[[float, float], bool],
     ) -> bool:
