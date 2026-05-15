@@ -24,40 +24,6 @@ simulation, Live trading, Venue Adapters, and infrastructure around you change.
 
 <img src="https://img.spacergif.org/spacer.gif" width="1" height="32"/>
 
-## Internally wired vs externally supplied
-
-The clean Core Pipeline is always the same shape; some pieces run inside Core
-when you call step APIs, and others must be supplied by your Runtime or tests.
-
-### Internally wired (always part of Core when you call step APIs)
-
-- `process_event_entry` / `process_canonical_event` and canonical reducers
-- Candidate combination, dominance, and reconciliation (`combine_candidate_intent_records`)
-- Policy admission **mechanism** when `CorePolicyAdmissionContext` is provided
-- Execution Control plan/apply **mechanism** when policy + apply contexts are provided
-- `CoreStepResult` / `CoreStepDecision` production
-
-### Externally supplied extension points
-
-- **Strategy evaluator** — `CoreStepStrategyEvaluator` or `CoreWakeupStrategyEvaluator`
-- **Policy evaluator** — any object implementing `PolicyIntentEvaluator` (passed via `CorePolicyAdmissionContext`)
-- **Execution Control** — `ExecutionControl` instance (passed via `CoreExecutionControlApplyContext`)
-- **Configuration** — optional `CoreConfiguration` for positioned market reduction
-- **Event bus** — `StrategyState` requires an `EventBus`; use `NullEventBus` for standalone Core/tests
-
-### Convenience implementations (optional; not wired by default)
-
-- **Risk Engine** (`RiskEngine`) — provided `PolicyIntentEvaluator` with built-in policy gates
-- **`ExecutionControl`** — provided queue/rate/inflight implementation
-- **`NullEventBus`** — discards observability events for tests and examples
-
-The minimal quickstart uses an inline allow-all policy to stay small. That does
-**not** mean the Risk Engine is unused or dead. Use `RiskEngine` when you want the
-built-in Risk Engine policy behavior. See `examples/core_step_quickstart.py` (minimal) and
-`examples/core_step_with_risk_engine.py` (Risk Engine variant).
-
-<img src="https://img.spacergif.org/spacer.gif" width="1" height="32"/>
-
 ## Why it is relevant
 
 Trading systems often drift when Backtesting logic, Live logic, policy limits, and
@@ -225,6 +191,40 @@ Runtime dispatches Intents into Orders
 
 <img src="https://img.spacergif.org/spacer.gif" width="1" height="32"/>
 
+## Internally wired vs externally supplied
+
+The clean Core Pipeline is always the same shape; some pieces run inside Core
+when you call step APIs, and others must be supplied by your Runtime or tests.
+
+### Internally wired (always part of Core when you call step APIs)
+
+- `process_event_entry` / `process_canonical_event` and canonical reducers
+- Candidate combination, dominance, and reconciliation (`combine_candidate_intent_records`)
+- Policy admission **mechanism** when `CorePolicyAdmissionContext` is provided
+- Execution Control plan/apply **mechanism** when policy + apply contexts are provided
+- `CoreStepResult` / `CoreStepDecision` production
+
+### Externally supplied extension points
+
+- **Strategy evaluator** — `CoreStepStrategyEvaluator` or `CoreWakeupStrategyEvaluator`
+- **Policy evaluator** — any object implementing `PolicyIntentEvaluator` (passed via `CorePolicyAdmissionContext`)
+- **Execution Control** — `ExecutionControl` instance (passed via `CoreExecutionControlApplyContext`)
+- **Configuration** — optional `CoreConfiguration` for positioned market reduction
+- **Event bus** — `StrategyState` requires an `EventBus`; use `NullEventBus` for standalone Core/tests
+
+### Convenience implementations (optional; not wired by default)
+
+- **Risk Engine** (`RiskEngine`) — provided `PolicyIntentEvaluator` with built-in policy gates
+- **`ExecutionControl`** — provided queue/rate/inflight implementation
+- **`NullEventBus`** — discards observability events for tests and examples
+
+The minimal quickstart uses an inline allow-all policy to stay small. That does
+**not** mean the Risk Engine is unused or dead. Use `RiskEngine` when you want the
+built-in Risk Engine policy behavior. See `examples/core_step_quickstart.py` (minimal) and
+`examples/core_step_with_risk_engine.py` (Risk Engine variant).
+
+<img src="https://img.spacergif.org/spacer.gif" width="1" height="32"/>
+
 ## Input / Core / Output / Not Owned By Core
 
 - Input: `EventStreamEntry` values with canonical Events and Event Stream position.
@@ -247,9 +247,7 @@ Runtime dispatches Intents into Orders
 | Execution Control | Kubernetes/deployment |
 | `CoreStepResult` decision contract | Runtime lifecycle glue |
 
-<img src="https://img.spacergif.org/spacer.gif" width="1" height="32"/>
-
-## Control time and scheduling (Core)
+### Control time and scheduling
 
 `ControlSchedulingObligation` is a **non-canonical**, time-dependent hint produced
 when Execution Control **apply** defers for **rate limits**. **Inflight** gating is
