@@ -128,10 +128,10 @@ Execution, scheduling glue, and Control-Time Event injection when a Control Sche
 
 ```mermaid
 flowchart TB
-    R1["Runtime:<br/>canonical Event"] --> Entry["EventStreamEntry:<br/>canonical Event + ProcessingPosition"]
-    Entry --> Core["TradingChassis Core:<br/>CoreStep / CoreWakeupStep"]
-    Core --> Result["CoreStepResult:<br/>dispatchable Intents + Control Scheduling Obligation"]
-    Result --> R2["Runtime:<br/>dispatch / scheduling / I/O"]
+    R1["**Runtime**<br/>canonical Event"] --> Entry["**EventStreamEntry**<br/>canonical Event + ProcessingPosition"]
+    Entry --> Core["**TradingChassis Core**<br/>CoreStep / CoreWakeupStep"]
+    Core --> Result["**CoreStepResult**<br/>dispatchable Intents + Control Scheduling Obligation"]
+    Result --> R2["**Runtime**<br/>dispatch / scheduling / I/O"]
 ```
 
 Core never replaces the Runtime: the Runtime is responsible for feeding canonical
