@@ -14,7 +14,7 @@ from tradingchassis_core.core.execution_control.types import ControlSchedulingOb
 class CoreStepResult:
     """Immutable result object for deterministic Core step APIs.
 
-    ``control_scheduling_obligation`` is set only when execution-control apply
+    ``control_scheduling_obligation`` is set only when Execution Control apply
     defers for **rate limits** (time-dependent). It is ``None`` for inflight-only
     deferral and other cases without a Core-derived wake time. Only injected
     ``ControlTimeEvent`` values are canonical stream input for control time.

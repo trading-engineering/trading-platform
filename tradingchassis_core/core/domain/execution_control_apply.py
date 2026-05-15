@@ -1,4 +1,4 @@
-"""Mutable execution-control apply stage over a pure execution-control plan."""
+"""Mutable Execution Control apply stage over a pure Execution Control plan."""
 
 from __future__ import annotations
 
@@ -57,7 +57,7 @@ class ExecutionControlHandledRecord:
 
 @dataclass(frozen=True, slots=True)
 class ExecutionControlApplyResult:
-    """Result of mutable execution-control apply over one plan state."""
+    """Result of mutable Execution Control apply over one plan state."""
 
     queued_effective_records: tuple[CandidateIntentRecord, ...] = ()
     dispatchable_records: tuple[ExecutionControlDispatchableRecord, ...] = ()
@@ -130,9 +130,9 @@ def apply_execution_control_plan(
     plan: ExecutionControlPlan,
     context: ExecutionControlApplyContext,
 ) -> ExecutionControlApplyResult:
-    """Apply mutable execution-control semantics over planned active records.
+    """Apply mutable Execution Control semantics over planned active records.
 
-    This function mutates only StrategyState queue data and ExecutionControl
+    This function mutates only StrategyState Queue data and ExecutionControl
     rate state. It does not perform venue dispatch and does not emit canonical
     events.
 

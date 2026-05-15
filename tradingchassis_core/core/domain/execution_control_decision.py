@@ -1,4 +1,4 @@
-"""Core-owned execution-control decision model."""
+"""Core-owned Execution Control decision model."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from tradingchassis_core.core.execution_control.types import ControlSchedulingOb
 
 @dataclass(frozen=True, slots=True)
 class ExecutionControlDecision:
-    """Immutable non-canonical execution-control outcome."""
+    """Immutable non-canonical Execution Control outcome."""
 
     queued_effective_intents: tuple[OrderIntent, ...] = ()
     dispatchable_intents: tuple[OrderIntent, ...] = ()

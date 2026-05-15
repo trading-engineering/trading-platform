@@ -1,6 +1,6 @@
 """Execution control (internal).
 
-This package hosts internal components that govern queue admission, inflight
+This package hosts internal components that govern Queue admission, inflight
 gating, and rate limiting. Policy admission stays in the Risk Engine / domain
 layer.
 

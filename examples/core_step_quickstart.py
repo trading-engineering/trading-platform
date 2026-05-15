@@ -1,6 +1,6 @@
 """Core-only CoreStep quickstart example.
 
-For ordered multi-entry wakeup batches see run_core_wakeup_step in the docs.
+For ordered multi-entry wakeup batches see run_core_wakeup_step in the README.
 """
 
 from __future__ import annotations
@@ -59,7 +59,7 @@ def _control_time_entry(*, index: int, ts_ns_local: int) -> tc.EventStreamEntry:
     # EventStreamEntry is the ordered Core input unit: a canonical Event plus
     # ProcessingPosition telling Core where this Event sits in the Event Stream.
     # ControlTimeEvent here is only a driver Event; scheduling obligations come
-    # from execution-control apply (e.g. rate-limit deferral), not from every step.
+    # from Execution Control apply (e.g. rate-limit deferral), not from every step.
     return tc.EventStreamEntry(
         position=tc.ProcessingPosition(index=index),
         event=tc.ControlTimeEvent(
@@ -92,7 +92,7 @@ def run_v1_generated_only(state: tc.StrategyState) -> tc.CoreStepResult:
 
 
 def run_v2_with_policy_and_apply(state: tc.StrategyState) -> tc.CoreStepResult:
-    # v2 adds policy admission and execution-control apply. With dispatchable
+    # v2 adds policy admission and Execution Control apply. With dispatchable
     # outputs activated, Core exposes Intents that Runtime can dispatch.
     result = tc.run_core_step(
         state,

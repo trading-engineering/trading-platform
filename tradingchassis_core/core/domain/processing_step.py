@@ -80,7 +80,7 @@ class CorePolicyAdmissionContext:
 
 @dataclass(frozen=True, slots=True)
 class CoreExecutionControlApplyContext:
-    """Optional mutable execution-control apply context for one Core step."""
+    """Optional mutable Execution Control apply context for one Core step."""
 
     execution_control: ExecutionControl
     now_ts_ns_local: int
@@ -265,7 +265,7 @@ def run_core_wakeup_decision(
     policy_admission_context: CorePolicyAdmissionContext | None = None,
     execution_control_apply_context: CoreExecutionControlApplyContext | None = None,
 ) -> CoreStepResult:
-    """Run one wakeup-level candidate/policy/execution-control decision phase."""
+    """Run one wakeup-level candidate/policy/Execution Control decision phase."""
 
     if execution_control_apply_context is not None and policy_admission_context is None:
         raise ValueError(

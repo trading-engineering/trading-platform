@@ -1,7 +1,7 @@
 """Deterministic Core Strategy state.
 
-This state container keeps canonical reducer-owned data and execution-control
-supporting structures (queue + inflight tracking). Runtime snapshot parsing and
+This state container keeps canonical reducer-owned data and Execution Control
+supporting structures (Queue + inflight tracking). Runtime snapshot parsing and
 venue lifecycle adaptation are intentionally out of scope for Core.
 """
 
@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 
 @dataclass(slots=True)
 class QueuedIntent:
-    """An intent stored for later sending (data-only queue)."""
+    """An intent stored for later sending (data-only Queue)."""
 
     intent: OrderIntent
     queued_at_ts_ns: int

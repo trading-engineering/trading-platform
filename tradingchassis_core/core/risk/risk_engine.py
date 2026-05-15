@@ -20,7 +20,7 @@ class RiskEngine:
     """Policy-only evaluator.
 
     This component is intentionally side-effect-free for the CoreStep policy phase:
-    it does not mutate queue/rate/inflight state and does not perform execution-control.
+    it does not mutate Queue/rate/inflight state and does not perform Execution Control.
     """
 
     def __init__(self, risk_cfg: RiskConfig) -> None:

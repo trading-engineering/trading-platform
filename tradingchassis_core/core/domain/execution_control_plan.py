@@ -1,4 +1,4 @@
-"""Pure, non-canonical execution-control candidate planning scaffolds."""
+"""Pure, non-canonical Execution Control candidate planning scaffolds."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from tradingchassis_core.core.domain.execution_control_decision import (
 
 @dataclass(frozen=True, slots=True)
 class ExecutionControlCandidateInput:
-    """Policy-admitted candidate records for capture-only execution-control planning."""
+    """Policy-admitted candidate records for capture-only Execution Control planning."""
 
     accepted_generated: tuple[CandidateIntentRecord, ...] = ()
     passthrough_queued: tuple[CandidateIntentRecord, ...] = ()
@@ -34,7 +34,7 @@ class ExecutionControlCandidateInput:
 
 @dataclass(frozen=True, slots=True)
 class ExecutionControlPlan:
-    """Capture-only execution-control candidate planning result."""
+    """Capture-only Execution Control candidate planning result."""
 
     active_records: tuple[CandidateIntentRecord, ...] = ()
     queued_effective_records: tuple[CandidateIntentRecord, ...] = ()
@@ -70,7 +70,7 @@ class ExecutionControlPlan:
 def plan_execution_control_candidates(
     planning_input: ExecutionControlCandidateInput,
 ) -> ExecutionControlPlan:
-    """Build a deterministic, side-effect-free execution-control plan projection."""
+    """Build a deterministic, side-effect-free Execution Control plan projection."""
 
     active_records = (
         tuple(planning_input.accepted_generated)

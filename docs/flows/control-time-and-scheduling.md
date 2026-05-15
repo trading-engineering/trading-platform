@@ -2,7 +2,7 @@
 
 This note is the **Core package** source of truth for how non-canonical
 `ControlSchedulingObligation` relates to canonical `ControlTimeEvent` input and
-to execution-control deferral.
+to Execution Control deferral.
 
 ## Terms
 
@@ -27,7 +27,7 @@ to execution-control deferral.
 
 | Deferral kind | Time-dependent? | `ControlSchedulingObligation` by default? | Expected resolution |
 | --- | --- | --- | --- |
-| Rate limit | Yes | **Yes** (reason such as `rate_limit`) | Runtime may realize the obligation and inject `ControlTimeEvent`; the next `run_core_step` re-runs reduction → Strategy → … → execution-control apply. |
+| Rate limit | Yes | **Yes** (reason such as `rate_limit`) | Runtime may realize the obligation and inject `ControlTimeEvent`; the next `run_core_step` re-runs reduction → Strategy → … → Execution Control apply. |
 | Inflight | No (feedback-dependent) | **No** | Later canonical **execution / lifecycle** Events (for example `OrderSubmittedEvent`, `OrderExecutionFeedbackEvent`, or `FillEvent`, depending on lifecycle) update `StrategyState` so a subsequent step can reconsider queued work. |
 
 **Not in scope for the current contract:** inflight timeout, wall-clock recovery,
@@ -45,7 +45,7 @@ Core slice.
 4. generated intents
 5. candidate records + dominance / reconciliation
 6. policy admission
-7. execution-control plan / **apply**
+7. Execution Control plan / apply
 8. `CoreStepResult.dispatchable_intents` and optional `control_scheduling_obligation`
 9. Runtime performs venue dispatch and **injects** further canonical Events (including
    any `ControlTimeEvent` realized from an obligation).
@@ -56,7 +56,7 @@ they are selected only in the mutable **apply** stage (`apply_execution_control_
 ## Runtime ownership
 
 - Runtimes **must not** mutate Core queues (`StrategyState.queued_intents`, etc.)
-  directly outside the normal Core step / execution-control apply path.
+  directly outside the normal Core step / Execution Control apply path.
 - Queue flush / sendability decisions remain **ExecutionControl-owned** inside
   Core when `CoreExecutionControlApplyContext` is supplied to `run_core_step` /
   wakeup APIs.

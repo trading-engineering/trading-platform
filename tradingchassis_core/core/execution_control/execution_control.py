@@ -3,10 +3,10 @@
 Owns:
 - token bucket rate limiting state & math (time-dependent deferral may surface
   a ``ControlSchedulingObligation`` from the apply stage; see docs on control time)
-- inflight gating that routes NEW/REPLACE to queue (feedback-dependent; no
+- inflight gating that routes NEW/REPLACE to Queue (feedback-dependent; no
   scheduling obligation by default)
-- queue admission via StrategyState.merge_intents_into_queue(...)
-- queue-only local handling for certain CANCEL/REPLACE cases
+- Queue admission via StrategyState.merge_intents_into_queue(...)
+- Queue-only local handling for certain CANCEL/REPLACE cases
 """
 
 from __future__ import annotations
@@ -270,7 +270,7 @@ class ExecutionControl:
         queued: list[OrderIntent],
         handled_in_queue: list[OrderIntent],
     ) -> None:
-        """REPLACE acting on queued NEW: transform into updated NEW in the queue."""
+        """REPLACE acting on queued NEW: transform into updated NEW in the Queue."""
         removed = state.pop_queued_intents_for_order(it.instrument, it.client_order_id)
         for qi in removed:
             replaced_in_queue.append((qi.intent, it))

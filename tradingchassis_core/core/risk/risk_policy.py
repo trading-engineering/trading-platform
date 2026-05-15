@@ -2,7 +2,7 @@
 
 This module is intentionally internal and behavior-preserving:
 - It contains only policy checks (validation, kill-switches, hard limits).
-- It does not perform queue admission, rate limiting, or inflight gating.
+- It does not perform Queue admission, rate limiting, or inflight gating.
 """
 
 from __future__ import annotations

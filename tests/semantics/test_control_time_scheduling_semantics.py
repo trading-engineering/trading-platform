@@ -171,7 +171,7 @@ def test_inflight_deferral_does_not_emit_control_scheduling_obligation() -> None
 
 
 def test_inflight_queued_replace_reprocessed_after_order_submitted_feedback() -> None:
-    """Canonical OrderSubmittedEvent clears inflight so a later step can dispatch queue."""
+    """Canonical OrderSubmittedEvent clears inflight so a later step can dispatch Queue."""
     now_ts = 100
     state = tc.StrategyState(event_bus=tc.NullEventBus())
     tc.process_event_entry(state, _order_submitted_entry(0, now_ts))

@@ -54,10 +54,10 @@ Event Stream and Configuration match.
 ## Control time and scheduling (Core)
 
 `ControlSchedulingObligation` is a **non-canonical**, time-dependent hint produced
-when execution-control **apply** defers for **rate limits**. **Inflight** gating is
+when Execution Control **apply** defers for **rate limits**. **Inflight** gating is
 **feedback-dependent** and does not, by default, produce this obligation; queued
 work is reconsidered after canonical execution Events update state. Runtimes must
-not flush Core queues outside the normal `run_core_step` / execution-control apply
+not flush Core queues outside the normal `run_core_step` / Execution Control apply
 path. See [`docs/flows/control-time-and-scheduling.md`](docs/flows/control-time-and-scheduling.md).
 | Runtime-independent package | Test trading semantics without production I/O; explicit ownership boundary |
 | Shared kernel across environments | Serious Backtesting and Live parity for the decision engine—no secondary copy of Strategy/Risk Engine/Execution Control code elsewhere |
