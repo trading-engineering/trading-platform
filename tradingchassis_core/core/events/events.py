@@ -7,7 +7,7 @@ from dataclasses import dataclass
 
 @dataclass(slots=True)
 class OrderStateTransitionEvent:
-    """Observability payload for unexpected order-state transitions."""
+    """Observability payload for unexpected Order-State transitions."""
 
     ts_ns_local: int
     instrument: str

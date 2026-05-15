@@ -19,8 +19,10 @@ simulation, Live trading, Venue Adapters, and infrastructure around you change.
 
 > Terminology: Definitions and related terms match the
 > [`canonical terminology`](https://tradingchassis.github.io/docs/latest/00-guides/terminology/).  
-> In-repo pointers: [`core/docs/README.md`](docs/README.md) and
+> In-repo pointers: [`core/docs/index.md`](docs/index.md) and
 > [`core/docs/code-map/core-pipeline-map.md`](docs/code-map/core-pipeline-map.md).
+
+<img src="https://img.spacergif.org/spacer.gif" width="1" height="32"/>
 
 ## Why it is relevant
 
@@ -41,34 +43,6 @@ canonical Events, invoke Core, and perform Execution and dispatch outside Core u
 and Execution Control semantics stay identical across those Runtimes when the
 Event Stream and Configuration match.
 
-## What it gives you
-
-| What you get | Why it matters |
-| --- | --- |
-| One deterministic Core pipeline | Same Event-step path for reduction → evaluation → candidates → Risk Engine → Execution Control apply |
-| Canonical Event input model (`EventStreamEntry`) | Aligns with Event Stream + Processing Order; State is `f(Event Stream, Configuration)` |
-| Strategy output as Intents | Internal, order/Venue-agnostic commands before Venue Adapter-specific shapes |
-| Risk Engine separated from Execution Control | Risk Engine (policy) vs Queue / scheduling / rate-aware presentation split, as in the intent pipeline (Strategy → Risk → Queue → Adapter) |
-| `dispatchable_intents` + optional Control Scheduling Obligation | Runtime performs Execution and may inject canonical `ControlTimeEvent` when a **rate-limit** obligation is realized ([`docs/flows/control-time-and-scheduling.md`](docs/flows/control-time-and-scheduling.md)); inflight deferral does not emit that obligation by default |
-
-## Control time and scheduling (Core)
-
-`ControlSchedulingObligation` is a **non-canonical**, time-dependent hint produced
-when Execution Control **apply** defers for **rate limits**. **Inflight** gating is
-**feedback-dependent** and does not, by default, produce this obligation; queued
-work is reconsidered after canonical execution Events update state. Runtimes must
-not flush Core queues outside the normal `run_core_step` / Execution Control apply
-path. See [`docs/flows/control-time-and-scheduling.md`](docs/flows/control-time-and-scheduling.md).
-| Runtime-independent package | Test trading semantics without production I/O; explicit ownership boundary |
-| Shared kernel across environments | Serious Backtesting and Live parity for the decision engine—no secondary copy of Strategy/Risk Engine/Execution Control code elsewhere |
-
-In short: one pipeline, canonical Events, Intents inside Core, policy vs Execution
-Control split, dispatchable Intents plus optional Control Scheduling Obligation for
-the Runtime, and a boundary that makes parity and testing practical—not a second
-copy of decision logic per environment.
-
-## Why it matters for trading
-
 The gap between tested behavior and Live trading behavior can dominate outcomes. **Backtesting**
 is only a reliable guide if the **same** Core decision logic—Strategy,
 Risk Engine, Execution Control—can drive Live when the Event Stream and
@@ -81,6 +55,33 @@ equality, or identical fills. It **does** remove a major class of drift: the
 decision engine itself. Wall-clock scheduling, Venue behavior, Venue Adapter
 mapping, latency, liquidity, market-data quality, and infrastructure failure modes
 stay in the Runtime, Venue Adapter, and Venue—not in Core.
+
+<img src="https://img.spacergif.org/spacer.gif" width="1" height="32"/>
+
+## What it gives you
+
+| What you get | Why it matters |
+| --- | --- |
+| One deterministic Core Pipeline | Same Event-step path for reduction → evaluation → candidates → Risk Engine → Execution Control apply |
+| Canonical Event input model (`EventStreamEntry`) | Aligns with Event Stream + Processing Order; State is `f(Event Stream, Configuration)` |
+| Strategy output as Intents | Internal, order/Venue-agnostic commands before Venue Adapter-specific shapes |
+| Risk Engine separated from Execution Control | Risk Engine (policy) vs Queue / scheduling / rate-aware presentation split, as in the Intent Pipeline (Strategy → Risk → Queue → Adapter) |
+| `dispatchable_intents` + optional Control Scheduling Obligation | Runtime performs Execution and may inject canonical `ControlTimeEvent` when a **rate-limit** obligation is realized ([`docs/flows/control-time-and-scheduling.md`](docs/flows/control-time-and-scheduling.md)); inflight deferral does not emit that obligation by default |
+
+Core is designed to reduce decision-logic drift between Backtesting
+and Live: the same canonical Event + `run_core_step` / reduction APIs
+can drive both worlds when each Runtime constructs comparable `EventStreamEntry`
+sequences under the same Configuration. Normalizing feeds, timestamps, and
+control semantics before they enter Core narrows unnecessary divergence.
+
+Core does not remove every simulation-vs-production gap. Individual Venue
+behavior, latency, fills and liquidity, market-data quality, Venue Adapter
+behavior, Runtime scheduling, and infrastructure failure modes can still
+differ and must be modeled outside Core. What Core removes is a major
+source of mismatch—duplicating and subtly diverging Strategy/Risk Engine/
+Execution Control itself.
+
+<img src="https://img.spacergif.org/spacer.gif" width="1" height="32"/>
 
 ## How it fits into a full system
 
@@ -102,23 +103,10 @@ flowchart TB
 Core never replaces the Runtime: the Runtime is responsible for feeding canonical
 Events and for turning `dispatchable_intents` into Venue traffic (and for everything
 Kubernetes, credentials, and operations-related). What stays stable is the Core
-pipeline and contracts; what varies by design is Runtime choice, Venue Adapter,
+Pipeline and contracts; what varies by design is Runtime choice, Venue Adapter,
 Venue, and deployment.
 
-## Backtesting and Live parity
-
-Core is designed to reduce decision-logic drift between Backtesting
-and Live: the same canonical Event + `run_core_step` / reduction APIs
-can drive both worlds when each Runtime constructs comparable `EventStreamEntry`
-sequences under the same Configuration. Normalizing feeds, timestamps, and
-control semantics before they enter Core narrows unnecessary divergence.
-
-Core does not remove every simulation-vs-production gap. Individual Venue
-behavior, latency, fills and liquidity, market-data quality, Venue Adapter
-behavior, Runtime scheduling, and infrastructure failure modes can still
-differ and must be modeled outside Core. What Core removes is a major
-source of mismatch—duplicating and subtly diverging Strategy/Risk Engine/
-Execution Control itself.
+<img src="https://img.spacergif.org/spacer.gif" width="1" height="32"/>
 
 ## When to use `tradingchassis_core`
 
@@ -135,34 +123,7 @@ Execution Control itself.
 - You expect this package to ship a full Kubernetes Runtime, deployment manifests, or production operations.
 - You expect Core to execute orders, talk to Venues, replace Venue Adapters, or perform external dispatch.
 
-## Full pipeline
-
-Internal processing pipeline, in sequential order:
-
-```text
-Runtime reduces to canonical Events
-
-  -> process_event_entry / process_canonical_event
-  -> Strategy evaluation
-  -> generated Intents
-  -> candidate records
-  -> dominance / reconciliation
-  -> Risk Engine (policy)
-  -> Execution Control plan/apply
-  -> CoreStepResult.dispatchable_intents
-
-Runtime dispatches Intents into Orders
-```
-
-## Input / Core / Output / Not Owned By Core
-
-- Input: `EventStreamEntry` values with canonical Events and Event Stream position.
-- Core does: deterministic reduction, Strategy evaluation boundary, candidate
-  merge/dominance, Risk Engine (policy), Execution Control planning/apply.
-- Output: `CoreStepResult` with generated/candidate Intents, optional
-  `dispatchable_intents`, and optional `control_scheduling_obligation`.
-- Not owned by Core: raw market/feed I/O, Venue Adapters, external dispatch,
-  credentials/environment wiring, Runtime orchestration, Kubernetes/deployment.
+<img src="https://img.spacergif.org/spacer.gif" width="1" height="32"/>
 
 ## Quickstart
 
@@ -199,6 +160,67 @@ print(result.generated_intents, result.dispatchable_intents)
 
 See `examples/core_step_quickstart.py` for a full runnable walkthrough.
 
+<img src="https://img.spacergif.org/spacer.gif" width="1" height="32"/>
+
+## Full Pipeline
+
+Internal processing Pipeline, in sequential order:
+
+```text
+Runtime reduces to canonical Events
+
+  -> process_event_entry / process_canonical_event
+  -> Strategy evaluation
+  -> generated Intents
+  -> candidate records
+  -> dominance / reconciliation
+  -> Risk Engine (policy)
+  -> Execution Control plan/apply
+  -> CoreStepResult.dispatchable_intents
+
+Runtime dispatches Intents into Orders
+```
+
+<img src="https://img.spacergif.org/spacer.gif" width="1" height="32"/>
+
+## Input / Core / Output / Not Owned By Core
+
+- Input: `EventStreamEntry` values with canonical Events and Event Stream position.
+- Core does: deterministic reduction, Strategy evaluation boundary, candidate
+  merge/dominance, Risk Engine (policy), Execution Control planning/apply.
+- Output: `CoreStepResult` with generated/candidate Intents, optional
+  `dispatchable_intents`, and optional `control_scheduling_obligation`.
+- Not owned by Core: raw market/feed I/O, Venue Adapters, external dispatch,
+  credentials/environment wiring, Runtime orchestration, Kubernetes/deployment.
+
+### Ownership Boundary
+
+| Core owns | Runtime owns |
+| --- | --- |
+| canonical models/contracts | raw I/O and feed adapters |
+| State reduction and ordering | Venue Adapters and transport |
+| Strategy evaluation boundary | adapter-side Execution |
+| candidate Intents and reconciliation | credentials/env wiring |
+| Risk Engine (policy) | Backtesting/Live orchestration |
+| Execution Control | Kubernetes/deployment |
+| `CoreStepResult` decision contract | Runtime lifecycle glue |
+
+<img src="https://img.spacergif.org/spacer.gif" width="1" height="32"/>
+
+## Control time and scheduling (Core)
+
+`ControlSchedulingObligation` is a **non-canonical**, time-dependent hint produced
+when Execution Control **apply** defers for **rate limits**. **Inflight** gating is
+**feedback-dependent** and does not, by default, produce this obligation; queued
+work is reconsidered after canonical execution Events update State. Runtimes must
+not flush Core Queues outside the normal `run_core_step` / Execution Control apply
+path. See [`docs/flows/control-time-and-scheduling.md`](docs/flows/control-time-and-scheduling.md).  
+
+In short: one Pipeline, canonical Events, Intents inside Core, policy vs Execution
+Control split, dispatchable Intents plus optional Control Scheduling Obligation for
+the Runtime, and a boundary that makes parity and testing practical—not a second
+copy of decision logic per environment.
+
 ## Public Entrypoints
 
 | Entrypoint | Purpose |
@@ -210,8 +232,6 @@ See `examples/core_step_quickstart.py` for a full runnable walkthrough.
 | `process_event_entry` | Reduce one `EventStreamEntry` into `StrategyState` |
 | `process_canonical_event` | Reduce one canonical Event into `StrategyState` |
 
-
-
 ## CoreWakeupStep semantics
 
 CoreWakeupStep is not "parallel Event processing".
@@ -221,21 +241,11 @@ canonical entries, and Core reduces them in that order before making one decisio
 - `run_core_step` handles one `EventStreamEntry`.
 - `run_core_wakeup_step` handles an ordered batch of `EventStreamEntry` values.
 - Runtime is responsible for normalizing and ordering simultaneous raw inputs.
-- Core reduces all wakeup entries in order, evaluates Strategy once on the final state,
+- Core reduces all wakeup entries in order, evaluates Strategy once on the final State,
   then runs Policy Admission and ExecutionControl once.
 - Runtime dispatches after the returned `CoreStepResult`.
 
-## Ownership Boundary
-
-| Core owns | Runtime owns |
-| --- | --- |
-| canonical models/contracts | raw I/O and feed adapters |
-| State reduction and ordering | Venue Adapters and transport |
-| Strategy evaluation boundary | adapter-side Execution |
-| candidate Intents and reconciliation | credentials/env wiring |
-| Risk Engine (policy) | Backtesting/Live orchestration |
-| Execution Control | Kubernetes/deployment |
-| `CoreStepResult` decision contract | Runtime lifecycle glue |
+<img src="https://img.spacergif.org/spacer.gif" width="1" height="32"/>
 
 ## Developer Commands
 

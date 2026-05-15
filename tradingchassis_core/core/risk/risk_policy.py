@@ -109,7 +109,7 @@ class RiskPolicy:
         return self._constraints_policy.normalize_intent(it, state)
 
     def validate_intent(self, it: OrderIntent, state: StrategyState) -> tuple[bool, str]:
-        """Outbound intent sanity.
+        """Outbound Intent sanity.
 
         Even if your schemas allow 0 placeholders, outbound intents should still be sensible.
         """
@@ -189,7 +189,7 @@ class RiskPolicy:
             gross_q = sum(v[0] for v in book.values())
             net_q = sum(v[1] for v in book.values())
 
-            # Apply delta for this intent (new or replace).
+            # Apply delta for this Intent (new or replace).
             new_abs = notional
             new_signed = notional if it.side == "buy" else -notional
 

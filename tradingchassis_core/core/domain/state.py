@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 
 @dataclass(slots=True)
 class QueuedIntent:
-    """An intent stored for later sending (data-only Queue)."""
+    """An Intent stored for later sending (data-only Queue)."""
 
     intent: OrderIntent
     queued_at_ts_ns: int

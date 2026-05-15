@@ -1,4 +1,4 @@
-"""Final-state CoreWakeupStep Strategy evaluation semantics (Phase WU2)."""
+"""Final CoreWakeupStep Strategy evaluation semantics (Phase WU2)."""
 
 from __future__ import annotations
 

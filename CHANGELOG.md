@@ -7,9 +7,9 @@ This changelog starts from the clean Core package baseline.
 ### Added
 
 - Deterministic `run_core_step` and `run_core_wakeup_step` architecture.
-- CoreWakeupStep final-state Strategy evaluation: reduce all entries, then `CoreWakeupStrategyEvaluator` once.
+- CoreWakeupStep final Strategy evaluation: reduce all entries, then `CoreWakeupStrategyEvaluator` once.
 - Canonical Event input models and `EventStreamEntry`/`ProcessingPosition`.
-- Intent candidate record pipeline with dominance/reconciliation.
+- Intent candidate record Pipeline with dominance/reconciliation.
 - Risk Engine (policy-only) admission and Execution Control plan/apply integration.
 - `CoreStepResult.dispatchable_intents` and `ControlSchedulingObligation` outputs.
 - Core-only quickstart example and focused semantics test coverage.

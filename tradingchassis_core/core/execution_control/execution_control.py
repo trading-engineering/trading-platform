@@ -92,7 +92,7 @@ class ExecutionControl:
         max_orders_per_sec: float | None,
         max_cancels_per_sec: float | None,
     ) -> _RateRoutingResult:
-        """Route policy-allowed intent by rate-limits (accept now vs stage)."""
+        """Route policy-allowed Intent by rate-limits (accept now vs stage)."""
         if it.intent_type == "cancel":
             if max_cancels_per_sec is not None:
                 allowed, wake_ts = self.consume_rate(

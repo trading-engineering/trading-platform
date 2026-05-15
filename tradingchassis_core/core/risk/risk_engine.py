@@ -121,7 +121,7 @@ class RiskEngine:
         state: StrategyState,
         now_ts_ns_local: int,
     ) -> tuple[bool, str | None]:
-        """Evaluate one intent with policy-only checks and no side effects."""
+        """Evaluate one Intent with policy-only checks and no side effects."""
 
         raw_intents = [intent]
 

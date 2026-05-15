@@ -7,7 +7,7 @@ This documentation set describes the standalone clean Core package baseline.
 - `reference/public-api.md`: supported root exports and package boundary
 - `reference/events-reference.md`: canonical Events and Intent contracts
 - `flows/control-time-and-scheduling.md`: rate-limit vs inflight deferral and obligations
-- `code-map/core-pipeline-map.md`: deterministic pipeline walkthrough
+- `code-map/core-pipeline-map.md`: deterministic Pipeline walkthrough
 - `code-map/repository-map.md`: package layout and ownership map
 - `how-to/add-canonical-event.md`: extending canonical Event contracts
 - `how-to/update-core-step-pipeline.md`: changing CoreStep/CoreWakeupStep behavior

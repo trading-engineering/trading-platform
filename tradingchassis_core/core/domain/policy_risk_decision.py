@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 
 class PolicyIntentEvaluator(Protocol):
-    """Side-effect-safe policy evaluator contract for one candidate intent."""
+    """Side-effect-safe policy evaluator contract for one candidate Intent."""
 
     def evaluate_policy_intent(
         self,

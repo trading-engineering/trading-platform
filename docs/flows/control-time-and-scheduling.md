@@ -12,11 +12,11 @@ to Execution Control deferral.
 - **ControlTimeEvent** — Canonical **control** category Event. It becomes part of
   deterministic history only after the **Runtime** injects it as
   `EventStreamEntry` input (same ingestion path as other canonical Events).
-- **Inflight** — Core-side **intent-operation** gating: a sendability / operation
+- **Inflight** — Core-side **Intent-operation** gating: a sendability / operation
   slot (for example keyed by `client_order_id`) is occupied because an earlier
-  intent operation is still awaiting **canonical execution feedback**. This is
+  Intent operation is still awaiting **canonical execution feedback**. This is
   not the same as venue-side “order ownership”; Core models sendability for the
-  decision pipeline.
+  decision Pipeline.
 - **Rate-limit deferral** — Execution control blocks dispatch because the
   configured **token / time budget** for orders or cancels is not yet available at
   the apply clock (`now_ts_ns_local` in `CoreExecutionControlApplyContext`).
@@ -33,11 +33,11 @@ to Execution Control deferral.
 **Not in scope for the current contract:** inflight timeout, wall-clock recovery,
 or “synthetic” obligations for inflight-only waits.
 
-**Not implied:** every queued intent produces a scheduling obligation or a future
+**Not implied:** every queued Intent produces a scheduling obligation or a future
 `ControlTimeEvent`. Obligations are for **rate-limit** rechecks in the current
 Core slice.
 
-## Clean Core pipeline (unchanged)
+## Clean Core Pipeline (unchanged)
 
 1. `EventStreamEntry`
 2. `process_event_entry` / `process_canonical_event`
@@ -55,7 +55,7 @@ they are selected only in the mutable **apply** stage (`apply_execution_control_
 
 ## Runtime ownership
 
-- Runtimes **must not** mutate Core queues (`StrategyState.queued_intents`, etc.)
+- Runtimes **must not** mutate Core Queues (`StrategyState.queued_intents`, etc.)
   directly outside the normal Core step / Execution Control apply path.
 - Queue flush / sendability decisions remain **ExecutionControl-owned** inside
   Core when `CoreExecutionControlApplyContext` is supplied to `run_core_step` /

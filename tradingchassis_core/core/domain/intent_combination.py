@@ -1,4 +1,4 @@
-"""Pure helper for Core-step candidate intent combination."""
+"""Pure helper for Core-step candidate Intent combination."""
 
 from __future__ import annotations
 

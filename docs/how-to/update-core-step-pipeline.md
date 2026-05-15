@@ -19,7 +19,7 @@ Recommended workflow:
 
 Guardrails:
 
-- No Runtime dispatch logic in Core pipeline code.
+- No Runtime dispatch logic in Core Pipeline code.
 - No legacy compatibility contract restoration.
 - Keep deterministic behavior and public API coherence.
 

@@ -48,7 +48,7 @@ python -m build
 - Register canonical category handling in `core/domain/event_model.py`.
 - Update canonical reduction behavior in `core/domain/processing.py`.
 
-### CoreStep/CoreWakeupStep pipeline
+### CoreStep/CoreWakeupStep Pipeline
 
 - Update `core/domain/processing_step.py` for deterministic flow changes.
 - Keep reconciliation/policy/apply transitions explicit and side-effect-safe.
