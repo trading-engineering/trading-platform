@@ -9,7 +9,7 @@ to Execution Control deferral.
 - **ControlSchedulingObligation** — Non-canonical Core output: a structured hint
   that a **time-dependent** recheck may be useful. It is **not** part of the
   canonical Event Stream and does not mutate `StrategyState`.
-- **ControlTimeEvent** — Canonical **control** category Event. It becomes part of
+- **Control-Time Event** (`ControlTimeEvent`) — Canonical **control** category Event. It becomes part of the
   deterministic history only after the **Runtime** injects it as
   `EventStreamEntry` input (same ingestion path as other canonical Events).
 - **Inflight** — Core-side **Intent-operation** gating: a sendability / operation
@@ -17,7 +17,7 @@ to Execution Control deferral.
   Intent operation is still awaiting **canonical execution feedback**. This is
   not the same as venue-side “order ownership”; Core models sendability for the
   decision Pipeline.
-- **Rate-limit deferral** — Execution control blocks dispatch because the
+- **Rate-limit deferral** — Execution Control blocks dispatch because the
   configured **token / time budget** for orders or cancels is not yet available at
   the apply clock (`now_ts_ns_local` in `CoreExecutionControlApplyContext`).
 - **Inflight deferral** — Dispatch is blocked because **inflight** gating applies,
@@ -57,7 +57,7 @@ they are selected only in the mutable **apply** stage (`apply_execution_control_
 
 - Runtimes **must not** mutate Core Queues (`StrategyState.queued_intents`, etc.)
   directly outside the normal Core step / Execution Control apply path.
-- Queue flush / sendability decisions remain **ExecutionControl-owned** inside
+- Queue flush / sendability decisions remain **Execution Control-owned** inside
   Core when `CoreExecutionControlApplyContext` is supplied to `run_core_step` /
   wakeup APIs.
 

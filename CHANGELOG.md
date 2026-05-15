@@ -16,7 +16,8 @@ This changelog starts from the clean Core package baseline.
 - Root export of `PolicyIntentEvaluator` and documentation of extension points vs convenience implementations.
 - Pipeline integration tests for `RiskEngine` as `policy_evaluator` in `run_core_step`.
 - `FillEvent` reducer and Pipeline tests.
-- Runnable RiskEngine example at `tests/runnable/core_step_with_risk_engine.py`.
+- Runnable Risk Engine example at `examples/core_step_with_risk_engine.py`.
+- Extension-point docs under `docs/` and U3 candidate list at `docs/roadmap/dead-code-cleanup-candidates.md`.
 
 ### Changed
 

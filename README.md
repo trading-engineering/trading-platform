@@ -47,14 +47,14 @@ when you call step APIs, and others must be supplied by your Runtime or tests.
 
 ### Convenience implementations (optional; not wired by default)
 
-- **`RiskEngine`** — provided `PolicyIntentEvaluator` with built-in policy gates
+- **Risk Engine** (`RiskEngine`) — provided `PolicyIntentEvaluator` with built-in policy gates
 - **`ExecutionControl`** — provided queue/rate/inflight implementation
 - **`NullEventBus`** — discards observability events for tests and examples
 
 The minimal quickstart uses an inline allow-all policy to stay small. That does
-**not** mean `RiskEngine` is unused or dead. Use `RiskEngine` when you want the
-built-in policy behavior. See `examples/core_step_quickstart.py` (minimal) and
-`tests/runnable/core_step_with_risk_engine.py` (RiskEngine variant).
+**not** mean the Risk Engine is unused or dead. Use `RiskEngine` when you want the
+built-in Risk Engine policy behavior. See `examples/core_step_quickstart.py` (minimal) and
+`examples/core_step_with_risk_engine.py` (Risk Engine variant).
 
 <img src="https://img.spacergif.org/spacer.gif" width="1" height="32"/>
 
@@ -84,7 +84,7 @@ Configuration are comparable. Deterministic Core logic driven by canonical Event
 makes that logic reproducible and unit-testable without duplicating it in each
 Runtime.
 
-This package does **not** guarantee profitable trading, perfect Backtesting/Live
+This package does **not** guarantee profitable trading, perfect Backtesting and Live
 equality, or identical fills. It **does** remove a major class of drift: the
 decision engine itself. Wall-clock scheduling, Venue behavior, Venue Adapter
 mapping, latency, liquidity, market-data quality, and infrastructure failure modes
@@ -167,10 +167,10 @@ Run the quickstart
 python examples/core_step_quickstart.py
 ```
 
-Optional RiskEngine policy example (same Pipeline, built-in policy):
+Optional Risk Engine policy example (same Pipeline, built-in policy):
 
 ```bash
-python tests/runnable/core_step_with_risk_engine.py
+python examples/core_step_with_risk_engine.py
 ```
 
 or minimal shape:
@@ -198,7 +198,9 @@ print(result.generated_intents, result.dispatchable_intents)
 # Expected: () () — no Strategy or Risk Engine/Execution Control path in this snippet.
 ```
 
-See `examples/core_step_quickstart.py` for a full runnable walkthrough.
+See `examples/core_step_quickstart.py` for a full runnable walkthrough and
+[`docs/how-to/use-policy-evaluator.md`](docs/how-to/use-policy-evaluator.md) for policy extension points.
+Planned U3 cleanup candidates: [`docs/roadmap/dead-code-cleanup-candidates.md`](docs/roadmap/dead-code-cleanup-candidates.md).
 
 <img src="https://img.spacergif.org/spacer.gif" width="1" height="32"/>
 
@@ -241,7 +243,7 @@ Runtime dispatches Intents into Orders
 | State reduction and ordering | Venue Adapters and transport |
 | Strategy evaluation boundary | adapter-side Execution |
 | candidate Intents and reconciliation | credentials/env wiring |
-| Risk Engine (policy) | Backtesting/Live orchestration |
+| Risk Engine (policy) | Backtesting and Live orchestration |
 | Execution Control | Kubernetes/deployment |
 | `CoreStepResult` decision contract | Runtime lifecycle glue |
 
@@ -272,7 +274,7 @@ copy of decision logic per environment.
 | `process_event_entry` | Reduce one `EventStreamEntry` into `StrategyState` |
 | `process_canonical_event` | Reduce one canonical Event into `StrategyState` |
 | `PolicyIntentEvaluator` | Protocol for policy admission (`evaluate_policy_intent`) |
-| `RiskEngine` | Convenience `PolicyIntentEvaluator` implementation |
+| Risk Engine (`RiskEngine`) | Convenience `PolicyIntentEvaluator` implementation |
 
 ## CoreWakeupStep semantics
 
@@ -284,7 +286,7 @@ canonical entries, and Core reduces them in that order before making one decisio
 - `run_core_wakeup_step` handles an ordered batch of `EventStreamEntry` values.
 - Runtime is responsible for normalizing and ordering simultaneous raw inputs.
 - Core reduces all wakeup entries in order, evaluates Strategy once on the final State,
-  then runs Policy Admission and ExecutionControl once.
+  then runs Policy Admission and Execution Control once.
 - Runtime dispatches after the returned `CoreStepResult`.
 
 <img src="https://img.spacergif.org/spacer.gif" width="1" height="32"/>
@@ -296,7 +298,7 @@ From root:
 ```bash
 python -m pip install -e ".[dev]"
 python examples/core_step_quickstart.py
-python tests/runnable/core_step_with_risk_engine.py
+python examples/core_step_with_risk_engine.py
 ./scripts/check.sh
 python -m build
 ```

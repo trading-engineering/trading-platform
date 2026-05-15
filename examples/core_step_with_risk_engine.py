@@ -1,7 +1,11 @@
-"""Core-only step using the provided RiskEngine as policy evaluator.
+"""Core-only example: built-in Risk Engine as ``PolicyIntentEvaluator``.
 
-See ``examples/core_step_quickstart.py`` for the minimal inline allow-all policy variant.
-Run: ``python tests/runnable/core_step_with_risk_engine.py`` from the ``core/`` directory.
+Demonstrates the full policy + Execution Control apply path. The main quickstart
+(``examples/core_step_quickstart.py``) intentionally uses a minimal inline
+allow-all policy; use this example when you want the provided Risk Engine gates.
+
+Core returns ``dispatchable_intents``; a Runtime performs Execution and Venue
+dispatch later. Core does not dispatch externally.
 """
 
 from __future__ import annotations
@@ -9,16 +13,16 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-_CORE_ROOT = Path(__file__).resolve().parents[2]
-if str(_CORE_ROOT) not in sys.path:
-    sys.path.insert(0, str(_CORE_ROOT))
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-import tradingchassis_core as tc  # noqa: E402
-from tradingchassis_core.core.domain.types import NotionalLimits  # noqa: E402
+import tradingchassis_core as tc
+from tradingchassis_core.core.domain.types import NotionalLimits
 
 INSTRUMENT = "BTC-USDC-PERP"
 
 
+# Strategy Evaluator: emits one generated Intent for this Core step.
 class _OneIntentEvaluator:
     def evaluate(self, context: object) -> list[tc.NewOrderIntent]:
         _ = context
@@ -39,6 +43,7 @@ class _OneIntentEvaluator:
 
 
 def _control_entry(index: int, ts_ns_local: int) -> tc.EventStreamEntry:
+    # Control-Time Event as a simple canonical driver (scheduling obligations come from apply).
     return tc.EventStreamEntry(
         position=tc.ProcessingPosition(index=index),
         event=tc.ControlTimeEvent(
@@ -84,6 +89,7 @@ def main() -> None:
         ts_ns_exch=999,
     )
 
+    # Built-in Risk Engine (`RiskEngine`) satisfies PolicyIntentEvaluator for policy admission.
     policy_engine = tc.RiskEngine(_risk_config())
     result = tc.run_core_step(
         state,
@@ -100,7 +106,7 @@ def main() -> None:
         ),
     )
 
-    print("CoreStep with RiskEngine (Core-only; Runtime dispatches later)")
+    print("CoreStep with Risk Engine (Core-only; Runtime dispatches later)")
     print("generated:", [i.client_order_id for i in result.generated_intents])
     print("dispatchable:", [i.client_order_id for i in result.dispatchable_intents])
 

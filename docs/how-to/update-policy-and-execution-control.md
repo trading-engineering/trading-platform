@@ -9,7 +9,9 @@ The Risk Engine (policy) and Execution Control are separate deterministic phases
 - Core integration:
   `core/domain/policy_risk_decision.py` and `run_core_step` policy phase
 - Built-in policy-only evaluator:
-  `core/risk/risk_engine.py`
+  `core/risk/risk_engine.py` (public Risk Engine class `RiskEngine`; internal `RiskPolicy` / `ExecutionConstraintsPolicy`)
+- User guide:
+  `use-policy-evaluator.md`
 
 When updating Risk Engine policy behavior:
 
