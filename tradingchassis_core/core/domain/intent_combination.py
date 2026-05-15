@@ -1,4 +1,4 @@
-"""Pure helper for Core-step candidate intent combination."""
+"""Pure helper for Core-step candidate Intent combination."""
 
 from __future__ import annotations
 
@@ -33,22 +33,6 @@ def _dominance_rank(intent: OrderIntent) -> int:
     if intent.intent_type == "new":
         return 1
     return 0
-
-
-def combine_candidate_intents(
-    *,
-    generated_intents: Sequence[OrderIntent],
-    queued_intents: Sequence[OrderIntent],
-) -> tuple[OrderIntent, ...]:
-    """Compatibility helper returning only effective intent values.
-
-    Prefer ``combine_candidate_intent_records`` when origin/provenance is needed.
-    """
-    records = combine_candidate_intent_records(
-        generated_intents=generated_intents,
-        queued_intents=queued_intents,
-    )
-    return tuple(record.intent for record in records)
 
 
 def combine_candidate_intent_records(

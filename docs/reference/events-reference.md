@@ -5,7 +5,7 @@ contracts. Pydantic models are the schema source of truth.
 
 ## Canonical Event Models
 
-- `MarketEvent`: book/trade market data input for state reduction
+- `MarketEvent`: book/trade market data input for State reduction
 - `ControlTimeEvent`: canonical **control** wakeup; becomes stream history only
   after Runtime injection. Reducer updates monotone time (and processing cursor
   when positioned). Scheduling **obligations** are a separate non-canonical output;

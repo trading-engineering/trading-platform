@@ -19,6 +19,7 @@ def test_public_api_exposes_clean_core_symbols() -> None:
         "CoreWakeupStrategyEvaluator",
         "CoreStepResult",
         "CoreStepDecision",
+        "PolicyIntentEvaluator",
         "PolicyRiskDecision",
         "ExecutionControlDecision",
         "CandidateIntentRecord",
@@ -58,6 +59,13 @@ def test_public_api_does_not_expose_removed_compatibility_symbols() -> None:
         "".join(["decide_", "intents"]),
         "".join(["Venue", "Adapter"]),
         "".join(["Venue", "Policy"]),
+        "fold_event_stream_entries",
+        "apply_execution_control_plan",
+        "ExecutionControlApplyContext",
+        "ExecutionControlApplyResult",
+        "ExecutionControlBlockedRecord",
+        "ExecutionControlDispatchableRecord",
+        "ExecutionControlHandledRecord",
     )
     for symbol in removed:
         assert not hasattr(tc, symbol)

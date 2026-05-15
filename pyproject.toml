@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "TradingChassis-core"
 version = "0.1.0"
-description = "Deterministic trading decision kernel."
+description = "Deterministic trading decision engine."
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [{ name = "TradingChassis Core Contributors" }]

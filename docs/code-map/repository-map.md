@@ -6,15 +6,16 @@ High-level map for the standalone Core package.
 
 - `tradingchassis_core/__init__.py`: public package boundary exports
 - `tradingchassis_core/core/domain/`: canonical contracts and deterministic
-  pipeline orchestration
+  Pipeline orchestration
 - `tradingchassis_core/core/risk/`: policy-only Risk Engine evaluator/config
 - `tradingchassis_core/core/execution_control/`: Execution Control primitives
-- `tradingchassis_core/core/events/`: internal Event bus/sink utilities
+- `tradingchassis_core/core/events/`: Event bus/sink utilities (`NullEventBus`; `LoggingEventSink` for Runtime)
 
 ## Tests and examples
 
 - `tests/semantics/`: focused contract and deterministic behavior tests
-- `examples/core_step_quickstart.py`: public-import quickstart
+- `examples/core_step_quickstart.py`: minimal inline-policy quickstart
+- `examples/core_step_with_risk_engine.py`: Risk Engine policy quickstart
 
 ## Top-level package docs and metadata
 
@@ -30,7 +31,7 @@ Core owns:
 
 - canonical Events and Processing Order contracts
 - deterministic reduction and step decisions
-- Intent candidate, Risk Engine (policy), Execution Control outputs
+- Intent candidate records, Risk Engine (policy), Execution Control outputs
 
 Core does not own:
 

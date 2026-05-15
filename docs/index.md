@@ -7,11 +7,13 @@ This documentation set describes the standalone clean Core package baseline.
 - `reference/public-api.md`: supported root exports and package boundary
 - `reference/events-reference.md`: canonical Events and Intent contracts
 - `flows/control-time-and-scheduling.md`: rate-limit vs inflight deferral and obligations
-- `code-map/core-pipeline-map.md`: deterministic pipeline walkthrough
+- `code-map/core-pipeline-map.md`: deterministic Pipeline walkthrough
 - `code-map/repository-map.md`: package layout and ownership map
 - `how-to/add-canonical-event.md`: extending canonical Event contracts
 - `how-to/update-core-step-pipeline.md`: changing CoreStep/CoreWakeupStep behavior
 - `how-to/update-policy-and-execution-control.md`: changing Risk Engine / Execution Control behavior
+- `how-to/use-policy-evaluator.md`: `PolicyIntentEvaluator`, `RiskEngine`, and examples
+- `roadmap/dead-code-cleanup-candidates.md`: U3 removal candidates (audit before delete)
 
 ## Package Purpose
 
@@ -38,7 +40,15 @@ canonical contracts, State reduction, and step-level decision outputs.
 Pydantic contract models in `tradingchassis_core/core/domain/types.py` are the
 source of truth for canonical Event/Intent schemas.
 
+## Extension points (summary)
+
+- **Supplied by Runtime/tests:** Strategy evaluators, `PolicyIntentEvaluator`, `ExecutionControl`, `CoreConfiguration`, `EventBus`
+- **Convenience:** `RiskEngine`, `NullEventBus`
+- **Wired inside Core:** reduction, candidate reconciliation, policy/EC mechanisms, `CoreStepResult`
+
+Examples: `examples/core_step_quickstart.py` (inline policy), `examples/core_step_with_risk_engine.py` (Risk Engine).
+
 ## Out of Scope
 
 - Runtime orchestration and Order lifecycle ownership
-- Venue Adapters, Backtesting/Live I/O, external dispatch
+- Venue Adapters, Backtesting and Live I/O, external dispatch

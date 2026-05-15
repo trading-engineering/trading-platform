@@ -137,7 +137,7 @@ def apply_execution_control_plan(
     events.
 
     ``control_scheduling_obligation`` is selected only from **rate-limit**
-    deferrals (time-dependent). **Inflight** gating queues or blocks work without
+    deferrals (time-dependent). **Inflight** gating Queues or blocks work without
     adding a scheduling obligation; that case is resolved when later canonical
     events update sendability (not via a Core-derived wake time in this slice).
     """

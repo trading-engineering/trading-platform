@@ -1,4 +1,4 @@
-"""Core-owned non-canonical candidate intent provenance models."""
+"""Core-owned non-canonical candidate Intent provenance models."""
 
 from __future__ import annotations
 

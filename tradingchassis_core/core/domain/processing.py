@@ -15,7 +15,7 @@ This module is intentionally small:
 from __future__ import annotations
 
 import math
-from collections.abc import Iterable, Mapping
+from collections.abc import Mapping
 
 from tradingchassis_core.core.domain.configuration import CoreConfiguration
 from tradingchassis_core.core.domain.event_model import (
@@ -238,22 +238,3 @@ def process_event_entry(
         position=entry.position,
         configuration=configuration,
     )
-
-
-def fold_event_stream_entries(
-    state: StrategyState,
-    entries: Iterable[EventStreamEntry],
-    *,
-    configuration: CoreConfiguration | None = None,
-) -> StrategyState:
-    """Fold ordered EventStreamEntry values into the provided state.
-
-    This utility is intentionally minimal and deterministic:
-    - entries are applied in caller-provided order;
-    - each entry is processed through ``process_event_entry``;
-    - errors from canonical/ordering validation are propagated unchanged;
-    - the same state instance is returned for ergonomic chaining.
-    """
-    for entry in entries:
-        process_event_entry(state, entry, configuration=configuration)
-    return state

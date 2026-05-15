@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 
 @dataclass(slots=True)
 class QueuedIntent:
-    """An intent stored for later sending (data-only Queue)."""
+    """An Intent stored for later sending (data-only Queue)."""
 
     intent: OrderIntent
     queued_at_ts_ns: int
@@ -575,36 +575,3 @@ class StrategyState:
             dropped.append(intent)
 
         return queued, replaced_in_queue, dropped
-
-    def pop_queued_intents(
-        self,
-        instrument: str,
-        *,
-        max_items: int | None = None,
-    ) -> list[OrderIntent]:
-        q: deque[QueuedIntent] = self.queued_intents.setdefault(instrument, deque())
-        if not q:
-            return []
-        items = list(q)
-        items.sort(key=lambda qi: (qi.priority, qi.queued_at_ts_ns))
-
-        filtered: list[QueuedIntent] = []
-        for qi in items:
-            if self.has_inflight(instrument, qi.intent.client_order_id):
-                continue
-            filtered.append(qi)
-
-        selected = filtered if max_items is None else filtered[:max(0, max_items)]
-        if max_items is not None and max_items <= 0:
-            return []
-
-        selected_ids = {id(x) for x in selected}
-        out: list[OrderIntent] = []
-        new_q: deque[QueuedIntent] = deque()
-        for qi in q:
-            if id(qi) in selected_ids:
-                out.append(qi.intent)
-            else:
-                new_q.append(qi)
-        self.queued_intents[instrument] = new_q
-        return out

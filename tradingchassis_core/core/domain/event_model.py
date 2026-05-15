@@ -11,12 +11,6 @@ from tradingchassis_core.core.domain.types import (
     OrderExecutionFeedbackEvent,
     OrderSubmittedEvent,
 )
-from tradingchassis_core.core.events.events import (
-    DerivedPnLEvent,
-    ExposureDerivedEvent,
-    OrderStateTransitionEvent,
-    RiskDecisionEvent,
-)
 from tradingchassis_core.core.execution_control.types import ControlSchedulingObligation
 
 
@@ -40,15 +34,6 @@ CANONICAL_STREAM_CANDIDATE_CATEGORY_BY_TYPE: dict[type[object], CanonicalEventCa
     OrderExecutionFeedbackEvent: CanonicalEventCategory.EXECUTION,
     ControlTimeEvent: CanonicalEventCategory.CONTROL,
 }
-
-TELEMETRY_EVENT_TYPES: frozenset[type[object]] = frozenset(
-    {
-        RiskDecisionEvent,
-        DerivedPnLEvent,
-        ExposureDerivedEvent,
-        OrderStateTransitionEvent,
-    }
-)
 
 NON_CANONICAL_CONTROL_HELPER_TYPES: frozenset[type[object]] = frozenset(
     {ControlSchedulingObligation}

@@ -119,7 +119,7 @@ def main() -> None:
     state = tc.StrategyState(event_bus=tc.NullEventBus())
 
     # Core consumes canonical Events. Here we use ControlTimeEvent as a simple
-    # canonical trigger Event to drive the deterministic step pipeline.
+    # canonical trigger Event to drive the deterministic step Pipeline.
     result_v1 = run_v1_generated_only(state)
     result_v2 = run_v2_with_policy_and_apply(state)
 

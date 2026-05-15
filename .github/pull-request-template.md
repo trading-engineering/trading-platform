@@ -23,7 +23,7 @@ Describe key implementation decisions.
 
 - [ ] Change preserves deterministic behavior
 - [ ] Tests confirm reproducibility
-- [ ] No hidden state introduced
+- [ ] No hidden State introduced
 
 ## Performance Impact
 
