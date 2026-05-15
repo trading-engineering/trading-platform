@@ -1,72 +1,57 @@
 # Security Policy
 
-## Supported Versions
+## Supported Baseline
 
-Only the latest version on the `main` branch is actively maintained.
+The supported baseline is the clean standalone Core package line (`0.1.x` and
+forward on the active mainline branch).
 
-Older commits and historical states of the repository may not receive security updates or patches.
-
----
+Older historical commits may not receive fixes.
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability, please **do not open a public GitHub issue**.
+Do not report vulnerabilities in public issues.
 
-Instead, report it responsibly via:
+Use a private security advisory workflow if available for this repository, or
+contact project maintainers through the configured private channel.
 
-- GitHub Security Advisories
-- Direct contact with the repository owner (if necessary)
+Include:
 
-When submitting a report, please include:
+- affected component(s)
+- reproduction details and impact
+- suggested mitigations (if known)
 
-- A clear description of the vulnerability
-- Steps to reproduce (if applicable)
-- Potential impact and affected components
-- Any suggested mitigation or fix
+## Scope
 
-Valid reports will be acknowledged in a timely manner and handled through responsible disclosure.
+This policy covers the Core package in this repository, including:
 
----
+- canonical Event and Intent contracts
+- deterministic CoreStep/CoreWakeupStep decision pipeline
+- package integrity and dependency usage in `tradingchassis_core`
 
-## Security Scope
+## Secrets and Credentials Policy
 
-This repository provides:
+Never commit live secrets or account-sensitive data, including:
 
-- Deterministic backtesting architecture
-- Risk-aware execution simulation
-- Event-driven domain modeling
+- API keys and Venue credentials
+- account identifiers tied to real accounts
+- private trading data dumps
 
-It does **not** currently provide production-grade live trading infrastructure.
+Tests and documentation examples must use synthetic or non-sensitive data only.
 
-Live exchange connectivity is under development and not feature-complete.
+## Runtime and Trading Caveat
 
----
+- TradingChassis Core is a library and does not guarantee safe live trading by
+  itself.
+- Runtime orchestration, Venue behavior, and deployment hardening remain outside
+  this package scope and require separate validation.
 
-## Dependency Security
+## No Financial Performance Guarantee
 
-- Dependencies are explicitly defined
-- Python version is pinned (3.11.x)
-- External libraries should be kept up to date
+This package provides deterministic software behavior, not financial advice or
+performance guarantees.
 
-Security-related dependency updates are prioritized.
+## Dependency Vulnerability Handling
 
----
-
-## Responsible Usage
-
-This code is intended for research and controlled environments.
-
-Users are responsible for:
-
-- Secure handling of API credentials
-- Secure deployment of live trading components
-- Validation of risk configurations
-
-This repository does not assume liability for financial losses
-resulting from misuse or incorrect configuration.
-
----
-
-## Disclosure Policy
-
-Please allow reasonable time for investigation and remediation before public disclosure of any reported vulnerabilities.
+- Keep dependencies minimal and pinned by compatible ranges.
+- Review dependency advisories and patch vulnerable versions promptly.
+- Prefer removing unused dependencies over adding new tooling.

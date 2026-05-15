@@ -1,60 +1,24 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
-
-The format is based on Keep a Changelog
-and this project adheres to Semantic Versioning.
+This changelog starts from the clean Core package baseline.
 
 ## [Unreleased]
 
-## [0.1.0] - 2026-02-17
-
-Initial public release of the core.
-
 ### Added
 
-#### Core Domain
-- Explicit order state machine
-- Structured domain types and reject reasons
-- Slot-based order tracking
-- Event bus and event sink abstractions
-- JSON schema validation for domain events
+- Deterministic `run_core_step` and `run_core_wakeup_step` architecture.
+- CoreWakeupStep final-state Strategy evaluation: reduce all entries, then `CoreWakeupStrategyEvaluator` once.
+- Canonical Event input models and `EventStreamEntry`/`ProcessingPosition`.
+- Intent candidate record pipeline with dominance/reconciliation.
+- Risk Engine (policy-only) admission and Execution Control plan/apply integration.
+- `CoreStepResult.dispatchable_intents` and `ControlSchedulingObligation` outputs.
+- Core-only quickstart example and focused semantics test coverage.
 
-#### Risk Layer
-- Configurable risk engine
-- Risk constraint enforcement
-- Deterministic risk gating before execution
+### Changed
 
-#### Backtest Layer
-- Integration with [hftbacktest](https://github.com/nkaz001/hftbacktest)
-- Strategy runner abstraction
-- Venue adapter interface
-- Deterministic event processing pipeline
+- Package metadata, exports, and docs reset for standalone Core library identity.
+- Pydantic models established as contract source of truth across public API docs.
 
-#### Orchestration
-- Segment-based execution model
-- Parameter sweep runtime
-- Experiment and segment entrypoints
-- Prometheus metrics integration
-- MLflow-compatible logging hooks
+### Removed
 
-#### Execution Modes
-- Fully local execution example
-- Cloud-native runtime entrypoints
-- S3-compatible storage adapter
-
-#### Strategy
-- Base strategy interface
-- Structured strategy configuration
-
-#### Testing
-- Semantic invariant test suite
-- Order state transition validation
-- Queue dominance rules
-- Risk constraint validation
-- Schema conformance tests
-
-#### Tooling
-- Dev container configuration
-- Development validation scripts
-- Dependency compilation helper
+- Legacy compatibility-first contracts and references not part of the clean baseline.

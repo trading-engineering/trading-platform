@@ -22,7 +22,7 @@ class ProcessingPosition:
 
 @dataclass(frozen=True, slots=True)
 class EventStreamEntry:
-    """Minimal envelope for canonical event processing-order input.
+    """Minimal envelope for canonical Event processing-order input.
 
     This value object intentionally carries only:
     - the causal processing-order position; and

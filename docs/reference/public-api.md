@@ -1,0 +1,69 @@
+# Public API Reference
+
+The public package boundary is the `tradingchassis_core` root import.
+
+## Canonical Events
+
+- `MarketEvent`
+- `ControlTimeEvent`
+- `OrderSubmittedEvent`
+- `OrderExecutionFeedbackEvent`
+- `FillEvent`
+
+## Step APIs
+
+- `process_canonical_event`
+- `process_event_entry`
+- `run_core_step`
+- `run_core_wakeup_reduction`
+- `run_core_wakeup_decision`
+- `run_core_wakeup_step` (ordered batch: reduce all entries, then evaluate Strategy once)
+
+## Step inputs/outputs
+
+- `EventStreamEntry`
+- `ProcessingPosition`
+- `CorePolicyAdmissionContext`
+- `CoreExecutionControlApplyContext`
+- `CoreStepDecision`
+- `CoreStepResult`
+- `CoreWakeupReductionResult`
+- `CoreWakeupStrategyContext`
+- `CoreWakeupStrategyEvaluator`
+
+## Supporting deterministic models
+
+- `CoreConfiguration`
+- `StrategyState`
+- `CandidateIntentRecord`
+- `CandidateIntentOrigin`
+- `PolicyRiskDecision`
+- `ExecutionControlDecision`
+- `ExecutionControl`
+- `ControlSchedulingObligation` (non-canonical; **rate-limit** recheck hint in the
+  current slice—see `../flows/control-time-and-scheduling.md`)
+
+## Intents and numeric models
+
+- `OrderIntent`
+- `NewOrderIntent`
+- `CancelOrderIntent`
+- `ReplaceOrderIntent`
+- `Price`
+- `Quantity`
+
+## Runtime-safe utilities
+
+- `NullEventBus`
+- `RiskEngine` (Risk Engine; policy-only)
+- `RiskConfig`
+
+## Publicly absent by design
+
+- `GateDecision`
+- `compat_gate_decision`
+- `ControlTimeQueueReevaluationContext`
+- `CoreDecisionContext`
+- `OrderStateEvent`
+- `DerivedFillEvent`
+- `VenueAdapter` / `VenuePolicy`

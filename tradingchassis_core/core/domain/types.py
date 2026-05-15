@@ -1,60 +1,37 @@
-"""Core shared data models and schemas.
+"""Core shared data models.
 
-This module defines Pydantic models used across the system for market data,
-order intents, risk constraints, and execution feedback.
-
-Semantic notes for this refactor slice:
-- ``MarketEvent`` is a canonical Market Event candidate.
-- ``FillEvent`` is tracked as a canonical Execution Event candidate.
-- ``OrderStateEvent`` remains a compatibility execution-feedback /
-  snapshot-materialization record for now.
-
-These models are treated as schema definitions and intentionally prioritize
-structural clarity over minimal class size.
+Pydantic models in this module are the source of truth for Core contracts.
 """
 
 # pylint: disable=line-too-long,missing-class-docstring,missing-function-docstring
 from __future__ import annotations
 
-from typing import Annotated, Any, Literal
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
-
-# ---------------------------------------------------------------------------
-# Common models
-# ---------------------------------------------------------------------------
 
 
 class Money(BaseModel):
     currency: str = Field(..., min_length=1)
-    amount: float = Field(...,)
-
+    amount: float = Field(...)
     model_config = ConfigDict(extra="forbid")
 
 
 class Price(BaseModel):
     currency: str = Field(..., min_length=1)
     value: float = Field(..., ge=0)
-
     model_config = ConfigDict(extra="forbid")
 
 
 class Quantity(BaseModel):
     value: float = Field(..., ge=0)
-    unit: str = Field(..., min_length=1)  # e.g. "shares", "contracts", "BTC"
-
+    unit: str = Field(..., min_length=1)
     model_config = ConfigDict(extra="forbid")
-
-
-# ---------------------------------------------------------------------------
-# Market data models (MarketEvent + payloads)
-# ---------------------------------------------------------------------------
 
 
 class BookLevel(BaseModel):
     price: Price
     quantity: Quantity
-
     model_config = ConfigDict(extra="forbid")
 
 
@@ -62,9 +39,7 @@ class BookPayload(BaseModel):
     book_type: Literal["snapshot", "delta"]
     bids: list[BookLevel]
     asks: list[BookLevel]
-    # depth is optional in the JSON schema, but must be >= 0 when present
     depth: int | None = Field(default=None, ge=0)
-
     model_config = ConfigDict(extra="forbid")
 
 
@@ -73,29 +48,20 @@ class TradePayload(BaseModel):
     price: Price
     quantity: Quantity
     trade_id: str | None = Field(default=None, min_length=1)
-
     model_config = ConfigDict(extra="forbid")
 
 
 class MarketEvent(BaseModel):
     ts_ns_exch: int = Field(..., gt=0)
     ts_ns_local: int = Field(..., gt=0)
-
     instrument: str = Field(..., min_length=1)
     event_type: Literal["book", "trade"]
-
     book: BookPayload | None = None
     trade: TradePayload | None = None
-
     model_config = ConfigDict(extra="forbid")
 
     @model_validator(mode="after")
     def validate_payload_for_event_type(self) -> MarketEvent:
-        """
-        Enforce the conditional requirements from the JSON schema:
-        - If event_type == "book": book must be present, trade must be None
-        - If event_type == "trade": trade must be present, book must be None
-        """
         if self.event_type == "book":
             if self.book is None:
                 raise ValueError("book payload is required when event_type is 'book'")
@@ -115,146 +81,49 @@ class MarketEvent(BaseModel):
         return self.event_type == "trade"
 
 
-# ---------------------------------------------------------------------------
-# Order intent models (discriminated union)
-# ---------------------------------------------------------------------------
-
-
 TimeInForce = Literal["GTC", "IOC", "FOK", "POST_ONLY"]
 OrderType = Literal["limit", "market"]
 Side = Literal["buy", "sell"]
 
 
 class OrderIntentBase(BaseModel):
-    """
-    Base fields shared by all order intents.
-
-    Notes:
-    - client_order_id maps to the execution binding's order_id and is used for new/cancel/replace.
-    - intents_correlation_id is optional and can be used to link multiple intents together.
-    """
-
-    ts_ns_local: int = Field(
-        ...,
-        gt=0,
-        description="Local intent timestamp in nanoseconds since Unix epoch.",
-    )
-    instrument: str = Field(
-        ...,
-        min_length=1,
-        description="Instrument identifier used for routing/execution binding (e.g., symbol, asset code).",
-    )
-    client_order_id: str = Field(
-        ...,
-        min_length=1,
-        description=(
-            "Order identifier (maps to the execution binding's order_id). "
-            "Used for new/cancel/replace. Must be unique while an order with the same ID exists."
-        ),
-    )
-    intents_correlation_id: str | None = Field(
-        default=None,
-        min_length=1,
-        description=(
-            "Optional correlation identifier to link multiple intents "
-            "(e.g., decision bundles) across the order lifecycle."
-        ),
-    )
-
+    ts_ns_local: int = Field(..., gt=0)
+    instrument: str = Field(..., min_length=1)
+    client_order_id: str = Field(..., min_length=1)
+    intents_correlation_id: str | None = Field(default=None, min_length=1)
     model_config = ConfigDict(extra="forbid")
 
 
 class NewOrderIntent(OrderIntentBase):
-    """
-    Create a new order.
-
-    Important:
-    - intended_price is required for both limit and market orders to match the execution binding signature.
-    """
-
-    intent_type: Literal["new"] = Field(
-        "new",
-        description="Intent type describing the order lifecycle action.",
-    )
-
-    side: Side = Field(..., description="Order side.")
-    order_type: OrderType = Field(..., description="Order type.")
-    intended_qty: Quantity = Field(
-        ...,
-        description="Intended total order quantity.",
-    )
-    intended_price: Price = Field(
-        ...,
-        description=(
-            "Intended order price. Required for both limit and market orders "
-            "to match the execution binding signature."
-        ),
-    )
-    time_in_force: TimeInForce = Field(
-        ...,
-        description="Time in force. Required for new intents.",
-    )
+    intent_type: Literal["new"] = Field("new")
+    side: Side = Field(...)
+    order_type: OrderType = Field(...)
+    intended_qty: Quantity = Field(...)
+    intended_price: Price = Field(...)
+    time_in_force: TimeInForce = Field(...)
 
 
 class CancelOrderIntent(OrderIntentBase):
-    """
-    Cancel an existing order identified by client_order_id.
-
-    This intent deliberately forbids order-creation fields (side, order_type, qty, price, tif).
-    """
-
-    intent_type: Literal["cancel"] = Field(
-        "cancel",
-        description="Intent type describing the order lifecycle action.",
-    )
+    intent_type: Literal["cancel"] = Field("cancel")
 
 
 class ReplaceOrderIntent(OrderIntentBase):
-    """
-    Modify an existing order (limit-only). The order ID remains the same (client_order_id).
-
-    Notes:
-    - order_type is constrained to 'limit'.
-    - time_in_force is intentionally not present here because the execution binding does not support modifying it.
-    - intended_qty is the new TOTAL quantity (not a delta).
-    """
-
-    intent_type: Literal["replace"] = Field(
-        "replace",
-        description="Intent type describing the order lifecycle action.",
-    )
-
-    side: Side = Field(..., description="Order side.")
-    order_type: Literal["limit"] = Field(
-        "limit",
-        description="Order type. For replace intents this must be 'limit'.",
-    )
-    intended_qty: Quantity = Field(
-        ...,
-        description="Intended total order quantity (new total quantity, not a delta).",
-    )
-    intended_price: Price = Field(
-        ...,
-        description="Intended order price.",
-    )
+    intent_type: Literal["replace"] = Field("replace")
+    side: Side = Field(...)
+    order_type: Literal["limit"] = Field("limit")
+    intended_qty: Quantity = Field(...)
+    intended_price: Price = Field(...)
 
 
-# Discriminated union: Pydantic will select the correct model based on intent_type.
 OrderIntent = Annotated[
     NewOrderIntent | CancelOrderIntent | ReplaceOrderIntent,
     Field(discriminator="intent_type"),
 ]
 
 
-# ---------------------------------------------------------------------------
-# Risk constraints models
-# ---------------------------------------------------------------------------
-
-
 class PositionLimits(BaseModel):
     currency: str = Field(..., min_length=1)
     max_position: float | None = Field(default=None, ge=0)
-
     model_config = ConfigDict(extra="forbid")
 
 
@@ -262,7 +131,6 @@ class NotionalLimits(BaseModel):
     currency: str = Field(..., min_length=1)
     max_gross_notional: float | None = Field(default=None, ge=0)
     max_single_order_notional: float | None = Field(default=None, ge=0)
-
     model_config = ConfigDict(extra="forbid")
 
 
@@ -271,14 +139,12 @@ class QuoteLimits(BaseModel):
     max_gross_quote_notional: float | None = Field(default=None, ge=0)
     max_net_quote_notional: float | None = None
     max_active_quotes: int | None = Field(default=None, ge=0)
-
     model_config = ConfigDict(extra="forbid")
 
 
 class OrderRateLimits(BaseModel):
     max_orders_per_second: float | None = Field(default=None, ge=0)
     max_cancels_per_second: float | None = Field(default=None, ge=0)
-
     model_config = ConfigDict(extra="forbid")
 
 
@@ -287,7 +153,6 @@ class MaxLoss(BaseModel):
     max_drawdown: float = Field(..., lt=0)
     rolling_loss: float | None = Field(default=None, lt=0)
     rolling_loss_window: float | None = Field(default=None, gt=0)
-
     model_config = ConfigDict(extra="forbid")
 
 
@@ -295,88 +160,68 @@ class RiskConstraints(BaseModel):
     ts_ns_local: int = Field(..., gt=0)
     scope: str = Field(..., min_length=1)
     trading_enabled: bool
-
     position_limits: PositionLimits | None = None
     notional_limits: NotionalLimits | None = None
     quote_limits: QuoteLimits | None = None
     order_rate_limits: OrderRateLimits | None = None
     max_loss: MaxLoss | None = None
-
     extra: dict[str, str | float | bool | None] = Field(default_factory=dict)
-
     model_config = ConfigDict(extra="forbid")
-
-
-# ---------------------------------------------------------------------------
-# FillEvent model (delta event)
-# ---------------------------------------------------------------------------
 
 
 class FillEvent(BaseModel):
     ts_ns_exch: int = Field(..., gt=0)
     ts_ns_local: int = Field(..., gt=0)
-
     instrument: str = Field(..., min_length=1)
     client_order_id: str = Field(..., min_length=1)
-
     side: Literal["buy", "sell"]
     intended_price: Price | None = None
-
     filled_price: Price
     intended_qty: Quantity | None = None
-
     cum_filled_qty: Quantity
     remaining_qty: Quantity | None = None
-
     time_in_force: Literal["GTC", "IOC", "FOK", "POST_ONLY"]
     liquidity_flag: Literal["maker", "taker", "unknown"]
-
     fee: Money | None = None
-
     model_config = ConfigDict(extra="forbid")
 
 
-# ---------------------------------------------------------------------------
-# OrderSubmittedEvent model (dispatch-time submitted boundary event)
-# ---------------------------------------------------------------------------
+class OrderExecutionFeedbackEvent(BaseModel):
+    ts_ns_local_feedback: int = Field(..., gt=0)
+    instrument: str = Field(..., min_length=1)
+    position: float
+    balance: float
+    fee: float
+    trading_volume: float
+    trading_value: float
+    num_trades: int
+    runtime_correlation: dict[str, str | int | float | bool | None] | None = None
+    model_config = ConfigDict(extra="forbid")
 
 
 class OrderSubmittedEvent(BaseModel):
     ts_ns_local_dispatch: int = Field(..., gt=0)
-
     instrument: str = Field(..., min_length=1)
     client_order_id: str = Field(..., min_length=1)
-
     side: Literal["buy", "sell"]
     order_type: Literal["limit", "market"]
-
     intended_price: Price
     intended_qty: Quantity
     time_in_force: Literal["GTC", "IOC", "FOK", "POST_ONLY"]
-
     intent_correlation_id: str | None = Field(default=None, min_length=1)
     dispatch_attempt_id: str | None = Field(default=None, min_length=1)
     runtime_correlation: dict[str, str | int | float | bool | None] | None = None
-
     model_config = ConfigDict(extra="forbid")
-
-
-# ---------------------------------------------------------------------------
-# ControlTimeEvent model (runtime-realized control-time canonical event)
-# ---------------------------------------------------------------------------
 
 
 class ControlTimeEvent(BaseModel):
     ts_ns_local_control: int = Field(..., gt=0)
     reason: str = Field(..., min_length=1)
-
     due_ts_ns_local: int | None = Field(default=None, gt=0)
     realized_ts_ns_local: int | None = Field(default=None, gt=0)
-
     obligation_reason: str | None = Field(default=None, min_length=1)
     obligation_due_ts_ns_local: int | None = Field(default=None, gt=0)
     runtime_correlation: dict[str, str | int | float | bool | None] | None = None
-
     model_config = ConfigDict(extra="forbid")
 
     @model_validator(mode="after")
@@ -386,51 +231,3 @@ class ControlTimeEvent(BaseModel):
                 "at least one of due_ts_ns_local or realized_ts_ns_local is required"
             )
         return self
-
-
-# ---------------------------------------------------------------------------
-# OrderStateEvent model (snapshot event)
-# ---------------------------------------------------------------------------
-
-
-class OrderStateEvent(BaseModel):
-    """Compatibility execution-feedback / snapshot-materialization record.
-
-    ``OrderStateEvent`` remains non-canonical in this slice. It exists for
-    compatibility ingestion/projection flows and must not be interpreted as a
-    canonical Event Stream record.
-    """
-    ts_ns_exch: int = Field(..., gt=0)
-    ts_ns_local: int = Field(..., gt=0)
-
-    instrument: str = Field(..., min_length=1)
-    client_order_id: str = Field(..., min_length=1)
-
-    order_type: Literal["limit", "market"]
-    state_type: Literal[
-        "pending_new",
-        "accepted",
-        "working",
-        "partially_filled",
-        "filled",
-        "canceled",
-        "expired",
-        "rejected",
-        "replaced",
-    ]
-
-    side: Literal["buy", "sell"]
-    intended_price: Price
-
-    filled_price: Price | None = None
-    intended_qty: Quantity
-
-    cum_filled_qty: Quantity | None = None
-    remaining_qty: Quantity | None = None
-
-    time_in_force: Literal["GTC", "IOC", "FOK", "POST_ONLY"]
-
-    reason: str | None = Field(default=None, min_length=1)
-    raw: dict[str, Any | None] = None
-
-    model_config = ConfigDict(extra="forbid")

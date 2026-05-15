@@ -2,7 +2,7 @@
 
 This module is intentionally internal and behavior-preserving:
 - It contains only policy checks (validation, kill-switches, hard limits).
-- It does not perform queue admission, rate limiting, or inflight gating.
+- It does not perform Queue admission, rate limiting, or inflight gating.
 """
 
 from __future__ import annotations
@@ -10,8 +10,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from tradingchassis_core.core.domain.reject_reasons import RejectReason
-from tradingchassis_core.core.domain.types import OrderIntent
-from tradingchassis_core.core.ports.venue_policy import NormalizationOutcome, VenuePolicy
+from tradingchassis_core.core.domain.types import NewOrderIntent, OrderIntent, ReplaceOrderIntent
+from tradingchassis_core.core.risk.execution_constraints_policy import (
+    ExecutionConstraintsPolicy,
+    NormalizationOutcome,
+)
 
 if TYPE_CHECKING:
     from tradingchassis_core.core.domain.state import StrategyState
@@ -21,8 +24,8 @@ if TYPE_CHECKING:
 class RiskPolicy:
     """Pure policy layer used by RiskEngine."""
 
-    def __init__(self, *, venue_policy: VenuePolicy) -> None:
-        self._venue_policy = venue_policy
+    def __init__(self, *, constraints_policy: ExecutionConstraintsPolicy) -> None:
+        self._constraints_policy = constraints_policy
 
     def trading_enabled_gate(
         self,
@@ -66,10 +69,11 @@ class RiskPolicy:
 
         pnl = state.get_total_pnl()
         if pnl <= max_loss_cfg.max_drawdown:
-            return True, self._accept_cancels_reject_others(
+            accepted_now, rejected = self._accept_cancels_reject_others(
                 raw_intents,
                 RejectReason.MAX_LOSS_DRAWDOWN,
             )
+            return True, accepted_now, rejected
 
         # Rolling loss kill-switch (equity change over a fixed window)
         if max_loss_cfg.rolling_loss is not None and max_loss_cfg.rolling_loss_window is not None:
@@ -79,10 +83,11 @@ class RiskPolicy:
                 window_ns=window_ns,
             )
             if rolling is not None and rolling <= max_loss_cfg.rolling_loss:
-                return True, self._accept_cancels_reject_others(
+                accepted_now, rejected = self._accept_cancels_reject_others(
                     raw_intents,
                     RejectReason.MAX_LOSS_ROLLING,
                 )
+                return True, accepted_now, rejected
 
         return False, [], []
 
@@ -101,7 +106,7 @@ class RiskPolicy:
         return accepted_now, rejected
 
     def normalize_intent(self, it: OrderIntent, state: StrategyState) -> NormalizationOutcome:
-        return self._venue_policy.normalize_intent(it, state)
+        return self._constraints_policy.normalize_intent(it, state)
 
     def validate_intent(self, it: OrderIntent, state: StrategyState) -> tuple[bool, str]:
         """Outbound intent sanity.
@@ -142,7 +147,7 @@ class RiskPolicy:
         max_gross_notional: float | None,
         base_gross_notional: float | None,
         quote_cfg: QuoteLimits | None,
-        quote_book: dict[tuple[str, str | None, tuple[float, float]]],
+        quote_book: dict[tuple[str, str], tuple[float, float]] | None,
     ) -> tuple[bool, str]:
         """Apply hard risk checks. Returns (ok, reason)."""
 
@@ -207,6 +212,8 @@ class RiskPolicy:
         return True, "OK"
 
     def intent_price(self, it: OrderIntent, state: StrategyState) -> float | None:
+        if not isinstance(it, (NewOrderIntent, ReplaceOrderIntent)):
+            return None
         if it.order_type == "limit":
             return None if it.intended_price is None else it.intended_price.value
         mid = state.get_mid(it.instrument)

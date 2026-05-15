@@ -25,7 +25,7 @@ class EventBus:
         self._sinks.append(sink)
 
     def emit(self, event: Any) -> None:
-        """Emit an event to all sinks."""
+        """Emit an Event to all sinks."""
         for sink in self._sinks:
             sink.on_event(event)
 

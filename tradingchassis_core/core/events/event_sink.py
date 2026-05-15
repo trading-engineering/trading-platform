@@ -10,4 +10,4 @@ from typing import Any, Protocol
 
 class EventSink(Protocol):
     def on_event(self, event: Any) -> None:
-        """Consume a domain event."""
+        """Consume a domain Event."""

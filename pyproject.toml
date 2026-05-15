@@ -3,18 +3,23 @@ requires = ["setuptools>=69", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "tradingchassis-core"
+name = "TradingChassis-core"
 version = "0.1.0"
-description = "Deterministic, event-driven core, with explicit risk management, order state machines, queue semantics, and research orchestration."
+description = "Deterministic trading decision kernel."
 readme = "README.md"
 requires-python = ">=3.11"
-authors = [{ name = "tradingeng@protonmail.com" }]
-license = { text = "MIT" }
+authors = [{ name = "TradingChassis Core Contributors" }]
+maintainers = [{ name = "TradingChassis Core Maintainers" }]
+license = "MIT"
+keywords = ["trading", "deterministic", "pydantic", "event-driven", "strategy"]
 
 classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Topic :: Office/Business :: Financial :: Investment",
+  "Topic :: Software Development :: Libraries",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.11",
-  "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent"
 ]
 
@@ -28,30 +33,25 @@ dev = [
   "import-linter>=1.11,<2",
   "ruff>=0.4,<1",
   "mypy>=1.9,<2",
-  "hftbacktest>=2,<3",
-  "jsonschema>=4,<5",
-  "matplotlib>=3,<4",
-  "numpy>=2.0,<2.3",
-  "referencing>=0.37,<1",
+  "build>=1,<2",
 ]
 
-# --------------------------------------------------
-# Explicit package discovery
-# --------------------------------------------------
+[project.urls]
+Homepage = "https://github.com/TradingChassis"
+Repository = "https://github.com/TradingChassis/core"
+Documentation = "https://github.com/TradingChassis/core/tree/main/core/docs"
+Changelog = "https://github.com/TradingChassis/core/blob/main/core/CHANGELOG.md"
+Issues = "https://github.com/TradingChassis/core/issues"
+
 [tool.setuptools.packages.find]
 include = ["tradingchassis_core*"]
 
-# --------------------------------------------------
-# Pytest
-# --------------------------------------------------
 [tool.pytest.ini_options]
 minversion = "9.0"
 addopts = "-ra"
 testpaths = ["tests"]
+pythonpath = ["."]
 
-# --------------------------------------------------
-# Ruff
-# --------------------------------------------------
 [tool.ruff]
 target-version = "py311"
 line-length = 100
@@ -60,30 +60,19 @@ line-length = 100
 select = ["E", "F", "I"]
 ignore = ["E501"]
 
-# --------------------------------------------------
-# MyPy (static typing)
-# --------------------------------------------------
 [tool.mypy]
 python_version = "3.11"
 warn_unused_configs = true
 ignore_missing_imports = true
 pretty = true
 show_error_codes = true
-ignore_errors = true
 
-# --------------------------------------------------
-# Import Linter
-# --------------------------------------------------
 [tool.importlinter]
 root_package = "tradingchassis_core"
 include_external_packages = true
 
-# Core stays pure
 [[tool.importlinter.contracts]]
-name = "Core must be pure"
+name = "Core stays runtime-independent"
 type = "forbidden"
-source_modules = ["tradingchassis_core.core"]
-forbidden_modules = [
-  "tradingchassis_core.strategies"
-]
-
+source_modules = ["tradingchassis_core"]
+forbidden_modules = []

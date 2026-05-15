@@ -23,7 +23,6 @@ venv.bak/
 *.key
 *.crt
 *.pub
-.oci/
 
 # ==============================
 # Python packaging / build artifacts
