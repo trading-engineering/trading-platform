@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import pytest
+
 import tradingchassis_core as tc
 from tradingchassis_core.core.domain.types import BookLevel, BookPayload, TradePayload
 
