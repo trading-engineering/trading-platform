@@ -53,6 +53,12 @@ Examples:
 - `OrderExecutionFeedbackEvent`
 - `FillEvent`
 
+Current Core baseline note:
+
+- Canonical `MarketEvent` reduction is book-only.
+- Trade-shaped `MarketEvent` payloads are not reduced in this baseline and are
+  explicitly rejected at canonical processing boundaries.
+
 ## Step APIs
 
 - `process_canonical_event`

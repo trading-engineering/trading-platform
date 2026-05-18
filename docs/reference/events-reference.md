@@ -5,7 +5,7 @@ contracts. Pydantic models are the schema source of truth.
 
 ## Canonical Event Models
 
-- `MarketEvent`: book/trade market data input for State reduction
+- `MarketEvent`: book market data input for Market State reduction in the current Core baseline
 - `ControlTimeEvent`: canonical **control** wakeup; becomes stream history only
   after Runtime injection. Reducer updates monotone time (and processing cursor
   when positioned). Scheduling **obligations** are a separate non-canonical output;
@@ -18,6 +18,16 @@ Canonical ingestion boundary:
 
 - `process_canonical_event(state, event, ...)`
 - `process_event_entry(state, EventStreamEntry(...), ...)`
+
+### MarketEvent baseline contract
+
+In the current Core baseline, canonical reduction supports only book-shaped
+`MarketEvent` payloads (`event_type="book"` with book levels).
+
+Trade-shaped `MarketEvent` payloads are reserved in the schema but are not part
+of the supported canonical reduction contract in this baseline. If a trade-shaped
+`MarketEvent` reaches canonical reduction, Core rejects it with explicit
+validation error behavior.
 
 ## Processing Order Models
 

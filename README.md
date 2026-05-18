@@ -189,6 +189,15 @@ Runtime reduces to canonical Events
 Runtime dispatches Intents into Orders
 ```
 
+Current Market Event baseline contract:
+
+- Core canonical reduction supports book-shaped `MarketEvent` payloads for
+  Market State reduction.
+- Trade-shaped `MarketEvent` payloads are not reduced by the current baseline
+  and are explicitly rejected at canonical processing boundaries.
+- Runtime may normalize venue data into canonical Events, but Core accepts only
+  the documented canonical reduction contract.
+
 <img src="https://img.spacergif.org/spacer.gif" width="1" height="32"/>
 
 ## Internally wired vs externally supplied
