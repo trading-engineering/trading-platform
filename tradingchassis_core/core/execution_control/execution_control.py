@@ -249,7 +249,7 @@ class ExecutionControl:
         replaced_in_queue: list[tuple[OrderIntent, OrderIntent]],
         handled_in_queue: list[OrderIntent],
     ) -> bool:
-        """CANCEL against queued-only state: remove queued intents, do not send cancel."""
+        """CANCEL against queued-only state: remove queued Intents, do not send cancel."""
         if it.intent_type != "cancel":
             return False
 

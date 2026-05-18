@@ -42,7 +42,7 @@ Core slice.
 1. `EventStreamEntry`
 2. `process_event_entry` / `process_canonical_event`
 3. Strategy evaluator
-4. generated intents
+4. generated Intents
 5. candidate records + dominance / reconciliation
 6. policy admission
 7. Execution Control plan / apply

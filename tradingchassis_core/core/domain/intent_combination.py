@@ -40,7 +40,7 @@ def combine_candidate_intent_records(
     generated_intents: Sequence[OrderIntent],
     queued_intents: Sequence[OrderIntent],
 ) -> tuple[CandidateIntentRecord, ...]:
-    """Combine queued + generated intents into a deterministic effective set.
+    """Combine queued + generated Intents into a deterministic effective set.
 
     This helper is pure and does not mutate StrategyState.
     Merge order is deterministic: queued first, then generated.

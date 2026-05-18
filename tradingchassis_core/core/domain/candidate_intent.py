@@ -9,7 +9,7 @@ from tradingchassis_core.core.domain.types import OrderIntent
 
 
 class CandidateIntentOrigin(str, Enum):
-    """Origin marker for candidate intents in one Core step."""
+    """Origin marker for candidate Intents in one Core step."""
 
     GENERATED = "generated"
     QUEUED = "queued"

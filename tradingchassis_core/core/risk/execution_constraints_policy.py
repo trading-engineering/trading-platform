@@ -1,6 +1,6 @@
 """Execution-constraint normalization and validation logic.
 
-This module applies instrument/execution constraints to order intents, such as
+This module applies instrument/execution constraints to order Intents, such as
 tick/lot rounding, post-only enforcement, and minimum notional checks.
 """
 

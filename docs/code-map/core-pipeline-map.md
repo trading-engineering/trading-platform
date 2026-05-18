@@ -46,7 +46,7 @@ Wakeup flow:
 2. `run_core_wakeup_reduction` calls `process_event_entry` for each entry in order.
 3. `CoreWakeupStrategyEvaluator.evaluate` runs **once** on the fully reduced State
    (`CoreWakeupStrategyContext` carries all entries).
-4. `run_core_wakeup_decision` snapshots queued intents once, combines generated + queued
+4. `run_core_wakeup_decision` snapshots queued Intents once, combines generated + queued
    once, applies dominance/reconciliation once, Policy Admission once, and
    Execution Control plan/apply once.
 5. `CoreStepResult.dispatchable_intents` is returned; Runtime dispatches later.

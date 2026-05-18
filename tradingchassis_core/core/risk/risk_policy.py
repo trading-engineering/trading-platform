@@ -111,7 +111,7 @@ class RiskPolicy:
     def validate_intent(self, it: OrderIntent, state: StrategyState) -> tuple[bool, str]:
         """Outbound Intent sanity.
 
-        Even if your schemas allow 0 placeholders, outbound intents should still be sensible.
+        Even if your schemas allow 0 placeholders, outbound Intents should still be sensible.
         """
         if it.ts_ns_local <= 0:
             return False, RejectReason.INVALID_TS
@@ -229,14 +229,14 @@ class RiskPolicy:
         return total
 
     def quote_book_global(self, state: StrategyState) -> dict[tuple[str, str], tuple[float, float]]:
-        """Build a best-effort global quote book including queued intents.
+        """Build a best-effort global quote book including queued Intents.
 
         Returns:
             Mapping (instrument, client_order_id) -> (abs_notional, signed_notional)
 
         Notes:
             - Working orders are sourced from StrategyState.orders.
-            - Queued intents in StrategyState.queued_intents are applied on top.
+            - Queued Intents in StrategyState.queued_intents are applied on top.
             - This is used only for quote-limits enforcement.
         """
 
@@ -254,7 +254,7 @@ class RiskPolicy:
                 signed = notional if o.side == "buy" else -notional
                 book[(instr, oid)] = (notional, signed)
 
-        # Queued intents (apply on top of working)
+        # Queued Intents (apply on top of working)
         for instr, q in state.queued_intents.items():
             contract_size = state.get_contract_size(instr)
             for qi in q:
