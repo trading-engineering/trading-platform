@@ -43,6 +43,9 @@ This changelog starts from the clean Core package baseline.
 - Canonical `MarketEvent` contract wording now explicitly documents the current
   book-only reduction baseline; trade-shaped payloads are explicitly unsupported
   for canonical reduction in this slice.
+- Public API docs/tests hardening for Core-F2: root Public API classification,
+  Advanced API labeling, root-vs-non-root clarity, and explicit surface lock
+  coverage for all current root exports. No exports were removed or renamed.
 
 ### Removed
 

@@ -1,51 +1,51 @@
 # Public API Reference
 
-The public package boundary is the `tradingchassis_core` root import.
+The Public API boundary is the `tradingchassis_core` root import.
 
-## Internally wired vs externally supplied
+This page classifies root exports into:
 
-### Internally wired (when step APIs run)
+- Public Data Model
+- Public Extension Point
+- Public Orchestration API
+- Public Convenience Implementation
+- Advanced API
 
-These run inside Core when you call `run_core_step` / CoreWakeupStep APIs (no substitute
-implementation required):
+`ControlSchedulingObligation` is a non-canonical output. `ControlTimeEvent` is the
+canonical Event symbol for the Control-Time Event concept.
 
-- `process_event_entry` / `process_canonical_event` and canonical reducers
-- Candidate combination, dominance, and reconciliation
-- Policy Admission **mechanism** when `CorePolicyAdmissionContext` is provided
-- Execution Control plan/apply **mechanism** when policy + apply contexts are provided
-- `CoreStepResult` / `CoreStepDecision` production
+## Public Orchestration API
 
-### Externally supplied extension points
+Primary orchestration entrypoints:
 
-| Symbol | Role |
-| --- | --- |
-| `CoreStepStrategyEvaluator` / `CoreWakeupStrategyEvaluator` | Strategy evaluation (read-only Strategy State view) |
-| `PolicyIntentEvaluator` | Policy Admission (`evaluate_policy_intent`) via `CorePolicyAdmissionContext` |
-| `ExecutionControl` | Queue/rate/inflight apply via `CoreExecutionControlApplyContext` |
-| `CoreConfiguration` | Optional instrument metadata for positioned market reduction |
-| `EventBus` / `NullEventBus` | `StrategyState` requires a bus; use `NullEventBus` for standalone Core |
+- `run_core_step`
+- `run_core_wakeup_step`
+- `process_event_entry`
+- `process_canonical_event`
 
-Strategy evaluation reads `StrategyStateView` and returns Intents. Strategy code must not
-mutate Core-owned State, Queue/inflight substate, or reducer-managed data; reducers and
-Execution Control own mutation inside Core processing.
+Advanced orchestration entrypoints (split CoreWakeupStep flow):
 
-### Convenience implementations (optional)
+- `run_core_wakeup_reduction`
+- `run_core_wakeup_decision`
 
-| Symbol | Role |
-| --- | --- |
-| Risk Engine (`RiskEngine`) | Built-in `PolicyIntentEvaluator` (not wired by default) |
-| `ExecutionControl` | Default Execution Control apply implementation (you still supply an instance) |
-| `NullEventBus` | Discards events for tests and examples |
+Core step orchestration is deterministic: Runtime provides canonical Event Stream
+input, Core reduces canonical Events, evaluates Strategy, applies Policy Admission
+and Execution Control, and returns `CoreStepResult`.
 
-**Internal (not public extension points):** `RiskPolicy`, `ExecutionConstraintsPolicy`,
-and other modules under `core/risk/` except `RiskEngine` / `RiskConfig`.
+Primary integrations should start with `run_core_step` or `run_core_wakeup_step`.
+Split APIs are public Advanced API for diagnostics, testing, and Runtime/Core split
+flows.
 
-Examples:
+## Public Data Model
 
-- Minimal inline policy: `examples/core_step_quickstart.py`
-- Built-in Risk Engine policy: `examples/core_step_with_risk_engine.py`
+Core and processing models:
 
-## Canonical Events
+- `CoreConfiguration`
+- `ProcessingPosition`
+- `EventStreamEntry`
+- `CoreStepResult`
+- `StrategyStateView`
+
+Canonical Event models:
 
 - `MarketEvent`
 - `ControlTimeEvent`
@@ -56,72 +56,7 @@ Examples:
 - `OrderExecutionFeedbackEvent`
 - `FillEvent`
 
-Current Core baseline note:
-
-- Canonical `MarketEvent` reduction is book-only.
-- Trade-shaped `MarketEvent` payloads are not reduced in this baseline and are
-  explicitly rejected at canonical processing boundaries.
-- Terminal Order lifecycle outcomes (`canceled`, `rejected`, `expired`) are
-  represented through explicit canonical Events:
-  `OrderCanceledEvent`, `OrderRejectedEvent`, and `OrderExpiredEvent`.
-- Policy Admission rejection is not an Order lifecycle terminal Event; it is an
-  Intent pipeline outcome that occurs before dispatch.
-
-## Step APIs
-
-- `process_canonical_event`
-- `process_event_entry`
-- `run_core_step`
-- `run_core_wakeup_reduction`
-- `run_core_wakeup_decision`
-- `run_core_wakeup_step` (ordered batch: reduce all entries, then evaluate Strategy once)
-
-## Step inputs/outputs
-
-- `EventStreamEntry`
-- `ProcessingPosition`
-- `CorePolicyAdmissionContext` (holds `PolicyIntentEvaluator`)
-- `CoreExecutionControlApplyContext` (holds `ExecutionControl`)
-- `CoreStepDecision`
-- `CoreStepResult`
-- `CoreWakeupReductionResult`
-- `CoreWakeupStrategyContext`
-- `CoreWakeupStrategyEvaluator`
-- `StrategyStateView` (read-only Strategy boundary)
-
-`CoreStepResult` Runtime boundary semantics:
-
-- `dispatchable_intents` is the Runtime-facing dispatch envelope. Runtime may
-  dispatch these Intents later; Core does not dispatch externally.
-- `control_scheduling_obligation` is a non-canonical Runtime-facing signal for
-  time-dependent rate-limit deferral in the current slice.
-- `generated_intents`, `candidate_intents`, `candidate_intent_records`, and
-  `core_step_decision` are deterministic introspection outputs and are not
-  themselves external dispatch obligations.
-
-## Policy and risk
-
-- `PolicyIntentEvaluator` (protocol)
-- `PolicyRiskDecision`
-- `PolicyAdmissionResult`
-- `PolicyRejectedCandidate`
-- Risk Engine (`RiskEngine`) (convenience `PolicyIntentEvaluator`)
-- `RiskConfig`
-- `RiskConstraints` (data model; often built for Strategy via `RiskEngine.build_constraints`)
-
-## Supporting deterministic models
-
-- `CoreConfiguration`
-- `StrategyState`
-- `StrategyStateView`
-- `CandidateIntentRecord`
-- `CandidateIntentOrigin`
-- `ExecutionControlDecision`
-- `ExecutionControl`
-- `ControlSchedulingObligation` (non-canonical; **rate-limit** recheck hint in the
-  current slice—see `../flows/control-time-and-scheduling.md`)
-
-## Intents and numeric models
+Order Intent and numeric models:
 
 - `OrderIntent`
 - `NewOrderIntent`
@@ -129,11 +64,116 @@ Current Core baseline note:
 - `ReplaceOrderIntent`
 - `Price`
 - `Quantity`
+
+Risk data models:
+
+- `RiskConfig`
+- `RiskConstraints`
 - `NotionalLimits`
 
-## Runtime-safe utilities
+Current baseline notes:
 
+- canonical Event reduction for `MarketEvent` is book-only in the current Core
+  baseline.
+- Trade-shaped `MarketEvent` payloads are not reduced in this baseline and are
+  explicitly rejected at canonical processing boundaries.
+- Policy Admission rejection is not an Order Lifecycle terminal Event.
+
+## Public Extension Point
+
+- `CoreStepStrategyEvaluator`
+- `CoreWakeupStrategyEvaluator`
+- `PolicyIntentEvaluator`
+- `CorePolicyAdmissionContext`
+
+Strategy evaluators read `StrategyStateView` through context and return Order Intent
+values. Policy evaluators are supplied through `CorePolicyAdmissionContext`.
+
+## Public Convenience Implementation
+
+- `RiskEngine`
+- `ExecutionControl`
 - `NullEventBus`
+
+These remain public for convenience and compatibility. Runtime still supplies
+instances and owns external dispatch and canonical Event injection.
+
+## Advanced API
+
+Advanced state, context, and split-step models:
+
+- `StrategyState`
+- `CoreStepStrategyContext`
+- `CoreWakeupStrategyContext`
+- `CoreWakeupReductionResult`
+- `CoreExecutionControlApplyContext`
+
+Advanced introspection and decision scaffolds:
+
+- `CandidateIntentOrigin`
+- `CandidateIntentRecord`
+- `CoreStepDecision`
+- `ExecutionControlDecision`
+- `PolicyRiskDecision`
+- `PolicyRejectedCandidate`
+- `PolicyAdmissionResult`
+
+Advanced runtime-facing non-canonical output:
+
+- `ControlSchedulingObligation`
+
+Advanced deterministic slot helpers:
+
+- `SlotKey`
+- `stable_slot_order_id`
+
+Advanced API symbols are public for compatibility and diagnostics, split-step
+integration, and advanced testing. They are not themselves Runtime dispatch
+obligations. Runtime dispatch obligations remain `CoreStepResult.dispatchable_intents`
+plus canonical Event injection behavior.
+
+## State and Strategy boundary
+
+- `StrategyState` is an advanced mutable Core state container.
+- Core reducers and Execution Control own mutation of Strategy State internals.
+- Strategy code should read `StrategyStateView` via Strategy contexts.
+- `StrategyStateView` is the public read-only Strategy boundary model.
+- Queue/inflight internals and reducer methods are not Strategy mutation APIs.
+
+`CoreStepStrategyContext` is an advanced Strategy adapter context. `context.state` is
+`StrategyStateView`, not mutable `StrategyState`.
+
+## Root export surface
+
+The current root export surface includes all symbols listed on this page and:
+
+- `__version__`
+
+## Root vs non-root API
+
+Some APIs are public but are module-level (non-root) rather than root exports.
+Example:
+
+- `EventBus` from `tradingchassis_core.core.events.event_bus`
+
+`EventBus` is intentionally non-root. `NullEventBus` is the root convenience export.
+
+## Internally wired vs externally supplied
+
+Internally wired when step APIs run:
+
+- canonical Event reduction and candidate reconciliation
+- Policy Admission mechanism when `CorePolicyAdmissionContext` is provided
+- Execution Control plan/apply mechanism when execution apply context is provided
+- `CoreStepResult` and advanced decision scaffolds production
+
+Externally supplied:
+
+- Strategy evaluator (`CoreStepStrategyEvaluator` or `CoreWakeupStrategyEvaluator`)
+- Policy evaluator (`PolicyIntentEvaluator`)
+- Execution Control instance (`ExecutionControl`)
+- optional `CoreConfiguration`
+- Event bus (`EventBus` module-level API, or root `NullEventBus`)
 
 ## Publicly absent by design
 
@@ -144,7 +184,6 @@ Current Core baseline note:
 - `OrderStateEvent`
 - `DerivedFillEvent`
 - `VenueAdapter` / `VenuePolicy`
-- `RiskPolicy` / `ExecutionConstraintsPolicy` (internal to Risk Engine / `RiskEngine`)
-- `fold_event_stream_entries` (removed U3; loop `process_event_entry` instead)
+- `RiskPolicy` / `ExecutionConstraintsPolicy` (internal to `RiskEngine`)
+- `fold_event_stream_entries` (removed U3; use `process_event_entry` loop)
 - `apply_execution_control_plan` and apply detail record types (internal; use `CoreStepResult`)
-- Telemetry event types formerly in `core/events/events.py` (removed U3)
