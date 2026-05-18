@@ -26,6 +26,11 @@ This changelog starts from the clean Core package baseline.
 - `FillEvent` reducer and pipeline tests.
 - Runnable Risk Engine example at `examples/core_step_with_risk_engine.py`.
 - Extension-point docs under `docs/` and U3 candidate list at `docs/roadmap/dead-code-cleanup-candidates.md`.
+- Explicit terminal canonical Order lifecycle Events:
+  `OrderCanceledEvent`, `OrderRejectedEvent`, and `OrderExpiredEvent`.
+- Terminal lifecycle reduction behavior and focused semantics tests for
+  deterministic working-order removal, canonical projection terminal state, and
+  inflight cleanup.
 
 ### Changed
 

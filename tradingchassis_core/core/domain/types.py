@@ -214,6 +214,27 @@ class OrderSubmittedEvent(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
+class OrderCanceledEvent(BaseModel):
+    ts_ns_local_feedback: int = Field(..., gt=0)
+    instrument: str = Field(..., min_length=1)
+    client_order_id: str = Field(..., min_length=1)
+    model_config = ConfigDict(extra="forbid")
+
+
+class OrderRejectedEvent(BaseModel):
+    ts_ns_local_feedback: int = Field(..., gt=0)
+    instrument: str = Field(..., min_length=1)
+    client_order_id: str = Field(..., min_length=1)
+    model_config = ConfigDict(extra="forbid")
+
+
+class OrderExpiredEvent(BaseModel):
+    ts_ns_local_feedback: int = Field(..., gt=0)
+    instrument: str = Field(..., min_length=1)
+    client_order_id: str = Field(..., min_length=1)
+    model_config = ConfigDict(extra="forbid")
+
+
 class ControlTimeEvent(BaseModel):
     ts_ns_local_control: int = Field(..., gt=0)
     reason: str = Field(..., min_length=1)

@@ -11,8 +11,26 @@ contracts. Pydantic models are the schema source of truth.
   when positioned). Scheduling **obligations** are a separate non-canonical output;
   see `../flows/control-time-and-scheduling.md`.
 - `OrderSubmittedEvent`: canonical submitted-order acknowledgement
-- `OrderExecutionFeedbackEvent`: canonical account/execution feedback
+- `OrderCanceledEvent`: canonical terminal lifecycle feedback for a canceled Order
+- `OrderRejectedEvent`: canonical terminal lifecycle feedback for a rejected Order
+- `OrderExpiredEvent`: canonical terminal lifecycle feedback for an expired Order
+- `OrderExecutionFeedbackEvent`: canonical account feedback (account/position/balance projection)
 - `FillEvent`: canonical fill lifecycle update
+
+Terminal lifecycle reducer contract in this Core baseline:
+
+- `OrderCanceledEvent`, `OrderRejectedEvent`, and `OrderExpiredEvent` update
+  `StrategyState` deterministically by:
+  - removing the Order from active working-order projections;
+  - updating canonical order projection state (`"canceled"`, `"rejected"`, or
+    `"expired"`);
+  - clearing inflight tracking for `instrument + client_order_id`.
+- Terminal Event reduction is idempotent and non-crashing for unknown orders:
+  Core records terminal canonical projection state when no active working order
+  exists.
+- Order rejection (`OrderRejectedEvent`) is an execution-side Order lifecycle
+  outcome and is distinct from Policy Admission rejection (which occurs before
+  dispatch in the Intent pipeline).
 
 Canonical ingestion boundary:
 

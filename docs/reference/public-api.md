@@ -50,6 +50,9 @@ Examples:
 - `MarketEvent`
 - `ControlTimeEvent`
 - `OrderSubmittedEvent`
+- `OrderCanceledEvent`
+- `OrderRejectedEvent`
+- `OrderExpiredEvent`
 - `OrderExecutionFeedbackEvent`
 - `FillEvent`
 
@@ -58,6 +61,11 @@ Current Core baseline note:
 - Canonical `MarketEvent` reduction is book-only.
 - Trade-shaped `MarketEvent` payloads are not reduced in this baseline and are
   explicitly rejected at canonical processing boundaries.
+- Terminal Order lifecycle outcomes (`canceled`, `rejected`, `expired`) are
+  represented through explicit canonical Events:
+  `OrderCanceledEvent`, `OrderRejectedEvent`, and `OrderExpiredEvent`.
+- Policy Admission rejection is not an Order lifecycle terminal Event; it is an
+  Intent pipeline outcome that occurs before dispatch.
 
 ## Step APIs
 

@@ -29,7 +29,10 @@ from tradingchassis_core.core.domain.types import (
     ControlTimeEvent,
     FillEvent,
     MarketEvent,
+    OrderCanceledEvent,
     OrderExecutionFeedbackEvent,
+    OrderExpiredEvent,
+    OrderRejectedEvent,
     OrderSubmittedEvent,
 )
 
@@ -110,6 +113,9 @@ def process_canonical_event(
     Accepted canonical candidates in the current slice:
     - ``MarketEvent`` (category: ``market``)
     - ``OrderSubmittedEvent`` (category: ``intent_related``)
+    - ``OrderCanceledEvent`` (category: ``execution``)
+    - ``OrderRejectedEvent`` (category: ``execution``)
+    - ``OrderExpiredEvent`` (category: ``execution``)
     - ``FillEvent`` (category: ``execution``)
     - ``OrderExecutionFeedbackEvent`` (category: ``execution``)
     - ``ControlTimeEvent`` (category: ``control``)
@@ -186,6 +192,24 @@ def process_canonical_event(
         if position is not None:
             state._advance_processing_position(position)
         state.apply_fill_event(event)
+        return
+
+    if category == CanonicalEventCategory.EXECUTION and isinstance(event, OrderCanceledEvent):
+        if position is not None:
+            state._advance_processing_position(position)
+        state.apply_order_canceled_event(event)
+        return
+
+    if category == CanonicalEventCategory.EXECUTION and isinstance(event, OrderRejectedEvent):
+        if position is not None:
+            state._advance_processing_position(position)
+        state.apply_order_rejected_event(event)
+        return
+
+    if category == CanonicalEventCategory.EXECUTION and isinstance(event, OrderExpiredEvent):
+        if position is not None:
+            state._advance_processing_position(position)
+        state.apply_order_expired_event(event)
         return
 
     if (

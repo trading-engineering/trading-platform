@@ -8,7 +8,10 @@ from tradingchassis_core.core.domain.types import (
     ControlTimeEvent,
     FillEvent,
     MarketEvent,
+    OrderCanceledEvent,
     OrderExecutionFeedbackEvent,
+    OrderExpiredEvent,
+    OrderRejectedEvent,
     OrderSubmittedEvent,
 )
 from tradingchassis_core.core.execution_control.types import ControlSchedulingObligation
@@ -30,6 +33,9 @@ CANONICAL_EVENT_CATEGORY_NAMES: tuple[str, ...] = tuple(
 CANONICAL_STREAM_CANDIDATE_CATEGORY_BY_TYPE: dict[type[object], CanonicalEventCategory] = {
     MarketEvent: CanonicalEventCategory.MARKET,
     OrderSubmittedEvent: CanonicalEventCategory.INTENT_RELATED,
+    OrderCanceledEvent: CanonicalEventCategory.EXECUTION,
+    OrderRejectedEvent: CanonicalEventCategory.EXECUTION,
+    OrderExpiredEvent: CanonicalEventCategory.EXECUTION,
     FillEvent: CanonicalEventCategory.EXECUTION,
     OrderExecutionFeedbackEvent: CanonicalEventCategory.EXECUTION,
     ControlTimeEvent: CanonicalEventCategory.CONTROL,

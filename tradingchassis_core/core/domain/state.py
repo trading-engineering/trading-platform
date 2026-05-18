@@ -19,8 +19,11 @@ if TYPE_CHECKING:
         ControlTimeEvent,
         FillEvent,
         NewOrderIntent,
+        OrderCanceledEvent,
         OrderExecutionFeedbackEvent,
+        OrderExpiredEvent,
         OrderIntent,
+        OrderRejectedEvent,
         OrderSubmittedEvent,
     )
     from tradingchassis_core.core.events.event_bus import EventBus
@@ -395,6 +398,66 @@ class StrategyState:
             updated_ts_ns_local=event.ts_ns_local_dispatch,
         )
         self._clear_inflight(event.instrument, event.client_order_id)
+
+    def _apply_terminal_order_event(
+        self,
+        *,
+        instrument: str,
+        client_order_id: str,
+        ts_ns_local_feedback: int,
+        terminal_state: str,
+    ) -> None:
+        self.update_timestamp(ts_ns_local_feedback)
+
+        order_bucket = self.orders.get(instrument)
+        if order_bucket is not None:
+            order_bucket.pop(client_order_id, None)
+
+        key = (instrument, client_order_id)
+        projection = self.canonical_orders.get(key)
+        if projection is None:
+            projection = CanonicalOrderProjection(
+                instrument=instrument,
+                client_order_id=client_order_id,
+                state=terminal_state,
+                submitted_ts_ns_local=ts_ns_local_feedback,
+                updated_ts_ns_local=ts_ns_local_feedback,
+            )
+            self.canonical_orders[key] = projection
+
+        projection.state = terminal_state
+        projection.updated_ts_ns_local = max(
+            projection.updated_ts_ns_local, ts_ns_local_feedback
+        )
+
+        self._clear_inflight(instrument, client_order_id)
+
+    def apply_order_canceled_event(self, event: OrderCanceledEvent) -> None:
+        """Reduce canonical canceled-order feedback into terminal order projection."""
+        self._apply_terminal_order_event(
+            instrument=event.instrument,
+            client_order_id=event.client_order_id,
+            ts_ns_local_feedback=event.ts_ns_local_feedback,
+            terminal_state="canceled",
+        )
+
+    def apply_order_rejected_event(self, event: OrderRejectedEvent) -> None:
+        """Reduce canonical rejected-order feedback into terminal order projection."""
+        self._apply_terminal_order_event(
+            instrument=event.instrument,
+            client_order_id=event.client_order_id,
+            ts_ns_local_feedback=event.ts_ns_local_feedback,
+            terminal_state="rejected",
+        )
+
+    def apply_order_expired_event(self, event: OrderExpiredEvent) -> None:
+        """Reduce canonical expired-order feedback into terminal order projection."""
+        self._apply_terminal_order_event(
+            instrument=event.instrument,
+            client_order_id=event.client_order_id,
+            ts_ns_local_feedback=event.ts_ns_local_feedback,
+            terminal_state="expired",
+        )
 
     def apply_control_time_event(self, event: ControlTimeEvent) -> None:
         """Reduce canonical control-time Event without side effects."""

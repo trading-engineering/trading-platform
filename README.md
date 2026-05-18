@@ -189,6 +189,20 @@ Runtime reduces to canonical Events
 Runtime dispatches Intents into Orders
 ```
 
+Terminal Order lifecycle baseline in this Core slice:
+
+- Core now accepts explicit canonical terminal lifecycle Events:
+  `OrderCanceledEvent`, `OrderRejectedEvent`, and `OrderExpiredEvent`.
+- Runtime owns venue I/O and must inject these canonical Events when terminal
+  outcomes are confirmed/reported in the Event Stream.
+- Terminal Event reduction removes active working-order projections, updates
+  canonical order projection state, and clears inflight tracking for
+  `instrument + client_order_id`.
+- `OrderRejectedEvent` is an Order lifecycle execution outcome and is distinct
+  from Policy Admission rejection in the Intent pipeline.
+- This slice does not add `OrderAcceptedEvent` and does not introduce a full
+  order state machine framework.
+
 Current Market Event baseline contract:
 
 - Core canonical reduction supports book-shaped `MarketEvent` payloads for
