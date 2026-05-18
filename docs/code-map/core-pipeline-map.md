@@ -1,6 +1,6 @@
-# Core Pipeline Map
+# Core pipeline Map
 
-This map captures the only supported deterministic decision Pipeline for
+This map captures the only supported deterministic decision pipeline for
 TradingChassis Core.
 
 ## Step-by-step flow
@@ -17,7 +17,7 @@ TradingChassis Core.
    in the current slice—see `../flows/control-time-and-scheduling.md`).
 9. Runtime can dispatch later and inject further canonical Events (including
    `ControlTimeEvent` when an obligation is realized); Core does not perform
-   external dispatch or mutate Queues outside this Pipeline.
+   external dispatch or mutate Queues outside this pipeline.
 
 ## Core APIs
 

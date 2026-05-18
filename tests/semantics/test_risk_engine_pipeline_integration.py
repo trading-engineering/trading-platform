@@ -75,7 +75,7 @@ def _prime_market(state: tc.StrategyState) -> None:
 
 
 def test_risk_engine_accepts_generated_intent_in_run_core_step() -> None:
-    """RiskEngine is a valid optional policy_evaluator for the full step Pipeline."""
+    """RiskEngine is a valid optional policy_evaluator for the full step pipeline."""
     state = tc.StrategyState(event_bus=tc.NullEventBus())
     _prime_market(state)
     policy_engine = tc.RiskEngine(_risk_config(trading_enabled=True))

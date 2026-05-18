@@ -1,4 +1,4 @@
-"""Clean CoreStep/CoreWakeupStep Pipeline tests."""
+"""Clean CoreStep/CoreWakeupStep pipeline tests."""
 
 from __future__ import annotations
 

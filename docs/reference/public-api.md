@@ -19,11 +19,15 @@ implementation required):
 
 | Symbol | Role |
 | --- | --- |
-| `CoreStepStrategyEvaluator` / `CoreWakeupStrategyEvaluator` | Strategy evaluation |
+| `CoreStepStrategyEvaluator` / `CoreWakeupStrategyEvaluator` | Strategy evaluation (read-only Strategy State view) |
 | `PolicyIntentEvaluator` | Policy Admission (`evaluate_policy_intent`) via `CorePolicyAdmissionContext` |
 | `ExecutionControl` | Queue/rate/inflight apply via `CoreExecutionControlApplyContext` |
 | `CoreConfiguration` | Optional instrument metadata for positioned market reduction |
 | `EventBus` / `NullEventBus` | `StrategyState` requires a bus; use `NullEventBus` for standalone Core |
+
+Strategy evaluation reads `StrategyStateView` and returns Intents. Strategy code must not
+mutate Core-owned State, Queue/inflight substate, or reducer-managed data; reducers and
+Execution Control own mutation inside Core processing.
 
 ### Convenience implementations (optional)
 
@@ -69,6 +73,7 @@ Examples:
 - `CoreWakeupReductionResult`
 - `CoreWakeupStrategyContext`
 - `CoreWakeupStrategyEvaluator`
+- `StrategyStateView` (read-only Strategy boundary)
 
 ## Policy and risk
 
@@ -84,6 +89,7 @@ Examples:
 
 - `CoreConfiguration`
 - `StrategyState`
+- `StrategyStateView`
 - `CandidateIntentRecord`
 - `CandidateIntentOrigin`
 - `ExecutionControlDecision`

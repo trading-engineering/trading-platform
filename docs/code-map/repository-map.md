@@ -6,7 +6,7 @@ High-level map for the standalone Core package.
 
 - `tradingchassis_core/__init__.py`: public package boundary exports
 - `tradingchassis_core/core/domain/`: canonical contracts and deterministic
-  Pipeline orchestration
+  pipeline orchestration
 - `tradingchassis_core/core/risk/`: policy-only Risk Engine evaluator/config
 - `tradingchassis_core/core/execution_control/`: Execution Control primitives
 - `tradingchassis_core/core/events/`: Event bus/sink utilities (`NullEventBus`; `LoggingEventSink` for Runtime)

@@ -25,7 +25,7 @@ Include:
 This policy covers the Core package in this repository, including:
 
 - canonical Event and Intent contracts
-- deterministic CoreStep/CoreWakeupStep decision Pipeline
+- deterministic CoreStep/CoreWakeupStep decision pipeline
 - package integrity and dependency usage in `tradingchassis_core`
 
 ## Secrets and Credentials Policy

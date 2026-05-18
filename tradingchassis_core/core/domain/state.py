@@ -9,7 +9,8 @@ from __future__ import annotations
 
 from collections import deque
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Iterable
+from types import MappingProxyType
+from typing import TYPE_CHECKING, Iterable, Mapping
 
 from tradingchassis_core.core.domain.processing_order import ProcessingPosition
 
@@ -102,6 +103,189 @@ class CanonicalOrderProjection:
     side: str | None = None
     intended_price: float | None = None
     intended_qty: float | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class MarketStateView:
+    """Immutable market snapshot exposed to Strategy evaluation."""
+
+    last_ts_ns_local: int
+    last_ts_ns_exch: int
+    best_bid: float
+    best_ask: float
+    mid: float
+    best_bid_qty: float
+    best_ask_qty: float
+    tick_size: float
+    lot_size: float
+    contract_size: float
+
+
+@dataclass(frozen=True, slots=True)
+class AccountStateView:
+    """Immutable account snapshot exposed to Strategy evaluation."""
+
+    position: float
+    balance: float
+    fee: float
+    trading_volume: float
+    trading_value: float
+    num_trades: int
+    equity: float
+    initial_equity: float
+    realized_pnl: float
+
+
+@dataclass(frozen=True, slots=True)
+class WorkingOrderView:
+    """Immutable working-order snapshot exposed to Strategy evaluation."""
+
+    instrument: str
+    client_order_id: str
+    side: str
+    intended_price: float
+    intended_qty: float
+    cum_filled_qty: float
+    remaining_qty: float
+    state: str
+    submitted_ts_ns_local: int
+    updated_ts_ns_local: int
+
+
+class StrategyStateView:
+    """Read-only snapshot of Strategy State for Strategy evaluation."""
+
+    __slots__ = (
+        "_sim_ts_ns_local",
+        "_market",
+        "_account",
+        "_orders",
+        "_fills",
+        "_fill_cum_qty",
+    )
+
+    def __init__(self, state: StrategyState) -> None:
+        self._sim_ts_ns_local = state.sim_ts_ns_local
+
+        market_snapshot = {
+            instrument: MarketStateView(
+                last_ts_ns_local=market.last_ts_ns_local,
+                last_ts_ns_exch=market.last_ts_ns_exch,
+                best_bid=market.best_bid,
+                best_ask=market.best_ask,
+                mid=market.mid,
+                best_bid_qty=market.best_bid_qty,
+                best_ask_qty=market.best_ask_qty,
+                tick_size=market.tick_size,
+                lot_size=market.lot_size,
+                contract_size=market.contract_size,
+            )
+            for instrument, market in state.market.items()
+        }
+        self._market: Mapping[str, MarketStateView] = MappingProxyType(market_snapshot)
+
+        account_snapshot = {
+            instrument: AccountStateView(
+                position=account.position,
+                balance=account.balance,
+                fee=account.fee,
+                trading_volume=account.trading_volume,
+                trading_value=account.trading_value,
+                num_trades=account.num_trades,
+                equity=account.equity,
+                initial_equity=account.initial_equity,
+                realized_pnl=account.realized_pnl,
+            )
+            for instrument, account in state.account.items()
+        }
+        self._account: Mapping[str, AccountStateView] = MappingProxyType(account_snapshot)
+
+        orders_snapshot: dict[str, Mapping[str, WorkingOrderView]] = {}
+        for instrument, by_id in state.orders.items():
+            orders_snapshot[instrument] = MappingProxyType(
+                {
+                    client_order_id: WorkingOrderView(
+                        instrument=working.instrument,
+                        client_order_id=working.client_order_id,
+                        side=working.side,
+                        intended_price=working.intended_price,
+                        intended_qty=working.intended_qty,
+                        cum_filled_qty=working.cum_filled_qty,
+                        remaining_qty=working.remaining_qty,
+                        state=working.state,
+                        submitted_ts_ns_local=working.submitted_ts_ns_local,
+                        updated_ts_ns_local=working.updated_ts_ns_local,
+                    )
+                    for client_order_id, working in by_id.items()
+                }
+            )
+        self._orders: Mapping[str, Mapping[str, WorkingOrderView]] = MappingProxyType(
+            orders_snapshot
+        )
+
+        fills_snapshot = {
+            instrument: tuple(fill.model_copy(deep=True) for fill in fills)
+            for instrument, fills in state.fills.items()
+        }
+        self._fills: Mapping[str, tuple[FillEvent, ...]] = MappingProxyType(fills_snapshot)
+
+        fill_cum_snapshot: dict[str, Mapping[str, float]] = {}
+        for instrument, fill_cum_by_id in state.fill_cum_qty.items():
+            fill_cum_snapshot[instrument] = MappingProxyType(
+                {
+                    client_order_id: float(qty)
+                    for client_order_id, qty in fill_cum_by_id.items()
+                }
+            )
+        self._fill_cum_qty: Mapping[str, Mapping[str, float]] = MappingProxyType(
+            fill_cum_snapshot
+        )
+
+    @property
+    def sim_ts_ns_local(self) -> int:
+        return self._sim_ts_ns_local
+
+    @property
+    def market(self) -> Mapping[str, MarketStateView]:
+        return self._market
+
+    @property
+    def account(self) -> Mapping[str, AccountStateView]:
+        return self._account
+
+    @property
+    def orders(self) -> Mapping[str, Mapping[str, WorkingOrderView]]:
+        return self._orders
+
+    @property
+    def fills(self) -> Mapping[str, tuple[FillEvent, ...]]:
+        return self._fills
+
+    @property
+    def fill_cum_qty(self) -> Mapping[str, Mapping[str, float]]:
+        return self._fill_cum_qty
+
+    def get_mid(self, instrument: str) -> float:
+        market = self._market.get(instrument)
+        return 0.0 if market is None else market.mid
+
+    def get_contract_size(self, instrument: str) -> float:
+        market = self._market.get(instrument)
+        return 1.0 if market is None else market.contract_size
+
+    def get_tick_size(self, instrument: str) -> float:
+        market = self._market.get(instrument)
+        return 0.0 if market is None else market.tick_size
+
+    def get_lot_size(self, instrument: str) -> float:
+        market = self._market.get(instrument)
+        return 0.0 if market is None else market.lot_size
+
+    def get_total_equity(self) -> float:
+        return float(sum(account.equity for account in self._account.values()))
+
+    def get_total_pnl(self) -> float:
+        return float(sum(account.realized_pnl for account in self._account.values()))
 
 
 class StrategyState:

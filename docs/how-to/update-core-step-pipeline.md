@@ -1,4 +1,4 @@
-# How To Update CoreStep Pipeline Behavior
+# How To Update CoreStep pipeline Behavior
 
 Core step orchestration lives in
 `tradingchassis_core/core/domain/processing_step.py`.
@@ -19,7 +19,7 @@ Recommended workflow:
 
 Guardrails:
 
-- No Runtime dispatch logic in Core Pipeline code.
+- No Runtime dispatch logic in Core pipeline code.
 - No legacy compatibility contract restoration.
 - Keep deterministic behavior and public API coherence.
 

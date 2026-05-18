@@ -62,10 +62,10 @@ stay in the Runtime, Venue Adapter, and Venue—not in Core.
 
 | What you get | Why it matters |
 | --- | --- |
-| One deterministic Core Pipeline | Same Event-step path for reduction → evaluation → candidates → Risk Engine → Execution Control apply |
+| One deterministic Core pipeline | Same Event-step path for reduction → evaluation → candidates → Risk Engine → Execution Control apply |
 | Canonical Event input model (`EventStreamEntry`) | Aligns with Event Stream + Processing Order; State is `f(Event Stream, Configuration)` |
 | Strategy output as Intents | Internal, order/Venue-agnostic commands before Venue Adapter-specific shapes |
-| Risk Engine separated from Execution Control | Risk Engine (policy) vs Queue / scheduling / rate-aware presentation split, as in the Intent Pipeline (Strategy → Risk → Queue → Adapter) |
+| Risk Engine separated from Execution Control | Risk Engine (policy) vs Queue / scheduling / rate-aware presentation split, as in the Intent pipeline (Strategy → Risk → Queue → Adapter) |
 | `dispatchable_intents` + optional Control Scheduling Obligation | Runtime performs Execution and may inject canonical `ControlTimeEvent` when a **rate-limit** obligation is realized ([`docs/flows/control-time-and-scheduling.md`](docs/flows/control-time-and-scheduling.md)); inflight deferral does not emit that obligation by default |
 
 Core is designed to reduce decision-logic drift between Backtesting
@@ -103,7 +103,7 @@ flowchart TB
 Core never replaces the Runtime: the Runtime is responsible for feeding canonical
 Events and for turning `dispatchable_intents` into Venue traffic (and for everything
 Kubernetes, credentials, and operations-related). What stays stable is the Core
-Pipeline and contracts; what varies by design is Runtime choice, Venue Adapter,
+pipeline and contracts; what varies by design is Runtime choice, Venue Adapter,
 Venue, and deployment.
 
 <img src="https://img.spacergif.org/spacer.gif" width="1" height="32"/>
@@ -133,7 +133,7 @@ Run the quickstart
 python examples/core_step_quickstart.py
 ```
 
-Optional Risk Engine policy example (same Pipeline, built-in policy):
+Optional Risk Engine policy example (same pipeline, built-in policy):
 
 ```bash
 python examples/core_step_with_risk_engine.py
@@ -170,9 +170,9 @@ Planned U3 cleanup candidates: [`docs/roadmap/dead-code-cleanup-candidates.md`](
 
 <img src="https://img.spacergif.org/spacer.gif" width="1" height="32"/>
 
-## Full Pipeline
+## Full pipeline
 
-Internal processing Pipeline, in sequential order:
+Internal processing pipeline, in sequential order:
 
 ```text
 Runtime reduces to canonical Events
@@ -193,7 +193,7 @@ Runtime dispatches Intents into Orders
 
 ## Internally wired vs externally supplied
 
-The clean Core Pipeline is always the same shape; some pieces run inside Core
+The clean Core pipeline is always the same shape; some pieces run inside Core
 when you call step APIs, and others must be supplied by your Runtime or tests.
 
 ### Internally wired (always part of Core when you call step APIs)
@@ -207,6 +207,7 @@ when you call step APIs, and others must be supplied by your Runtime or tests.
 ### Externally supplied extension points
 
 - **Strategy evaluator** — `CoreStepStrategyEvaluator` or `CoreWakeupStrategyEvaluator`
+  receives a read-only `StrategyStateView` via `context.state` and returns Intents
 - **Policy evaluator** — any object implementing `PolicyIntentEvaluator` (passed via `CorePolicyAdmissionContext`)
 - **Execution Control** — `ExecutionControl` instance (passed via `CoreExecutionControlApplyContext`)
 - **Configuration** — optional `CoreConfiguration` for positioned market reduction
@@ -222,6 +223,9 @@ The minimal quickstart uses an inline allow-all policy to stay small. That does
 **not** mean the Risk Engine is unused or dead. Use `RiskEngine` when you want the
 built-in Risk Engine policy behavior. See `examples/core_step_quickstart.py` (minimal) and
 `examples/core_step_with_risk_engine.py` (Risk Engine variant).
+
+Strategy code reads State and returns Intents. It must not mutate Core-owned
+State, Queue/inflight substate, or reducer-managed data.
 
 <img src="https://img.spacergif.org/spacer.gif" width="1" height="32"/>
 
@@ -256,7 +260,7 @@ work is reconsidered after canonical execution Events update State. Runtimes mus
 not flush Core Queues outside the normal `run_core_step` / Execution Control apply
 path. See [`docs/flows/control-time-and-scheduling.md`](docs/flows/control-time-and-scheduling.md).  
 
-In short: one Pipeline, canonical Events, Intents inside Core, policy vs Execution
+In short: one pipeline, canonical Events, Intents inside Core, policy vs Execution
 Control split, dispatchable Intents plus optional Control Scheduling Obligation for
 the Runtime, and a boundary that makes parity and testing practical—not a second
 copy of decision logic per environment.

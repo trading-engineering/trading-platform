@@ -1,4 +1,4 @@
-"""FillEvent canonical reduction and Core step Pipeline coverage."""
+"""FillEvent canonical reduction and Core step pipeline coverage."""
 
 from __future__ import annotations
 

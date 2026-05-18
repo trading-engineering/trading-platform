@@ -39,6 +39,7 @@ def test_public_api_exposes_clean_core_symbols() -> None:
         "Quantity",
         "CoreConfiguration",
         "StrategyState",
+        "StrategyStateView",
         "ExecutionControl",
         "ControlSchedulingObligation",
         "NullEventBus",

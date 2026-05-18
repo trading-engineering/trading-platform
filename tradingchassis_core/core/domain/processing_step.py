@@ -27,7 +27,7 @@ from tradingchassis_core.core.domain.policy_risk_decision import (
 )
 from tradingchassis_core.core.domain.processing import process_event_entry
 from tradingchassis_core.core.domain.processing_order import EventStreamEntry, ProcessingPosition
-from tradingchassis_core.core.domain.state import StrategyState
+from tradingchassis_core.core.domain.state import StrategyState, StrategyStateView
 from tradingchassis_core.core.domain.step_decision import CoreStepDecision
 from tradingchassis_core.core.domain.step_result import CoreStepResult
 from tradingchassis_core.core.domain.types import OrderIntent
@@ -40,7 +40,7 @@ if TYPE_CHECKING:
 class CoreStepStrategyContext:
     """Deterministic Strategy-evaluation context for one Core step."""
 
-    state: StrategyState
+    state: StrategyStateView
     event: object
     position: ProcessingPosition
     configuration: CoreConfiguration | None = None
@@ -57,7 +57,7 @@ class CoreStepStrategyEvaluator(Protocol):
 class CoreWakeupStrategyContext:
     """Deterministic Strategy-evaluation context for one Core wakeup batch."""
 
-    state: StrategyState
+    state: StrategyStateView
     entries: tuple[EventStreamEntry, ...]
     configuration: CoreConfiguration | None = None
     last_position: ProcessingPosition | None = None
@@ -147,8 +147,9 @@ def run_core_step(
 
     generated_intents: tuple[OrderIntent, ...] = ()
     if strategy_evaluator is not None:
+        state_view = StrategyStateView(state)
         strategy_context = CoreStepStrategyContext(
-            state=state,
+            state=state_view,
             event=entry.event,
             position=entry.position,
             configuration=configuration,
@@ -243,8 +244,9 @@ def run_core_wakeup_reduction(
     generated_intents: tuple[OrderIntent, ...] = ()
     if wakeup_strategy_evaluator is not None:
         last_position = entries_tuple[-1].position if entries_tuple else None
+        state_view = StrategyStateView(state)
         wakeup_context = CoreWakeupStrategyContext(
-            state=state,
+            state=state_view,
             entries=entries_tuple,
             configuration=configuration,
             last_position=last_position,

@@ -7,7 +7,7 @@ what was kept, and what remains deferred.
 
 | Item | Rationale |
 | --- | --- |
-| `StrategyState.pop_queued_intents` | No callers in the Core Pipeline; Runtime tests (`core-runtime`) only monkeypatch the name to assert it is **not** invoked |
+| `StrategyState.pop_queued_intents` | No callers in the Core pipeline; Runtime tests (`core-runtime`) only monkeypatch the name to assert it is **not** invoked |
 | `fold_event_stream_entries` | Zero callers; batch reduction is `process_event_entry` in a loop |
 | `core/events/events.py` telemetry models | Never emitted; only referenced by unused `TELEMETRY_EVENT_TYPES` |
 | `combine_candidate_intents` | Unused wrapper around `combine_candidate_intent_records` |
@@ -20,7 +20,7 @@ what was kept, and what remains deferred.
 | `RiskEngine.build_constraints` | Called from Runtime (`core-runtime` `strategy_runner.py`) for Strategy evaluation |
 | `SlotKey`, `stable_slot_order_id` | Used by Runtime (`core-runtime` `debug_strategy.py`) |
 | `sink_logging.LoggingEventSink` | Used by Runtime (`core-runtime` `strategy_runner.py`) |
-| Risk Engine (`RiskEngine`), `RiskPolicy`, `ExecutionConstraintsPolicy`, `PolicyIntentEvaluator`, canonical Events, Core step APIs | Active extension points / Pipeline |
+| Risk Engine (`RiskEngine`), `RiskPolicy`, `ExecutionConstraintsPolicy`, `PolicyIntentEvaluator`, canonical Events, Core step APIs | Active extension points / pipeline |
 
 ## Deferred (intentionally not removed)
 

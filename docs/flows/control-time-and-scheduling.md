@@ -16,7 +16,7 @@ to Execution Control deferral.
   slot (for example keyed by `client_order_id`) is occupied because an earlier
   Intent operation is still awaiting **canonical execution feedback**. This is
   not the same as venue-side “order ownership”; Core models sendability for the
-  decision Pipeline.
+  decision pipeline.
 - **Rate-limit deferral** — Execution Control blocks dispatch because the
   configured **token / time budget** for orders or cancels is not yet available at
   the apply clock (`now_ts_ns_local` in `CoreExecutionControlApplyContext`).
@@ -37,7 +37,7 @@ or “synthetic” obligations for inflight-only waits.
 `ControlTimeEvent`. Obligations are for **rate-limit** rechecks in the current
 Core slice.
 
-## Clean Core Pipeline (unchanged)
+## Clean Core pipeline (unchanged)
 
 1. `EventStreamEntry`
 2. `process_event_entry` / `process_canonical_event`
