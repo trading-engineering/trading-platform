@@ -8,8 +8,7 @@ version = "0.1.0"
 description = "Deterministic trading decision engine."
 readme = "README.md"
 requires-python = ">=3.11"
-authors = [{ name = "TradingChassis Core Contributors" }]
-maintainers = [{ name = "TradingChassis Core Maintainers" }]
+authors = [{ name = "TradingChassis Core Contributors", email = "tradingeng@protonmail.com" }]
 license = "MIT"
 keywords = ["trading", "deterministic", "pydantic", "event-driven", "strategy"]
 
