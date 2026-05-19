@@ -1,3 +1,13 @@
+# Status: Legacy / Architectural Exploration
+
+This repository is no longer part of the active direction of TradingChassis.
+
+It explored deterministic Event-driven trading semantics, Intent handling,
+risk gates, and Execution Control boundaries as part of an earlier design phase.
+
+TradingChassis has since pivoted away from implementing a custom trading engine.
+This repository remains public as historical context and proof of architectural exploration.
+
 # TradingChassis Core
 
 `tradingchassis_core` is the stable deterministic trading decision engine
